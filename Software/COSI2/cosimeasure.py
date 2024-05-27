@@ -61,7 +61,7 @@ class cosimeasure(object):
         
         self.magnet = magnet
 
-        self.measurement_time_delay = 3
+        self.measurement_time_delay = 4
         if isfake:
             self.measurement_time_delay = 0.25 # for quick testing
             return
@@ -186,7 +186,7 @@ class cosimeasure(object):
                 self.command("G0 Z%.2f"%maxz) # homing max z               
 
     def moveto(self,x:float,y:float,z:float):
-        print('moving head to %.2f, %.2f, %.2f'%(x,y,z))
+        #print('moving head to %.2f, %.2f, %.2f'%(x,y,z))
         self.command("G0 X%.2f Y%.2f Z%.2f"%(x,y,z))
         self.head_position = self.get_current_position(fakePosition=[x,y,z])
 
@@ -306,7 +306,7 @@ class cosimeasure(object):
                             time.sleep(5)
                             
                         pos = self.get_current_position(fakePosition=pt) # update head position of the cosimeasure object, used for live plotting
-                        print(pt) # if gui lags, the terminal still shows points
+                        #print(pt) # if gui lags, the terminal still shows points
                         time.sleep(self.measurement_time_delay) # adjust according to the #averages of the gaussmeter
                         bx,by,bz,babs = self.gaussmeter.read_gaussmeter(fakeField=[0,100,0,0]) # after waiting get the averaged field vals
                         print('pt %d of %d'%(ptidx,len(self.path.r)),pos,'mm reached, B0=[%.1f,%.4f,%.1f] mT'%(bx,by,bz))
