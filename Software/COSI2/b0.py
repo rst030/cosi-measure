@@ -297,6 +297,8 @@ class b0():
 
         path_filename_str = str(header_lines[4].split('path:')[1])
         print('warning. path file %s not used. path data taken from csv!'%path_filename_str)
+        
+        
     
     
     def parse_header_of_B0_file(self,header_lines):
@@ -344,6 +346,7 @@ class b0():
 
         # make an empty instance of b0 and get the b0 values from the csv file.
         self.__init__()        
+        self.filename = b0_filename
         with open(b0_filename) as file:
                 raw_B0_data = file.readlines()     
                 headerlength = 0
