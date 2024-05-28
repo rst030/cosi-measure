@@ -96,6 +96,20 @@ class b0():
         self.reorder_field_to_cubic_grid()
 
         
+    def delete_max_point(self,maxPoint):
+        for idx in range(len(self.path.r)):
+            if self.fieldDataAlongPath[idx,0] >= maxPoint:
+                self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
+                print('max point %d replaced by neighbor'%idx)
+                    
+    def delete_min_point(self,minPoint):
+        for idx in range(len(self.path.r)):
+            if self.fieldDataAlongPath[idx,0] <= minPoint:
+                self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
+                print('min point %d replaced by neighbor'%idx)
+            
+    
+    
     def reorder_field_to_cubic_grid(self):
         # what we want to do here is make the coordinate grid. A cube, essentially.
         # we know that the path has a fixed distance between the points. This is crucial.
@@ -147,11 +161,11 @@ class b0():
         # so there are unique_x x values between x_min and x_max
         # lets make a linspace
         self.xPts = np.arange(start=x_min,stop=x_max,step=step_size_x) #linspace(start=x_min,stop=x_max,num=num_steps_x)
-        print("xPts: ", self.xPts)
+        print("xPts: ", self.xPts[0:10])
         self.yPts = np.arange(start=y_min,stop=y_max,step=step_size_y) #linspace(start=y_min,stop=y_max,num=num_steps_y)
-        print("yPts: ", self.yPts)
+        print("yPts: ", self.yPts[0:10])
         self.zPts = np.arange(start=z_min,stop=z_max,step=step_size_z) #linspace(start=z_min,stop=z_max,num=num_steps_z)
-        print("zPts: ", self.zPts)
+        print("zPts: ", self.zPts[0:10])
         
                 
         # now we do a trick
@@ -170,7 +184,8 @@ class b0():
         
         b0Data = np.zeros((len(self.xPts),len(self.yPts),len(self.zPts),4))
         
-        
+        meanField_raw = np.mean(abs(self.fieldDataAlongPath[idx,0]))
+                   
         for idx in range(np.size(self.path.r,0)):
             x_value_along_path = self.path.r[idx,0]
             y_value_along_path = self.path.r[idx,1]
@@ -181,20 +196,49 @@ class b0():
             zArg = min(np.where(abs(self.zPts - z_value_along_path) < epsz))
         
             #print("pth r=[",self.path.r[idx,:],"] closest grid [",xPts[xArg],yPts[yArg],zPts[zArg],"]")
-            b0Data[xArg,yArg,zArg,:] = abs(self.fieldDataAlongPath[idx,:])
             
+                    # get minmax and average
+                # cleaning
+
+            
+            if self.fieldDataAlongPath[idx,0] == 0:
+                self.fieldDataAlongPath[idx,:] == self.fieldDataAlongPath[idx-1,:] if self.fieldDataAlongPath[idx-1,0] !=0 else self.fieldDataAlongPath[idx-2,:]
+                print('b0 importer: warning! 0 VALUE detected! pt %d, assigning'%(idx),self.fieldDataAlongPath[idx-1,:])
+           
+           # replacing the max point by neighbor
+            if abs(self.fieldDataAlongPath[idx,0])/meanField_raw>1.1:
+                print(self.fieldDataAlongPath[idx,0],'is too big! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
+                self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
+                print('assigned: ',self.fieldDataAlongPath[idx,:], '<+++++')
+           
+           # replacing the min point by neighbor
+            if meanField_raw/abs(self.fieldDataAlongPath[idx,0])>1.1:
+                print(self.fieldDataAlongPath[idx,0],'is too small! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
+                self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
+                print('assigned: ',self.fieldDataAlongPath[idx,:], '<-----')
+
+
+            b0Data[xArg,yArg,zArg,:] = [abs(self.fieldDataAlongPath[idx,0]),abs(self.fieldDataAlongPath[idx,1]),abs(self.fieldDataAlongPath[idx,2]),abs(self.fieldDataAlongPath[idx,3])]
+
+                
             
         b0Data[b0Data==0]=np.NaN    
         # getting mean field
-        meanField = np.nanmean(b0Data[:,:,:,1])
-        print('Mean field <B0> = ',meanField, 'mT')
+        meanField = np.nanmean(b0Data[:,:,:,0])
+        
         # homogeniety
-        maxField = np.nanmax(b0Data[:,:,:,1])
-        minField = np.nanmin(b0Data[:,:,:,1])
+        maxField = np.nanmax(b0Data[:,:,:,0])
+        minField = np.nanmin(b0Data[:,:,:,0])
+               
+        
         try:
             homogeneity = float(1e6*(maxField-minField)/meanField)
         except:
             homogeneity = 0
+            
+        print('Mean field <B0> = ',meanField, 'mT')
+        print('Max field = ',maxField, 'mT')
+        print('Min field = ',minField, 'mT')
         print('homogeniety: %.0f ppm'%homogeneity)
 
 
@@ -229,7 +273,7 @@ class b0():
             b0abs = float(line.split(',')[6])
             
             self.fieldDataAlongPath[idx,:] = [b0x,b0y,b0z,b0abs]
-
+            
             
     def parse_header_of_CSV_file(self,header_lines):
         # COSI2 B0 scan						
@@ -253,6 +297,8 @@ class b0():
 
         path_filename_str = str(header_lines[4].split('path:')[1])
         print('warning. path file %s not used. path data taken from csv!'%path_filename_str)
+        
+        
     
     
     def parse_header_of_B0_file(self,header_lines):
@@ -300,6 +346,7 @@ class b0():
 
         # make an empty instance of b0 and get the b0 values from the csv file.
         self.__init__()        
+        self.filename = b0_filename
         with open(b0_filename) as file:
                 raw_B0_data = file.readlines()     
                 headerlength = 0
