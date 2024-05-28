@@ -35,6 +35,7 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         self.load_button.clicked.connect(self.load_b0)  # Remember to code the method in the class.
         self.load_csv_button.clicked.connect(self.load_csv)  # Remember to code the method in the class.
         self.show_2d_slice_btn.clicked.connect(self.plot_B0M_slice_2d)
+        self.export_for_Tom_btn.clicked.connect(self.export_for_Tom)
 
         # --- adding the plotter: ---
         # B0M plotter:
@@ -220,3 +221,19 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         self.b0map.make_artificial_field_along_path(coordinates_of_singularity = [10,20,30],radius_of_singularity=10)
         self.b0map.saveAsCsv_for_comsol(new_csv_path)
         #self.b0map.path.saveAs(new_csv_path)
+
+
+    def export_for_Tom(self):
+        print('file dialog for exporting two files for Tom''s script')
+        # open file dialog
+        try:
+            Tom_filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, caption="file name for csv export",
+                                                                   directory=self.workingFolder,
+                                                                   filter="path files for Tom (*.path)")
+            self.workingFolder = os.path.split(os.path.abspath(Tom_filename))[0]
+
+        except:
+            print('no filename given, do it again.')
+            return 0
+
+        self.b0map.save_for_Tom(Tom_filename)

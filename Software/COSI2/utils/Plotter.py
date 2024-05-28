@@ -8,6 +8,10 @@ mpl window is imbedded into the parent that has to be passed to the constructor.
     '''
 
 import matplotlib
+# if conflict with 3d axes after running Tom's script
+# sudo apt remove python3-matplotlib
+# sudo apt remove python3-matplotlib
+
 import numpy as np
 
 import chg

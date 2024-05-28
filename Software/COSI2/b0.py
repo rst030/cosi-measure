@@ -206,13 +206,13 @@ class b0():
                 print('b0 importer: warning! 0 VALUE detected! pt %d, assigning'%(idx),self.fieldDataAlongPath[idx-1,:])
            
            # replacing the max point by neighbor
-            if abs(self.fieldDataAlongPath[idx,0])/meanField_raw>1.1:
+            if abs(self.fieldDataAlongPath[idx,0])/meanField_raw>1.25:
                 print(self.fieldDataAlongPath[idx,0],'is too big! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
                 self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
                 print('assigned: ',self.fieldDataAlongPath[idx,:], '<+++++')
            
            # replacing the min point by neighbor
-            if meanField_raw/abs(self.fieldDataAlongPath[idx,0])>1.1:
+            if meanField_raw/abs(self.fieldDataAlongPath[idx,0])>1.25:
                 print(self.fieldDataAlongPath[idx,0],'is too small! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
                 self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
                 print('assigned: ',self.fieldDataAlongPath[idx,:], '<-----')
@@ -255,13 +255,21 @@ class b0():
             b0y = float(line.split(' ')[1])
             b0z = float(line.split(' ')[2])
             b0abs = float(line.split(' ')[3])
+
+            if b0abs == 0 :# sometimes gaussmeter doesnt give the vector
+                b0abs = np.sqrt(b0x**2+b0y**2+b0z**2)
+                print('OOPS')
+
             self.fieldDataAlongPath[idx,:] = [b0x,b0y,b0z,b0abs]
-        
+
+
         if self.fieldDataAlongPath[0,1] == 0:
             self.fieldDataAlongPath[0,0] = np.nanmean(self.fieldDataAlongPath[1:,0])
             self.fieldDataAlongPath[0,1] = np.nanmean(self.fieldDataAlongPath[1:,1])
             self.fieldDataAlongPath[0,2] = np.nanmean(self.fieldDataAlongPath[1:,2])
             self.fieldDataAlongPath[0,3] = np.nanmean(self.fieldDataAlongPath[1:,3])
+
+
                         
     def parse_field_of_CSV_file(self,field_lines):
         # 315.17	152.35	113.75	0	100	0	0
@@ -271,6 +279,10 @@ class b0():
             b0y = float(line.split(',')[4])
             b0z = float(line.split(',')[5])
             b0abs = float(line.split(',')[6])
+
+            if b0abs == 0 :# sometimes gaussmeter doesnt give the vector
+                b0abs = np.sqrt(b0x**2+b0y**2+b0z**2)
+                print('OOPS')
             
             self.fieldDataAlongPath[idx,:] = [b0x,b0y,b0z,b0abs]
             
@@ -320,6 +332,21 @@ class b0():
         mag_gamma= float(mg_euler_str.split(',')[2].split(' ')[2])
 
         self.magnet = osi2magnet.osi2magnet(origin=[mag_center_x,mag_center_y,mag_center_z],euler_angles_zyx=[mag_alpha,mag_beta,mag_gamma])
+
+
+    def save_for_Tom(self,filename:str):
+        with open(filename+'.path', 'w') as file:
+             for pathpt in self.path.r:
+                 file.write('X%.2fY%.2fZ%.2f\n'%(pathpt[0],pathpt[1],pathpt[2]))
+        file.close()
+        print('exported path as *.path file')
+        
+        with open(filename+'.txt', 'w') as file:
+             for field_pt in self.fieldDataAlongPath:
+                 file.write('%.9f	%.9f	%.9f	%.9f	\n'%(abs(field_pt[3]),abs(field_pt[2]),abs(field_pt[1]),abs(field_pt[0])))
+        file.close()
+        print('exported field as *.txt file')
+
 
 
     def saveAsCsv_for_comsol(self, filename: str):
