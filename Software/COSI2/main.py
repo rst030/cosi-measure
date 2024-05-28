@@ -73,6 +73,7 @@ QUIET=my_args.quiet # todo suppress gui and messages when called with -q
 
 # multithreading - doing it like in EMRE
 # one process measures, other process plots
+# checking connection to github
 
 # these two processes are required for multithreading
 
