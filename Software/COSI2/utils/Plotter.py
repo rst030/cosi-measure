@@ -8,6 +8,10 @@ mpl window is imbedded into the parent that has to be passed to the constructor.
     '''
 
 import matplotlib
+# if conflict with 3d axes after running Tom's script
+# sudo apt remove python3-matplotlib
+# sudo apt remove python3-matplotlib
+
 import numpy as np
 
 import chg
@@ -235,7 +239,7 @@ class PlotterCanvas(FigureCanvas):
         
     def plotB0slice(self,b0map_object:b0.b0,slice_number_xy=-1,slice_number_zx=-1,slice_number_yz=-1):
         self.axes.cla()
-        slice_color_map='coolwarm'
+        slice_color_map='viridis'
         minval_of_b0 = np.nanmin(b0map_object.b0Data[:,:,:,0])
         maxval_of_b0 = np.nanmax(b0map_object.b0Data[:,:,:,0])
         
@@ -370,9 +374,9 @@ class PlotterCanvas(FigureCanvas):
         
         print('--- plotter is called --- ', minval_of_b0)
         
-        slice_color_map='coolwarm'
+        slice_color_map='viridis'
         
-        nlevels = 64
+        nlevels = 32
         ctrf = None
 
         if slice_number_xy >= 0:

@@ -216,6 +216,13 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QPushButton" name="export_for_Tom_btn">
+          <property name="text">
+           <string>export for Tom</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
       <item>

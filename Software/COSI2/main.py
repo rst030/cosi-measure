@@ -73,11 +73,12 @@ QUIET=my_args.quiet # todo suppress gui and messages when called with -q
 
 # multithreading - doing it like in EMRE
 # one process measures, other process plots
+# checking connection to github
 
 # these two processes are required for multithreading
 
 
-class data_generating_thread(QThread): # oт это у нас кусрэд, но наш, русскaй, родной, ТТТ.
+class data_generating_thread(QThread):
     def __init__(self, _cosimeasure:cosimeasure.cosimeasure):  # and here is its constructor
         super(data_generating_thread, self).__init__() # from a parent to be born
         self.quit_flag = False # and no flag was given to ever quit anything
