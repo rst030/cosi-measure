@@ -218,7 +218,8 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         
         
         # TEMP!
-        self.b0map.make_artificial_field_along_path(coordinates_of_singularity = [10,20,30],radius_of_singularity=10)
+        #self.b0map.make_artificial_field_along_path(coordinates_of_singularity = [25,50,100],radius_of_singularity=50, intensity=47.2, bg = 47)
+        self.b0map.make_cylindrical_anomaly_along_x(yz_of_the_cylinder_center=[-50,120],radius_of_cylinder=70,intensity=47.1, bg = 47)
         self.b0map.saveAsCsv_for_comsol(new_csv_path)
         #self.b0map.path.saveAs(new_csv_path)
 

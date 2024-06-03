@@ -81,17 +81,42 @@ class b0():
     
         
     # ----------------- artificial data generation ----------------- 
-    def make_artificial_field_along_path(self,coordinates_of_singularity,radius_of_singularity:float):
+    def make_cylindrical_anomaly_along_x(self,yz_of_the_cylinder_center,radius_of_cylinder,intensity,bg):
+        path = self.path
+        y0 = yz_of_the_cylinder_center[0]
+        z0 = yz_of_the_cylinder_center[1]
+        
+        bg_field = bg
+        anomaly_field = intensity
+
+        self.fieldDataAlongPath = np.zeros((len(self.path.r),4)) # bx,by,bz,babs
+
+        for idx in range(len(path.r)):
+            self.fieldDataAlongPath[idx,:] = [bg_field,bg_field,bg_field,bg_field]
+            if np.sqrt((path.r[idx,1]-y0)**2+(path.r[idx,2]-z0)**2)<radius_of_cylinder:
+                self.fieldDataAlongPath[idx,:] = [anomaly_field,anomaly_field,anomaly_field,anomaly_field]
+                
+        print("cylinder generated")        
+        self.reorder_field_to_cubic_grid()
+
+
+
+
+
+    def make_artificial_field_along_path(self,coordinates_of_singularity,radius_of_singularity,intensity,bg):
         path = self.path
         x0 = coordinates_of_singularity[0]
         y0 = coordinates_of_singularity[1]
         z0 = coordinates_of_singularity[2]
         
+        bg_field = bg
+        anomaly_field = intensity
+
         self.fieldDataAlongPath = np.zeros((len(self.path.r),4)) # bx,by,bz,babs
         for idx in range(len(path.r)):
-            self.fieldDataAlongPath[idx,:] = [0,1,0,0]
+            self.fieldDataAlongPath[idx,:] = [bg_field,bg_field,bg_field,bg_field]
             if np.sqrt((path.r[idx,0]-x0)**2+(path.r[idx,1]-y0)**2+(path.r[idx,2]-z0)**2)<radius_of_singularity:
-                self.fieldDataAlongPath[idx,:] = [414,414,414,414]
+                self.fieldDataAlongPath[idx,:] = [anomaly_field,anomaly_field,anomaly_field,anomaly_field]
                 
         self.reorder_field_to_cubic_grid()
 
@@ -139,7 +164,7 @@ class b0():
         step_size_y_list = []
         step_size_z_list = []
         
-        for idx in range(1,len(self.path.r)):
+        for idx in range(2,len(self.path.r)):
             step = self.path.r[idx,:] - self.path.r[idx-1,:]
             if step[0] > 1e-3:
                 step_size_x_list.append(step[0])
@@ -206,13 +231,13 @@ class b0():
                 print('b0 importer: warning! 0 VALUE detected! pt %d, assigning'%(idx),self.fieldDataAlongPath[idx-1,:])
            
            # replacing the max point by neighbor
-            if abs(self.fieldDataAlongPath[idx,0])/meanField_raw>1.25:
+            if abs(self.fieldDataAlongPath[idx,0])/meanField_raw>1.5:
                 print(self.fieldDataAlongPath[idx,0],'is too big! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
                 self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
                 print('assigned: ',self.fieldDataAlongPath[idx,:], '<+++++')
            
            # replacing the min point by neighbor
-            if meanField_raw/abs(self.fieldDataAlongPath[idx,0])>1.25:
+            if meanField_raw/abs(self.fieldDataAlongPath[idx,0])>1.5:
                 print(self.fieldDataAlongPath[idx,0],'is too small! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
                 self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
                 print('assigned: ',self.fieldDataAlongPath[idx,:], '<-----')
