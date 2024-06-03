@@ -120,6 +120,9 @@ class pth():
         for i in range(len(self.r[:,0])):
             self.r[i,:] = osi2magnet.rotatePoint_xyz(point = self.r[i,:],origin=self.pathCenter,gamma=-gamma,beta=-beta,alpha=-alpha)
 
+            # warning! here something is not right.
+            
+
     def saveAs(self,filename: str):
         # open file filename and write comma separated values in it
         # experiment parameters
