@@ -36,7 +36,7 @@ class cosimeasure(object):
     magnetometer = None
     working_directory = r'./dummies/pathfiles/'
     bvalues = [] # list of strings
-    measurement_time_delay = 3 # s
+    measurement_time_delay = 1 # s
     magnet = osi2magnet.osi2magnet
 
 
@@ -61,7 +61,7 @@ class cosimeasure(object):
         
         self.magnet = magnet
 
-        self.measurement_time_delay = 4
+        self.measurement_time_delay = 2.3
         if isfake:
             self.measurement_time_delay = 0.25 # for quick testing
             return
@@ -272,7 +272,7 @@ class cosimeasure(object):
         self.path = self.b0.path
         
         print('cosimeasure uses path of the passed b0 object')
-        self.gaussmeter.fast(state=True)
+        self.gaussmeter.fast(state=False)
         print('running along path, no display on GM')
         if self.b0_filename: # if filename was given
             with open(self.b0_filename, 'w') as file: # open that file
