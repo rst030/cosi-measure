@@ -231,13 +231,13 @@ class b0():
                 print('b0 importer: warning! 0 VALUE detected! pt %d, assigning'%(idx),self.fieldDataAlongPath[idx-1,:])
            
            # replacing the max point by neighbor
-            if abs(self.fieldDataAlongPath[idx,0])/meanField_raw>1.5:
+            if abs(self.fieldDataAlongPath[idx,0])/meanField_raw>1.25:
                 print(self.fieldDataAlongPath[idx,0],'is too big! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
                 self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
                 print('assigned: ',self.fieldDataAlongPath[idx,:], '<+++++')
            
            # replacing the min point by neighbor
-            if meanField_raw/abs(self.fieldDataAlongPath[idx,0])>1.5:
+            if meanField_raw/abs(self.fieldDataAlongPath[idx,0])>1.25:
                 print(self.fieldDataAlongPath[idx,0],'is too small! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
                 self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
                 print('assigned: ',self.fieldDataAlongPath[idx,:], '<-----')

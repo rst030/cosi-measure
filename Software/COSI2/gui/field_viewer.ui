@@ -219,7 +219,7 @@
         <item>
          <widget class="QPushButton" name="export_for_Tom_btn">
           <property name="text">
-           <string>export for Tom</string>
+           <string>export separately</string>
           </property>
          </widget>
         </item>
@@ -260,7 +260,7 @@
      <x>0</x>
      <y>0</y>
      <width>1335</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
