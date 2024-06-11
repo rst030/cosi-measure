@@ -22,9 +22,9 @@ minx = 0
 miny = 0
 minz = 0
 
-maxx = 487
+maxx = 497
 maxy = 460
-maxz = 300 
+maxz = 610 
 
 manstep = 5 # mm manual step
 

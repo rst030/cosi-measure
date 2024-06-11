@@ -1,0 +1,31 @@
+mapping of the brown magnet osi2 one
+one shim insert inserted
+iter 2 ring 0 tray 9 (max z, 0 y)
+magnet facing cosi
+
+center
+[250.24318365 113.97140265 271.83297656]
+g0 x250y114z272
+
+path
+250.2,114.0,272.0,90
+friday ball path with 10 pts per R, R=90mm
+250.2,114.0,272.0
+-90,-90,0
+
+delay between pts 3s
+3544 points
+3 hours to scan
+
+calculate inhomogeneity well. Look at the points.
+
+after the weekend. on monday. 240610.
+big ball. since the inserts not done yet.
+g0 x250y114z272
+
+R125mm
+12 pts
+250.2,114.0,272.0,125
+250.2,114.0,272.0
+
+big_ball_R125_12pts
