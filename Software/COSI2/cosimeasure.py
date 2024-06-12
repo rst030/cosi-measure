@@ -22,9 +22,9 @@ minx = 0
 miny = 0
 minz = 0
 
-maxx = 487
+maxx = 497
 maxy = 460
-maxz = 300 
+maxz = 610 
 
 manstep = 5 # mm manual step
 
@@ -36,7 +36,7 @@ class cosimeasure(object):
     magnetometer = None
     working_directory = r'./dummies/pathfiles/'
     bvalues = [] # list of strings
-    measurement_time_delay = 3 # s
+    measurement_time_delay = None # s
     magnet = osi2magnet.osi2magnet
 
 
@@ -61,7 +61,7 @@ class cosimeasure(object):
         
         self.magnet = magnet
 
-        self.measurement_time_delay = 4
+        self.measurement_time_delay = 3
         if isfake:
             self.measurement_time_delay = 0.25 # for quick testing
             return

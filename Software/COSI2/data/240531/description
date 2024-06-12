@@ -1,0 +1,15 @@
+Hamburg magnet on a wooden table, cosi missing steps on x while moving together with z.
+
+[244.12467179 139.06831145 183.29302807]
+g0 x244.1 y 139.1 z 183.3
+244.1,139.1,183.3,106
+
+delay 2.3s
+LCD on
+
+after fixing microsteps on 3 June
+[244.12478802 137.06830745 183.2929893 ]
+g0 x244.1 z183.3 y 137.1
+
+#ball
+244.1,137.1,183.3,106

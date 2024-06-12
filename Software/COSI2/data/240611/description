@@ -1,0 +1,9 @@
+detailed scan of the Hamburg magnet v2.0
+center
+[245.48962698 140.59032489 178.96246979]
+
+g0 x245.5y140.6z179
+
+R130mm bal
+245.5,140.6,179,130
+
