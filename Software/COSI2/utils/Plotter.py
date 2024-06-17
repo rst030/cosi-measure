@@ -332,6 +332,7 @@ class PlotterCanvas(FigureCanvas):
             self.axes.text(bore_depth/2, 0, 0, "BACK", color='black',zdir='z')
             
         if show_rings is not None:
+            from utils import shimming_magnet
             # plot points where shimming magnets are
             # start with one shim insert. 7 magnets, 7 points.
             def data_for_rings(radius,x_pos,tray_nr):
@@ -352,20 +353,20 @@ class PlotterCanvas(FigureCanvas):
             
             shim_radius = b0map_object.magnet.shim_ring_radius
             
+            
+            my_magnets = []
+            
+            
             ring_position_x = 0
-        
+            
             for _tray_nr in range(1,13,1):
                 Xs,Ys,Zs = data_for_rings(radius=shim_radius,x_pos=ring_position_x,tray_nr=_tray_nr)            
-                r = _tray_nr/12
-                g=0
-                b = 1-_tray_nr/12
-                if _tray_nr%2 == 1:
-                    g = 1
-                    r = 1-_tray_nr/12
-                    b = _tray_nr/12
-                
-                self.axes.scatter(Xs, Ys, Zs, color=[r,g,b])        
-                self.axes.text(ring_position_x, np.mean(Ys), np.mean(Zs) , "%d"%_tray_nr, color='black',zdir='y',fontsize=14)
+                for i in range(len(Xs)):
+                    my_little_magnet = shimming_magnet.shimming_magnet(position = [Xs[i],Ys[i],Zs[i]], dipole_moment = 42, rotation_yz = 2*np.pi*(i+7*_tray_nr)/200 )
+                    self.axes.quiver(my_little_magnet.position[0],my_little_magnet.position[1],my_little_magnet.position[2],my_little_magnet.dipole[0],my_little_magnet.dipole[1],my_little_magnet.dipole[2],color='black')
+                    my_magnets.append(my_little_magnet)
+
+                self.axes.text(ring_position_x, np.mean(Ys), np.mean(Zs) , "%d"%_tray_nr, color='red',zdir='y',fontsize=10)
 
         
         # plot the contour plots with a color map
