@@ -1,0 +1,23 @@
+b0 scan after 2nd iteration of shimming.
+4 shim rings installed
+
+ref pts
+pr=np.array([37.000,453.000,264.500]) # 37.000 Y:453.000 Z:264.500
+pl=np.array([497.000,454.000,274.500]) # X:497.000 Y:454.000 Z:274.500
+pt=np.array([270.000,455.000,499.500]) # X:270.000 Y:455.000 Z:499.500
+
+magnet center
+[268.17179851 197.46324078 271.82536364]
+
+g0 x268 y197.5 z271.8
+
+quick ball:
+268.2,197.5,271.8,90
+3 pts
+quick_ball_after_2nd_shim_attempt1_R90mm_3pts
+
+weekend ball:
+268.2,197.5,271.8,90
+18 pts
+
+18.7 hr to go.
