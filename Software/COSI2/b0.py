@@ -5,6 +5,54 @@ import numpy as np
 import pth # path class to create a path object
 import osi2magnet # osi2magnet class to create an osi2magnet object 
 
+import scipy.ndimage as cp # for erosion
+from scipy.special import sph_harm
+from scipy.optimize import least_squares
+from scipy.linalg import lstsq
+
+
+# HELPING METHODS
+    # helping methods
+
+def cartToSpher(coords):
+    r = np.sqrt(np.sum(np.square(coords),axis = -1))    
+    #remove r = 0 to avoid divide by zero
+    r[r==0] = np.nan
+    
+    phi = np.arctan2(coords[...,0], coords[...,1]) + np.pi
+    theta = np.arccos(coords[...,2]/r)
+    return np.stack([r,theta, phi], axis = -1)
+
+
+def getRealSphericalHarmonics(coords, maxOrder):
+    r0          = np.nanmean(coords[...,0])       # Get the mean radius for normalisation
+    spherHarm   = np.zeros((np.shape(coords[...,0]) + ((maxOrder + 1)**2,)))
+    #r0          = np.nanmean(150)       #Get the mean radius for normalisation
+    idx         = 0
+    for n in range(maxOrder+1):
+        for m in range(-n,n+1):
+            if m < 0:
+                spherHarm[...,idx] = ((1j/np.sqrt(2))*(np.divide(coords[...,0],r0)**n)*(sph_harm(m,n,coords[...,2], coords[...,1])-((-1)**m)*sph_harm(-m,n,coords[...,2], coords[...,1]))).real
+            elif m > 0:
+                spherHarm[...,idx] = ((1/np.sqrt(2))*(np.divide(coords[...,0],r0)**n)*(sph_harm(-m,n,coords[...,2], coords[...,1])+((-1)**m)*sph_harm(m,n,coords[...,2], coords[...,1]))).real
+            elif m == 0:
+                spherHarm[...,idx] = np.multiply(sph_harm(m,n,coords[...,2], coords[...,1]),np.divide(coords[...,0],r0)**n).real
+            else:
+                print("That wasnt suppoosed to happen!")
+            idx += 1
+    return spherHarm
+
+
+
+def saveTmpData(filename:str,numpyData:np.array):
+    fullFileName = './data/tmp/'+filename
+    np.save(fullFileName, numpyData)
+    print('saved numpy array as %s'%fullFileName) 
+# ---------------------------------------------------------------------
+
+
+
+
 class b0():
     '''b0 object. created for cosi data. contains path.'''
 
@@ -267,8 +315,10 @@ class b0():
         print('homogeniety: %.0f ppm'%homogeneity)
 
 
+        self.homogeneity = homogeneity
+        self.mean_field = meanField
         self.b0Data = b0Data
-        print('B0.B0DATA GENERATED ON A RECT GRID')
+        print('B0.B0 DATA GENERATED ON A RECT GRID')
 
     # ------------------- data parsers -------------------
                 
@@ -359,7 +409,186 @@ class b0():
         self.magnet = osi2magnet.osi2magnet(origin=[mag_center_x,mag_center_y,mag_center_z],euler_angles_zyx=[mag_alpha,mag_beta,mag_gamma])
 
 
-    def save_for_Tom(self,filename:str):
+
+
+    # DATA MANIPULATION SECTION
+     # ------------ fitting B0 with spherical harmonics ---------------
+
+    def fitSphericalHarmonics(self, maxorder:int, dsv:float, resol:float):
+        # fitSphericalHarmonicsShell2_forInterpolation.py
+        
+        fieldMap = self.b0Data[...,0] #np.load(r'./data/tmp/b0Data.npy')[...,0]
+        
+        # order of sph harm to consider
+        maxOrder = maxorder
+        # Diameter spherical volume over which to do the spherical harmonic decomposition
+        DSV = dsv
+        # resolution for rendering the sph harmonics
+        resolution = resol
+        
+        #Create a cartesian coordinate system of where the data points were acquired, maps were acquired with a 5mm resolution 
+        fieldMapDims = np.shape(fieldMap)
+        
+        print(fieldMapDims)
+        
+        self.xDim_SPH_decomp = np.linspace(0, resolution*(fieldMapDims[0]-1), fieldMapDims[0]) - resolution*(fieldMapDims[0] -1)/2
+        self.yDim_SPH_decomp = np.linspace(0, resolution*(fieldMapDims[1]-1), fieldMapDims[1]) - resolution*(fieldMapDims[1] -1)/2
+        self.zDim_SPH_decomp = np.linspace(0, resolution*(fieldMapDims[2]-1), fieldMapDims[2]) - resolution*(fieldMapDims[2] -1)/2
+
+        coord = np.meshgrid(self.xDim_SPH_decomp, self.yDim_SPH_decomp, self.zDim_SPH_decomp, indexing='ij')
+
+        #Create a spherical mask for the data
+        sphereMask = np.zeros(np.shape(coord[0]), dtype = bool)
+        sphereMask[np.square(coord[0]) + np.square(coord[1]) + np.square(coord[2]) <= (DSV/2)**2] = 1 
+        sphereMask = sphereMask*(~np.isnan(fieldMap))
+
+        # Create a spherical shell mask to consider only data points on the surface of the sphere
+        erodedMask = cp.binary_erosion(sphereMask)  # remove the outer surface of the initial spherical mask
+        shellMask = np.array(sphereMask^erodedMask, dtype = float)   # create a new mask by looking at the difference between the inital and eroded mask
+        shellMask[shellMask == 0] = np.nan  # set points outside mask to 'NaN', works better than setting it to zero for calculating mean fields etc.
+
+        sphereMask = np.asarray(sphereMask, dtype=float)
+        sphereMask[sphereMask == 0] = np.nan
+
+        #apply mask to data
+        maskedField = np.multiply(sphereMask, fieldMap)
+        print("Mean field strength in %i cm sphere: %.2f mT"%(DSV/10, np.nanmean(maskedField)))
+        print("Inhomogeneity in %i cm sphere: %.0f ppm" %(DSV/10, 1e6*(np.nanmax(maskedField) - np.nanmin(maskedField))/np.nanmean(maskedField)))
+
+        #convert cartesian coordinates to spherical coordinates
+        #spherCoord = cartToSpher(np.stack((coord[1],coord[0], coord[2]), axis = -1))
+        spherCoord = cartToSpher(np.stack((coord[0],coord[1], coord[2]), axis = -1))
+        
+        #apply mask to field and coordinate arrays and vectorise them
+        maskedFieldShell = fieldMap[shellMask == 1]
+        maskedCoordShell = spherCoord[shellMask == 1,:]
+        
+        #Get the spherical harmonics for each of the field points
+        spherHarm = getRealSphericalHarmonics(maskedCoordShell, maxOrder)
+
+        #Inital guess for the optimisation
+        initialGuess = np.zeros((np.size(spherHarm,-1)))
+
+        def fitSphericalHarmonics(fitVector, args):
+            return np.square(maskedFieldShell - np.matmul(spherHarm, fitVector))
+
+        #run the optimisation
+        fitData = least_squares(fitSphericalHarmonics, initialGuess, args = (maskedFieldShell,))
+
+        #grab the coefficients from the data array
+        spherHarmCoeff = fitData.x
+
+
+        lsqFit = lstsq(spherHarm, maskedFieldShell)
+        #spherHarmCoeff = lsqFit[0]
+
+        #calculate the field from the spherical harmonic decomposition
+        decomposedField = np.matmul(spherHarm, spherHarmCoeff)
+        print("Inhomogeneity of fit: %.0f ppm" %(1e6*(np.max(decomposedField) - np.min(decomposedField))/np.mean(decomposedField)))
+
+        #See what the difference is between the two decomposed field
+        shimmedField = maskedFieldShell - decomposedField
+        print("Error: %.0f ppm" %(1e6*(np.max(shimmedField) - np.min(shimmedField))/np.mean(maskedFieldShell)))
+
+        #generate spherical coordinates over entire sphere, not just shell, for plotting
+        spherCoordSphere = np.copy(spherCoord)
+        spherCoordSphere[spherCoord[...,0] == 0,:] = np.nan
+        spherHarm3D = getRealSphericalHarmonics(spherCoordSphere, maxOrder)
+
+        tempSpherHarmCoeff = np.copy(spherHarmCoeff)
+        # tempSpherHarmCoeff[4:] = 0
+        #calculate the spherical harmonic decomposed field
+        decomposedField = np.matmul(spherHarm3D, tempSpherHarmCoeff)*sphereMask
+
+        # calculate difference between decomposed field and measured field
+        errorField = maskedField - decomposedField
+
+        # --- assigning class variables ---
+        self.maskedField = maskedField
+        self.decomposedField = decomposedField
+        self.errorField = errorField
+        self.spherHarmCoeff = spherHarmCoeff
+        
+        
+        # save sph_harm coefficients
+        SphHarmDataNumpyFilename = 'SpHData.npy'
+        saveTmpData(filename = SphHarmDataNumpyFilename,numpyData=self.spherHarmCoeff)     
+
+
+    def interpolateField(self, resol:float, dsv:float): # 250 interpolate field with sph harmonics at /higher/ res
+        '''interpolate the measured field with higher resolution by the spherical harmonics calculated before'''
+        coeffs = self.spherHarmCoeff #np.load(r'./data/tmp/SpHData.npy')
+        print('sph coefficients loaded')
+        maxOrder = int(np.size(coeffs)**0.5 -1)
+        DSV = dsv # diameter of sphere, mm
+        resolution = resol # mm
+        print('making a fine coordinate grid')
+        
+        # Create a cartesian coordinate system of where the data points were acquired, maps were acquired with a 5mm resolution 
+        self.xDim_SPH_fine = np.linspace(-DSV/2, DSV/2, int(DSV/resolution+1))
+        self.yDim_SPH_fine = np.linspace(-DSV/2, DSV/2, int(DSV/resolution+1))
+        self.zDim_SPH_fine = np.linspace(-DSV/2, DSV/2, int(DSV/resolution+1))
+        
+        coord = np.meshgrid(self.xDim_SPH_fine, self.yDim_SPH_fine, self.zDim_SPH_fine, indexing='ij')
+        
+                #Create a spherical mask for the data
+        sphereMask = np.zeros(np.shape(coord[0]), dtype = bool)
+        sphereMask[np.square(coord[0]) + np.square(coord[1]) + np.square(coord[2]) <= (DSV/2)**2] = 1 
+        sphereMask = np.asarray(sphereMask, dtype=np.double)
+        sphereMask[sphereMask == 0] = np.nan
+
+        spherCoord = cartToSpher(np.stack((coord[0],coord[1], coord[2]), axis = -1))
+        #generate spherical coordinates over entire sphere, not just shell, for plotting
+        spherCoordSphere = np.copy(spherCoord)
+        spherCoordSphere[spherCoord[...,0] == 0,:] = np.nan
+        
+        spherHarm3D = getRealSphericalHarmonics(spherCoordSphere, maxOrder)
+        #calculate the field from the spherical harmonic decomposition
+        decomposedField = np.matmul(spherHarm3D, coeffs)*sphereMask
+
+        print("Inhomogeneity of fit: %.0f ppm" %(1e6*(np.max(decomposedField) - np.min(decomposedField))/np.mean(decomposedField)))
+        self.interpolatedField = decomposedField
+        DecomposedDataNumpyFilename = 'B0_interpolated.npy'
+        saveTmpData(filename = DecomposedDataNumpyFilename,numpyData=self.interpolatedField) 
+
+
+    
+    def get_shim_positions(self):
+        # get the magnets. All magnets. Plot the initial field of all magnets oriented along Y axis.
+        from utils import shimming_magnet
+        # create array of magnet coordinates in the rings
+        # make an array of magnets
+
+        shimRadius          = 276*1e-3#276*1e-3 <- was set by Tom!      # radius on which the shim magnets are placed
+        ringPositions_along_x       = np.linspace(-0.1755,0.1755,4)          #np.linspace(-0.2295, .2295, 4) #Z positions to place shin rubgs
+        magsPerSegment      = 7             # number of magnets peer shim tray segment
+        anglePerSegment     = 19.25 #the angular distance in degrees between the furthest magnets in a shim tray (span of magnets in shim tray)
+        numSegments         = 12 #corresponds to the number of shim trays
+
+        segmentAngles       = np.linspace(0,360, numSegments, endpoint = False)
+        magAngles           = np.linspace(-anglePerSegment/2, anglePerSegment/2, magsPerSegment) 
+
+        positions = []
+        self.shim_magnets = []
+        
+        for ringPosition in ringPositions_along_x:
+            for segmentAngle in segmentAngles:
+                for magAngle in magAngles:
+                    xpos = ringPosition
+                    ypos = shimRadius*np.cos((segmentAngle+magAngle)*np.pi/180)
+                    zpos = shimRadius*np.sin((segmentAngle+magAngle)*np.pi/180)
+                    positions.append((xpos,ypos,zpos))
+                    my_magnet = shimming_magnet.shimming_magnet(position=[xpos,ypos,zpos], dipole_moment = 0.1, rotation_yz = 0)
+                    self.shim_magnets.append(my_magnet)
+
+
+        initialField = self.interpolatedField #np.load(r'./data/tmp/B0_interpolated.npy')
+
+
+
+# ------------------------------ DATA SAVING METHODS -------------------------------
+
+    def save_separately(self,filename:str):
         with open(filename+'.path', 'w') as file:
              for pathpt in self.path.r:
                  file.write('X%.2fY%.2fZ%.2f\n'%(pathpt[0],pathpt[1],pathpt[2]))
