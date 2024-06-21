@@ -231,7 +231,14 @@
           <item>
            <widget class="QCheckBox" name="PlotSPHCheckBox">
             <property name="text">
-             <string>SPH</string>
+             <string>SPH fit</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="PlotShimFieldCheckBox">
+            <property name="text">
+             <string>shim field</string>
             </property>
            </widget>
           </item>

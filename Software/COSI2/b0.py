@@ -529,15 +529,15 @@ class b0():
         self.yDim_SPH_fine = np.linspace(-DSV/2, DSV/2, int(DSV/resolution+1))
         self.zDim_SPH_fine = np.linspace(-DSV/2, DSV/2, int(DSV/resolution+1))
         
-        coord = np.meshgrid(self.xDim_SPH_fine, self.yDim_SPH_fine, self.zDim_SPH_fine, indexing='ij')
+        self.coord_grid_fine = np.meshgrid(self.xDim_SPH_fine, self.yDim_SPH_fine, self.zDim_SPH_fine, indexing='ij')
         
                 #Create a spherical mask for the data
-        sphereMask = np.zeros(np.shape(coord[0]), dtype = bool)
-        sphereMask[np.square(coord[0]) + np.square(coord[1]) + np.square(coord[2]) <= (DSV/2)**2] = 1 
+        sphereMask = np.zeros(np.shape(self.coord_grid_fine[0]), dtype = bool)
+        sphereMask[np.square(self.coord_grid_fine[0]) + np.square(self.coord_grid_fine[1]) + np.square(self.coord_grid_fine[2]) <= (DSV/2)**2] = 1 
         sphereMask = np.asarray(sphereMask, dtype=np.double)
         sphereMask[sphereMask == 0] = np.nan
 
-        spherCoord = cartToSpher(np.stack((coord[0],coord[1], coord[2]), axis = -1))
+        spherCoord = cartToSpher(np.stack((self.coord_grid_fine[0],self.coord_grid_fine[1], self.coord_grid_fine[2]), axis = -1))
         #generate spherical coordinates over entire sphere, not just shell, for plotting
         spherCoordSphere = np.copy(spherCoord)
         spherCoordSphere[spherCoord[...,0] == 0,:] = np.nan
@@ -582,7 +582,29 @@ class b0():
                     self.shim_magnets.append(my_magnet)
 
 
+        print('%d shim magnets generated'%len(self.shim_magnets))
+        grid = self.coord_grid_fine
+        print('rendering the fields of the magnets on the grid, ',np.shape(grid))
+        for shim_magnet in self.shim_magnets:
+            shim_magnet.render_field(grid)
+
+
         initialField = self.interpolatedField #np.load(r'./data/tmp/B0_interpolated.npy')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

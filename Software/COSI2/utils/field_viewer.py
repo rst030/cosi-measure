@@ -70,6 +70,8 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         self.ShowMagnetCheckBox.stateChanged.connect(self.plot_B0M_slice)
         self.ShowRingsCheckBox.stateChanged.connect(self.plot_B0M_slice)
         self.PlotSPHCheckBox.stateChanged.connect(self.plot_B0M_slice)
+        self.PlotShimFieldCheckBox.stateChanged.connect(self.plot_B0M_slice)
+        
 
         
     def load_csv(self):
@@ -165,6 +167,7 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         plot_magnet_flag = self.ShowMagnetCheckBox.isChecked()
         plot_rings_flag = self.ShowRingsCheckBox.isChecked()
         plot_SPH_flag = self.PlotSPHCheckBox.isChecked() # plot the decomposed field
+        plot_SHIM_FIELD_flag = self.PlotShimFieldCheckBox.isChecked() # plot the shim field
         
         if plot_SPH_flag:
             self.XYspinBox.setMaximum(len(self.b0map.zDim_SPH_fine)-1)               
@@ -186,7 +189,8 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         self.plotter.plotB0Map(b0map_object=self.b0map, 
                                slice_number_xy=XY_slice_number,slice_number_zx=ZX_slice_number,slice_number_yz=YZ_slice_number, 
                                show_sphere_radius=showSphRad,show_magnet = showMagnet,
-                               show_rings = showRings, coordinate_system='magnet',plot_sph = plot_SPH_flag)
+                               show_rings = showRings, coordinate_system='magnet',plot_sph = plot_SPH_flag,
+                               plot_shim = plot_SHIM_FIELD_flag)
         
 
 

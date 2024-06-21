@@ -287,7 +287,7 @@ class PlotterCanvas(FigureCanvas):
             self.ylabel = 'Z [mm]'
             self.update_plotter()
     
-    def plotB0Map(self,b0map_object:b0.b0,slice_number_xy=-1,slice_number_zx=-1,slice_number_yz=-1, show_sphere_radius = None, show_magnet = None,show_rings = None, coordinate_system=None, plot_sph = None):
+    def plotB0Map(self,b0map_object:b0.b0,slice_number_xy=-1,slice_number_zx=-1,slice_number_yz=-1, show_sphere_radius = None, show_magnet = None,show_rings = None, coordinate_system=None, plot_sph = None,plot_shim = None):
         # plot only one slice of data. Slice at the middle of the scan
         self.axes.cla()
        
@@ -333,15 +333,17 @@ class PlotterCanvas(FigureCanvas):
             
         if show_rings is not None:
             # get the shim magnets from the b0 object
-            shimming_magnets = b0map_object.shim_magnets
-        
+            try:
+                shimming_magnets = b0map_object.shim_magnets
+            except:
+                print('generate shim positions first!')
             for my_little_magnet in shimming_magnets:
                 # the viewer coordinates are mm
                 self.axes.quiver(my_little_magnet.position[0]*1e3,my_little_magnet.position[1]*1e3,my_little_magnet.position[2]*1e3,my_little_magnet.dipole[0]*1e2,my_little_magnet.dipole[1]*1e2,my_little_magnet.dipole[2]*1e2,color='black')
             
             self.update_plotter()
             
-        # plot the contour plots with a color map
+        # plot the measured field, contour plots with a color map
         if plot_sph is None or plot_sph == False: # if didnt tick or unticked the plot sph checkbox
             minval_of_b0 = np.nanmin(b0map_object.b0Data[:,:,:,0])
             maxval_of_b0 = np.nanmax(b0map_object.b0Data[:,:,:,0])
@@ -420,7 +422,9 @@ class PlotterCanvas(FigureCanvas):
             self.axes.autoscale(False)
             self.update_plotter()
         
-        if plot_sph: # if ticked the plot sph checkbox
+        if plot_sph: # if ticked the plot sph checkbox,
+        # plot the interpolated field (SPH), contour plots with a color map
+
             self.update_plotter()
             print('getting the sph decomposed field from the b0 object')
             minval_of_b0 = np.nanmin(b0map_object.decomposedField[:,:,:])
