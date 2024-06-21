@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>693</width>
-    <height>633</height>
+    <width>1085</width>
+    <height>725</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>500</width>
+    <height>0</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Field Viewer</string>
@@ -39,6 +45,9 @@
        <layout class="QVBoxLayout" name="verticalLayout">
         <property name="spacing">
          <number>4</number>
+        </property>
+        <property name="sizeConstraint">
+         <enum>QLayout::SetDefaultConstraint</enum>
         </property>
         <item>
          <widget class="QLabel" name="info_label">
@@ -73,15 +82,31 @@
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMaximumSize</enum>
+          </property>
           <item>
            <widget class="QCheckBox" name="XYcheckBox">
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="text">
              <string>SLICE XY</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="XYspinBox"/>
+           <widget class="QSpinBox" name="XYspinBox">
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -89,13 +114,26 @@
          <layout class="QHBoxLayout" name="horizontalLayout_5">
           <item>
            <widget class="QCheckBox" name="ZXcheckBox">
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="text">
              <string>SLICE ZX</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="ZXspinBox"/>
+           <widget class="QSpinBox" name="ZXspinBox">
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -103,20 +141,42 @@
          <layout class="QHBoxLayout" name="horizontalLayout_6">
           <item>
            <widget class="QCheckBox" name="YZcheckBox">
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="text">
              <string>SLICE YZ</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QSpinBox" name="YZspinBox"/>
+           <widget class="QSpinBox" name="YZspinBox">
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_7">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMaximumSize</enum>
+          </property>
           <item>
            <widget class="QCheckBox" name="ShowSphereCheckBox">
+            <property name="maximumSize">
+             <size>
+              <width>200</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="text">
              <string>sphere</string>
             </property>
@@ -124,6 +184,12 @@
           </item>
           <item>
            <widget class="QCheckBox" name="ShowMagnetCheckBox">
+            <property name="maximumSize">
+             <size>
+              <width>200</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="text">
              <string> magnet</string>
             </property>
@@ -131,6 +197,12 @@
           </item>
           <item>
            <widget class="QCheckBox" name="ShowPathCheckBox">
+            <property name="maximumSize">
+             <size>
+              <width>200</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="text">
              <string>path</string>
             </property>
@@ -140,10 +212,26 @@
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMaximumSize</enum>
+          </property>
           <item>
            <widget class="QCheckBox" name="ShowRingsCheckBox">
+            <property name="maximumSize">
+             <size>
+              <width>200</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="text">
              <string>rings</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="PlotSPHCheckBox">
+            <property name="text">
+             <string>SPH</string>
             </property>
            </widget>
           </item>
@@ -151,6 +239,12 @@
         </item>
         <item>
          <widget class="Line" name="line">
+          <property name="minimumSize">
+           <size>
+            <width>200</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -158,8 +252,34 @@
         </item>
         <item>
          <widget class="QPushButton" name="show_2d_slice_btn">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>200</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="text">
            <string>show 2d slice</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="mean_field_label">
+          <property name="text">
+           <string>Mean Field: N/A</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="inhomogeneity_label">
+          <property name="text">
+           <string>Inhomogeneity: N/A</string>
           </property>
          </widget>
         </item>
@@ -177,36 +297,93 @@
          </spacer>
         </item>
         <item>
+         <widget class="Line" name="line_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_9">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMaximumSize</enum>
+          </property>
           <item>
            <widget class="QLabel" name="label">
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="text">
              <string>Harmonic</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="lineEdit">
-            <property name="maximumSize">
-             <size>
-              <width>50</width>
-              <height>16777215</height>
-             </size>
+           <widget class="QSpinBox" name="sph_spinbox">
+            <property name="minimum">
+             <number>1</number>
             </property>
-            <property name="text">
-             <string>1</string>
-            </property>
-            <property name="maxLength">
-             <number>100</number>
+            <property name="maximum">
+             <number>64</number>
             </property>
            </widget>
           </item>
          </layout>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <layout class="QHBoxLayout" name="horizontalLayout_11">
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Resolution [mm]</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="resolution_SPH_spinbox">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>64</number>
+            </property>
+            <property name="singleStep">
+             <number>1</number>
+            </property>
+            <property name="value">
+             <number>2</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QPushButton" name="SPH_button">
+          <property name="maximumSize">
+           <size>
+            <width>200</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="text">
            <string>SPH DECOMP</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="line_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="get_shim_positions_btn">
+          <property name="text">
+           <string>Get Shim Positions</string>
           </property>
          </widget>
         </item>
@@ -227,7 +404,7 @@
          <widget class="QPushButton" name="load_button">
           <property name="maximumSize">
            <size>
-            <width>500</width>
+            <width>200</width>
             <height>16777215</height>
            </size>
           </property>
@@ -238,6 +415,12 @@
         </item>
         <item>
          <widget class="QPushButton" name="load_csv_button">
+          <property name="maximumSize">
+           <size>
+            <width>200</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="text">
            <string>Load CSV</string>
           </property>
@@ -245,6 +428,12 @@
         </item>
         <item>
          <widget class="QPushButton" name="coordinate_transform_btn">
+          <property name="maximumSize">
+           <size>
+            <width>200</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="text">
            <string>To Magnet Coordinates</string>
           </property>
@@ -254,7 +443,7 @@
          <widget class="QPushButton" name="save_button">
           <property name="maximumSize">
            <size>
-            <width>500</width>
+            <width>200</width>
             <height>16777215</height>
            </size>
           </property>
@@ -265,6 +454,12 @@
         </item>
         <item>
          <widget class="QPushButton" name="export_for_Tom_btn">
+          <property name="maximumSize">
+           <size>
+            <width>200</width>
+            <height>16777215</height>
+           </size>
+          </property>
           <property name="text">
            <string>export separately</string>
           </property>
@@ -280,8 +475,14 @@
            <widget class="QWidget" name="plotter_widget" native="true">
             <property name="minimumSize">
              <size>
-              <width>480</width>
+              <width>420</width>
               <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>1080</width>
+              <height>16777215</height>
              </size>
             </property>
            </widget>
@@ -295,7 +496,20 @@
     <item row="0" column="1">
      <layout class="QVBoxLayout" name="verticalLayout_2d_plotter">
       <item>
-       <widget class="QWidget" name="plotter_widget_2d" native="true"/>
+       <widget class="QWidget" name="plotter_widget_2d" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>420</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>1080</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
@@ -306,7 +520,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>693</width>
+     <width>1085</width>
      <height>22</height>
     </rect>
    </property>

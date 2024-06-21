@@ -35,7 +35,13 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         self.load_button.clicked.connect(self.load_b0)  # Remember to code the method in the class.
         self.load_csv_button.clicked.connect(self.load_csv)  # Remember to code the method in the class.
         self.show_2d_slice_btn.clicked.connect(self.plot_B0M_slice_2d)
-        self.export_for_Tom_btn.clicked.connect(self.export_for_Tom)
+        self.export_for_Tom_btn.clicked.connect(self.export_separately)
+        
+        # data transformation buttons
+        self.SPH_button.clicked.connect(self.fit_sph)
+        
+        # shimming button
+        self.get_shim_positions_btn.clicked.connect(self.get_shim_positions)
 
         # --- adding the plotter: ---
         # B0M plotter:
@@ -63,6 +69,7 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         self.ShowSphereCheckBox.stateChanged.connect(self.plot_B0M_slice)
         self.ShowMagnetCheckBox.stateChanged.connect(self.plot_B0M_slice)
         self.ShowRingsCheckBox.stateChanged.connect(self.plot_B0M_slice)
+        self.PlotSPHCheckBox.stateChanged.connect(self.plot_B0M_slice)
 
         
     def load_csv(self):
@@ -157,7 +164,16 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         plot_sphere_flag = self.ShowSphereCheckBox.isChecked()
         plot_magnet_flag = self.ShowMagnetCheckBox.isChecked()
         plot_rings_flag = self.ShowRingsCheckBox.isChecked()
+        plot_SPH_flag = self.PlotSPHCheckBox.isChecked() # plot the decomposed field
         
+        if plot_SPH_flag:
+            self.XYspinBox.setMaximum(len(self.b0map.zDim_SPH_fine)-1)               
+            self.ZXspinBox.setMaximum(len(self.b0map.yDim_SPH_fine)-1)           
+            self.YZspinBox.setMaximum(len(self.b0map.xDim_SPH_fine)-1)       
+        else:
+            self.XYspinBox.setMaximum(len(self.b0map.xPts)-1)               
+            self.ZXspinBox.setMaximum(len(self.b0map.yPts)-1)           
+            self.YZspinBox.setMaximum(len(self.b0map.xPts)-1)       
         
         XY_slice_number = int(self.XYspinBox.value()) if plot_XY_sliceFlag else -1
         ZX_slice_number = int(self.ZXspinBox.value()) if plot_ZX_sliceFlag else -1
@@ -169,7 +185,8 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         # plot the slices according to the checked boxes
         self.plotter.plotB0Map(b0map_object=self.b0map, 
                                slice_number_xy=XY_slice_number,slice_number_zx=ZX_slice_number,slice_number_yz=YZ_slice_number, 
-                               show_sphere_radius=showSphRad,show_magnet = showMagnet,show_rings = showRings, coordinate_system='magnet')
+                               show_sphere_radius=showSphRad,show_magnet = showMagnet,
+                               show_rings = showRings, coordinate_system='magnet',plot_sph = plot_SPH_flag)
         
 
 
@@ -196,7 +213,10 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         self.YZspinBox.setMaximum(len(self.b0map.xPts)-1)     
         self.YZspinBox.setValue(round((len(self.b0map.xPts)-1)/2))        
         self.YZspinBox.valueChanged.connect(self.plot_B0M_slice)
-
+        
+        # show field inmomogeneity and mean field in the labels
+        self.mean_field_label.setText('Mean field: %.3f [mT]'%float(self.b0map.mean_field))
+        self.inhomogeneity_label.setText('Ihmomogeneity: %.0f [ppm]'%float(self.b0map.homogeneity))
         
         
         #self.plotter.plotB0Map(self.b0map,slice_number=0,coordinate_system='magnet')
@@ -224,17 +244,46 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         #self.b0map.path.saveAs(new_csv_path)
 
 
-    def export_for_Tom(self):
+    def export_separately(self):
         print('file dialog for exporting two files for Tom''s script')
         # open file dialog
         try:
-            Tom_filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, caption="file name for csv export",
+            separate_filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, caption="file name for csv export",
                                                                    directory=self.workingFolder,
                                                                    filter="path files for Tom (*.path)")
-            self.workingFolder = os.path.split(os.path.abspath(Tom_filename))[0]
+            self.workingFolder = os.path.split(os.path.abspath(separate_filename))[0]
 
         except:
             print('no filename given, do it again.')
             return 0
 
-        self.b0map.save_for_Tom(Tom_filename)
+        self.b0map.save_separately(separate_filename)
+
+    # spherical harmonic things
+    def fit_sph(self):
+        order = int(self.sph_spinbox.value())
+        print('FIT SPHERICAL HARMONICS up to %d TO THE DATA,\n DATA MUST BE IN THE MAGNET COORDINATES'%order)
+        diameter_of_sphere = self.b0map.path.radius*2
+        self.b0map.fitSphericalHarmonics(maxorder=order,dsv=diameter_of_sphere,resol=3)
+        resolution_of_sph_fit=int(self.resolution_SPH_spinbox.value())
+        self.b0map.interpolateField(resol=resolution_of_sph_fit,dsv=diameter_of_sphere)
+        print('spherical harmonic decomposition completed. coefficients extracted.')
+        print('now perform field interpolation')
+        print('You can now plot decomposed sph by ticking the SPH checkbox.')
+        
+         # foolproof checkboxes        
+        print(len(self.b0map.zPts))
+        
+        self.XYspinBox.setMaximum(len(self.b0map.zDim_SPH_fine)-1)           
+        self.ZXspinBox.setMaximum(len(self.b0map.yDim_SPH_fine)-1)           
+        self.YZspinBox.setMaximum(len(self.b0map.xDim_SPH_fine)-1)    
+        
+    def get_shim_positions(self):
+        print('before that, even, plot the shim field.')
+        print('First put all magnets in the rings with their b0 along Y.')
+        print('and draw magnets in rings with their direcrion vectors.')
+        self.b0map.get_shim_positions()
+        
+              
+
+        
