@@ -136,6 +136,11 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         plot_ZX_sliceFlag = self.ZXcheckBox.isChecked()
         plot_YZ_sliceFlag = self.YZcheckBox.isChecked()
         
+        plot_RAW_flag = self.PlotRawCheckBox.isChecked() # plot the raw field
+        plot_SPH_flag = self.PlotSPHCheckBox.isChecked() # plot the decomposed field
+        plot_SHIM_FIELD_flag = self.PlotShimFieldCheckBox.isChecked() # plot the shim field
+        
+        
         XY_slice_number = int(self.XYspinBox.value()) if plot_XY_sliceFlag else -1
         ZX_slice_number = int(self.ZXspinBox.value()) if plot_ZX_sliceFlag else -1
         YZ_slice_number = int(self.YZspinBox.value()) if plot_YZ_sliceFlag else -1
@@ -154,7 +159,8 @@ class field_viewer_gui(QtWidgets.QMainWindow):
             print('select only one plane!')
             return 0
         self.plotter2d.plotB0slice(b0map_object=self.b0map, 
-                        slice_number_xy=XY_slice_number,slice_number_zx=ZX_slice_number,slice_number_yz=YZ_slice_number)
+                        slice_number_xy=XY_slice_number,slice_number_zx=ZX_slice_number,
+                        slice_number_yz=YZ_slice_number, plot_raw=plot_RAW_flag, plot_sph=plot_SPH_flag,plot_shim = plot_SHIM_FIELD_flag)
 
         
 
@@ -166,8 +172,11 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         plot_sphere_flag = self.ShowSphereCheckBox.isChecked()
         plot_magnet_flag = self.ShowMagnetCheckBox.isChecked()
         plot_rings_flag = self.ShowRingsCheckBox.isChecked()
+        
+        plot_RAW_flag = self.PlotRawCheckBox.isChecked() # plot the raw field
         plot_SPH_flag = self.PlotSPHCheckBox.isChecked() # plot the decomposed field
         plot_SHIM_FIELD_flag = self.PlotShimFieldCheckBox.isChecked() # plot the shim field
+         
         
         if plot_SPH_flag:
             self.XYspinBox.setMaximum(len(self.b0map.zDim_SPH_fine)-1)               
@@ -187,9 +196,15 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         
         # plot the slices according to the checked boxes
         self.plotter.plotB0Map(b0map_object=self.b0map, 
-                               slice_number_xy=XY_slice_number,slice_number_zx=ZX_slice_number,slice_number_yz=YZ_slice_number, 
-                               show_sphere_radius=showSphRad,show_magnet = showMagnet,
-                               show_rings = showRings, coordinate_system='magnet',plot_sph = plot_SPH_flag,
+                               slice_number_xy=XY_slice_number,
+                               slice_number_zx=ZX_slice_number,
+                               slice_number_yz=YZ_slice_number, 
+                               show_sphere_radius=showSphRad,
+                               show_magnet = showMagnet,
+                               show_rings = showRings, 
+                               coordinate_system='magnet',
+                               plot_raw = plot_RAW_flag, 
+                               plot_sph = plot_SPH_flag,
                                plot_shim = plot_SHIM_FIELD_flag)
         
 

@@ -196,7 +196,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="ShowPathCheckBox">
+           <widget class="QCheckBox" name="ShowRingsCheckBox">
             <property name="maximumSize">
              <size>
               <width>200</width>
@@ -204,7 +204,7 @@
              </size>
             </property>
             <property name="text">
-             <string>path</string>
+             <string>rings</string>
             </property>
            </widget>
           </item>
@@ -216,15 +216,12 @@
            <enum>QLayout::SetMaximumSize</enum>
           </property>
           <item>
-           <widget class="QCheckBox" name="ShowRingsCheckBox">
-            <property name="maximumSize">
-             <size>
-              <width>200</width>
-              <height>16777215</height>
-             </size>
+           <widget class="QCheckBox" name="PlotRawCheckBox">
+            <property name="enabled">
+             <bool>true</bool>
             </property>
             <property name="text">
-             <string>rings</string>
+             <string>Raw data</string>
             </property>
            </widget>
           </item>

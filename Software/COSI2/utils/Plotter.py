@@ -237,57 +237,158 @@ class PlotterCanvas(FigureCanvas):
         self.plot_magnet(b0map_object.magnet)
         self.update_plotter()
         
-    def plotB0slice(self,b0map_object:b0.b0,slice_number_xy=-1,slice_number_zx=-1,slice_number_yz=-1):
+    def plotB0slice(self,b0map_object:b0.b0,slice_number_xy=-1,slice_number_zx=-1,slice_number_yz=-1,plot_raw=False,plot_sph=False,plot_shim=False):
         self.axes.cla()
         slice_color_map='viridis'
-        minval_of_b0 = np.nanmin(b0map_object.b0Data[:,:,:,0])
-        maxval_of_b0 = np.nanmax(b0map_object.b0Data[:,:,:,0])
         
-        if slice_number_xy >= 0:
-            #x, y = np.meshgrid(b0map_object.xPts, b0map_object.yPts)
-            z = b0map_object.zPts[slice_number_xy]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
         
-            #vals = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,1])
-            imgdata = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,0])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
-            img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
-                                   origin = 'lower', 
-                                   extent=[min(b0map_object.xPts),max(b0map_object.xPts),min(b0map_object.yPts),max(b0map_object.yPts)])
-            
-            self.title = 'XY slice #%d z=%.2f mm'%(slice_number_xy,z)
-            self.xlabel = 'X [mm]'
-            self.ylabel = 'Y [mm]'
-            self.update_plotter()
-            
-        if slice_number_zx >= 0:
-            #x, y = np.meshgrid(b0map_object.xPts, b0map_object.yPts)
-            y = b0map_object.yPts[slice_number_zx]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
+        if plot_raw:
         
-            #vals = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,1])
-            imgdata = np.transpose(b0map_object.b0Data[:,slice_number_zx,:,0])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
-            img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
-                                   origin = 'lower',
-                                   extent=[min(b0map_object.xPts),max(b0map_object.xPts),min(b0map_object.zPts),max(b0map_object.zPts)])
+            minval_of_b0 = np.nanmin(b0map_object.b0Data[:,:,:,0])
+            maxval_of_b0 = np.nanmax(b0map_object.b0Data[:,:,:,0])
             
-            self.title = 'ZX slice #%d y=%.2f mm'%(slice_number_zx,y)
-            self.xlabel = 'X [mm]'
-            self.ylabel = 'Z [mm]'
-            self.update_plotter()
+            if slice_number_xy >= 0:
+                #x, y = np.meshgrid(b0map_object.xPts, b0map_object.yPts)
+                z = b0map_object.zPts[slice_number_xy]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
             
-        if slice_number_yz >= 0:
-            x = b0map_object.yPts[slice_number_yz]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
-        
-            #vals = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,1])
-            imgdata = np.transpose(b0map_object.b0Data[slice_number_yz,:,:,0])
-            img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
-                                   origin = 'lower',
-                                   extent=[min(b0map_object.yPts),max(b0map_object.yPts),min(b0map_object.zPts),max(b0map_object.zPts)])
+                #vals = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,1])
+                imgdata = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,0])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
+                img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
+                                    origin = 'lower', 
+                                    extent=[min(b0map_object.xPts),max(b0map_object.xPts),min(b0map_object.yPts),max(b0map_object.yPts)])
+                
+                self.title = 'XY slice #%d z=%.2f mm'%(slice_number_xy,z)
+                self.xlabel = 'X [mm]'
+                self.ylabel = 'Y [mm]'
+                self.update_plotter()
+                
+            if slice_number_zx >= 0:
+                #x, y = np.meshgrid(b0map_object.xPts, b0map_object.yPts)
+                y = b0map_object.yPts[slice_number_zx]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
             
-            self.title = 'YZ slice #%d x=%.2f mm'%(slice_number_yz,x)
-            self.xlabel = 'Y [mm]'
-            self.ylabel = 'Z [mm]'
-            self.update_plotter()
+                #vals = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,1])
+                imgdata = np.transpose(b0map_object.b0Data[:,slice_number_zx,:,0])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
+                img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
+                                    origin = 'lower',
+                                    extent=[min(b0map_object.xPts),max(b0map_object.xPts),min(b0map_object.zPts),max(b0map_object.zPts)])
+                
+                self.title = 'ZX slice #%d y=%.2f mm'%(slice_number_zx,y)
+                self.xlabel = 'X [mm]'
+                self.ylabel = 'Z [mm]'
+                self.update_plotter()
+                
+            if slice_number_yz >= 0:
+                x = b0map_object.yPts[slice_number_yz]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
+            
+                #vals = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,1])
+                imgdata = np.transpose(b0map_object.b0Data[slice_number_yz,:,:,0])
+                img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
+                                    origin = 'lower',
+                                    extent=[min(b0map_object.yPts),max(b0map_object.yPts),min(b0map_object.zPts),max(b0map_object.zPts)])
+                
+                self.title = 'YZ slice #%d x=%.2f mm'%(slice_number_yz,x)
+                self.xlabel = 'Y [mm]'
+                self.ylabel = 'Z [mm]'
+                self.update_plotter()
+                
+        if plot_sph:
+            minval_of_b0 = np.nanmin(b0map_object.interpolatedField[:,:,:])
+            maxval_of_b0 = np.nanmax(b0map_object.interpolatedField[:,:,:])
+            
+            if slice_number_xy >= 0:
+                #x, y = np.meshgrid(b0map_object.xPts, b0map_object.yPts)
+                z = b0map_object.xDim_SPH_fine[slice_number_xy]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
+            
+                #vals = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,1])
+                imgdata = np.transpose(b0map_object.interpolatedField[:,:,slice_number_xy])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
+                img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
+                                    origin = 'lower', 
+                                    extent=[min(b0map_object.xDim_SPH_fine),max(b0map_object.xDim_SPH_fine),min(b0map_object.yDim_SPH_fine),max(b0map_object.yDim_SPH_fine)])
+                
+                self.title = 'FIT. XY slice #%d z=%.2f mm'%(slice_number_xy,z)
+                self.xlabel = 'X [mm]'
+                self.ylabel = 'Y [mm]'
+                self.update_plotter()
+                
+            if slice_number_zx >= 0:
+                #x, y = np.meshgrid(b0map_object.xPts, b0map_object.yPts)
+                y = b0map_object.zDim_SPH_fine[slice_number_zx]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
+            
+                #vals = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,1])
+                imgdata = np.transpose(b0map_object.interpolatedField[:,slice_number_zx,:])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
+                img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
+                                    origin = 'lower',
+                                    extent=[min(b0map_object.xDim_SPH_fine),max(b0map_object.xDim_SPH_fine),min(b0map_object.zDim_SPH_fine),max(b0map_object.zDim_SPH_fine)])
+                
+                self.title = 'FIT ZX slice #%d y=%.2f mm'%(slice_number_zx,y)
+                self.xlabel = 'X [mm]'
+                self.ylabel = 'Z [mm]'
+                self.update_plotter()
+                
+            if slice_number_yz >= 0:
+                x = b0map_object.yDim_SPH_fine[slice_number_yz]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
+            
+                #vals = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,1])
+                imgdata = np.transpose(b0map_object.interpolatedField[slice_number_yz,:,:])
+                img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
+                                    origin = 'lower',
+                                    extent=[min(b0map_object.yDim_SPH_fine),max(b0map_object.yDim_SPH_fine),min(b0map_object.zDim_SPH_fine),max(b0map_object.zDim_SPH_fine)])
+                
+                self.title = 'FIT YZ slice #%d x=%.2f mm'%(slice_number_yz,x)
+                self.xlabel = 'Y [mm]'
+                self.ylabel = 'Z [mm]'
+                self.update_plotter()
+                
+        if plot_shim:
+            minval_of_b0 = np.nanmin(b0map_object.shimField[:,:,:])
+            maxval_of_b0 = np.nanmax(b0map_object.shimField[:,:,:])
+            
+            if slice_number_xy >= 0:
+                #x, y = np.meshgrid(b0map_object.xPts, b0map_object.yPts)
+                z = b0map_object.xDim_SPH_fine[slice_number_xy]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
+            
+                #vals = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,1])
+                imgdata = np.transpose(b0map_object.shimField[:,:,slice_number_xy])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
+                img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
+                                    origin = 'lower', 
+                                    extent=[min(b0map_object.xDim_SPH_fine),max(b0map_object.xDim_SPH_fine),min(b0map_object.yDim_SPH_fine),max(b0map_object.yDim_SPH_fine)])
+                
+                self.title = 'SHIM. XY slice #%d z=%.2f mm'%(slice_number_xy,z)
+                self.xlabel = 'X [mm]'
+                self.ylabel = 'Y [mm]'
+                self.update_plotter()
+                
+            if slice_number_zx >= 0:
+                #x, y = np.meshgrid(b0map_object.xPts, b0map_object.yPts)
+                y = b0map_object.zDim_SPH_fine[slice_number_zx]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
+            
+                #vals = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,1])
+                imgdata = np.transpose(b0map_object.shimField[:,slice_number_zx,:])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
+                img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
+                                    origin = 'lower',
+                                    extent=[min(b0map_object.xDim_SPH_fine),max(b0map_object.xDim_SPH_fine),min(b0map_object.zDim_SPH_fine),max(b0map_object.zDim_SPH_fine)])
+                
+                self.title = 'SHIM ZX slice #%d y=%.2f mm'%(slice_number_zx,y)
+                self.xlabel = 'X [mm]'
+                self.ylabel = 'Z [mm]'
+                self.update_plotter()
+                
+            if slice_number_yz >= 0:
+                x = b0map_object.yDim_SPH_fine[slice_number_yz]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
+            
+                #vals = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,1])
+                imgdata = np.transpose(b0map_object.shimField[slice_number_yz,:,:])
+                img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
+                                    origin = 'lower',
+                                    extent=[min(b0map_object.yDim_SPH_fine),max(b0map_object.yDim_SPH_fine),min(b0map_object.zDim_SPH_fine),max(b0map_object.zDim_SPH_fine)])
+                
+                self.title = 'SHIM YZ slice #%d x=%.2f mm'%(slice_number_yz,x)
+                self.xlabel = 'Y [mm]'
+                self.ylabel = 'Z [mm]'
+                self.update_plotter()
+            
     
-    def plotB0Map(self,b0map_object:b0.b0,slice_number_xy=-1,slice_number_zx=-1,slice_number_yz=-1, show_sphere_radius = None, show_magnet = None,show_rings = None, coordinate_system=None, plot_sph = None,plot_shim = None):
+    def plotB0Map(self,b0map_object:b0.b0,slice_number_xy=-1,slice_number_zx=-1,slice_number_yz=-1, show_sphere_radius = None, show_magnet = None,show_rings = None, coordinate_system=None, plot_raw = False, plot_sph = False ,plot_shim = False):
         # plot only one slice of data. Slice at the middle of the scan
         self.axes.cla()
        
@@ -344,7 +445,8 @@ class PlotterCanvas(FigureCanvas):
             self.update_plotter()
             
         # plot the measured field, contour plots with a color map
-        if plot_sph is None or plot_sph == False: # if didnt tick or unticked the plot sph checkbox
+        if plot_raw: # if didnt tick or unticked the plot sph checkbox
+            print('PLOTTING RAW DATA')
             minval_of_b0 = np.nanmin(b0map_object.b0Data[:,:,:,0])
             maxval_of_b0 = np.nanmax(b0map_object.b0Data[:,:,:,0])
             
@@ -407,20 +509,6 @@ class PlotterCanvas(FigureCanvas):
             self.axes.set_zlim(min(b0map_object.zPts), max(b0map_object.zPts))
             
             
-            
-            norm = matplotlib.colors.Normalize(vmin=minval_of_b0, vmax=maxval_of_b0)
-            
-            if self.colorbar_object is None:
-                self.colorbar_object = plt.colorbar(matplotlib.cm.ScalarMappable(norm = norm,cmap = slice_color_map) ,ax=self.axes, orientation='vertical',label = '[mT]')
-                ctrf.set_clim(minval_of_b0,maxval_of_b0)
-                self.fig.tight_layout()
-            else:
-                self.fig.tight_layout()
-                #self.colorbar_object.ax.set_xlabel('[mT]')
-                
-            
-            self.axes.autoscale(False)
-            self.update_plotter()
         
         if plot_sph: # if ticked the plot sph checkbox,
         # plot the interpolated field (SPH), contour plots with a color map
@@ -465,9 +553,73 @@ class PlotterCanvas(FigureCanvas):
             self.axes.set_ylim(min(b0map_object.yDim_SPH_fine), max(b0map_object.yDim_SPH_fine))
             self.axes.set_zlim(min(b0map_object.zDim_SPH_fine), max(b0map_object.zDim_SPH_fine))
             
+
+            
+        if plot_shim:
+            # plot the interpolated field (SPH), contour plots with a color map
+            self.update_plotter()
+            print('getting the SHIM field from the b0 object')
+            minval_of_b0 = np.nanmin(b0map_object.shimField[:,:,:])
+            maxval_of_b0 = np.nanmax(b0map_object.shimField[:,:,:])
+            print('min b0 sph: %.3f mT'%minval_of_b0)
+            print('max b0 sph: %.3f mT'%maxval_of_b0)
+            print('--- SHIM plotter is called --- ')
+            
+            slice_color_map='viridis'
+            
+            nlevels = 32
+            ctrf = None
+            
+            if slice_number_xy >= 0:
+                # if slice number xy given, plot Z slice
+                x,y = np.meshgrid(b0map_object.xDim_SPH_fine, b0map_object.yDim_SPH_fine,indexing='ij')
+                z = b0map_object.zDim_SPH_fine[slice_number_xy]
+                vals =b0map_object.shimField[:,:,slice_number_xy]
+                ctrf = self.axes.contourf(x,y,vals, offset = z, zdir = 'z', alpha=0.5,cmap=slice_color_map,edgecolor='black',vmin = minval_of_b0, vmax = maxval_of_b0,levels=nlevels)
+    
+            if slice_number_yz >= 0:
+                # if slice number yz given, plot X slice
+                y,z = np.meshgrid(b0map_object.yDim_SPH_fine, b0map_object.zDim_SPH_fine,indexing='ij')
+                x = b0map_object.xDim_SPH_fine[slice_number_yz]
+                vals =b0map_object.shimField[slice_number_yz,:,:]
+                ctrf = self.axes.contourf(vals,y,z, offset = x, zdir = 'x', alpha=0.5,cmap=slice_color_map,edgecolor='black',vmin = minval_of_b0, vmax = maxval_of_b0,levels=nlevels)
+
+            if slice_number_zx >= 0:
+                # if slice number zx given, plot Y slice
+                x,z = np.meshgrid(b0map_object.xDim_SPH_fine, b0map_object.zDim_SPH_fine,indexing='ij')
+                y = b0map_object.yDim_SPH_fine[slice_number_zx]
+                vals =b0map_object.shimField[:,slice_number_zx,:]
+                ctrf = self.axes.contourf(x,vals,z, offset = y, zdir = 'y', alpha=0.5,cmap=slice_color_map,edgecolor='black',vmin = minval_of_b0, vmax = maxval_of_b0,levels=nlevels)
+    
+    
+
+            self.axes.set_xlim(min(b0map_object.xDim_SPH_fine), max(b0map_object.xDim_SPH_fine))
+            self.axes.set_ylim(min(b0map_object.yDim_SPH_fine), max(b0map_object.yDim_SPH_fine))
+            self.axes.set_zlim(min(b0map_object.zDim_SPH_fine), max(b0map_object.zDim_SPH_fine))
+            
+            
+            
+            
+            
+            
+            
+            
+        try:
+            norm = matplotlib.colors.Normalize(vmin=minval_of_b0, vmax=maxval_of_b0)
+
+            
+            if self.colorbar_object is None:
+                self.colorbar_object = plt.colorbar(matplotlib.cm.ScalarMappable(norm = norm,cmap = slice_color_map) ,ax=self.axes, orientation='vertical',label = '[mT]')
+                ctrf.set_clim(minval_of_b0,maxval_of_b0)
+                self.fig.tight_layout()
+            else:
+                self.fig.tight_layout()
+                
+            
             self.axes.autoscale(False)
             self.update_plotter()
-            
+        except:
+            print('SELECT one type of data to plot.')    
         
         
         

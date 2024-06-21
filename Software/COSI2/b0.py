@@ -590,6 +590,22 @@ class b0():
 
 
         initialField = self.interpolatedField #np.load(r'./data/tmp/B0_interpolated.npy')
+        print('Da mangetic field in the magnet is pointing in the -Z direction,')
+        print('The plotted component in this gui is the -Z component of the magnetic field')
+        print('todo:')
+        print('place one shim magnet in the middle of the fine grid')
+        print('orient the magnet along the -Z axis.')
+        print('there it enhances the field maximally.')
+        print('orient the magnet along the +Z axis.')
+        print('there it compensates the field maximally.')
+        print('Calculate the field of the shim magnet in the fine grid')
+        print('take the +Z component of the field and plot it in the viever.')
+        print('See what you get.')
+        
+        
+        
+        
+        self.shimField = -initialField
 
 
 
