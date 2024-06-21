@@ -84,44 +84,62 @@ class ball_path(object):
         self.make_ball(center = self.center, radius = self.radius, radius_npoints = self.radius_npoints)
 
 
-
     def make_ball(self, center, radius:float, radius_npoints:int):
+
+        def G0(x:float,y:float,z:float):
+            g0 =  'x%.2f y%.2f z%.2f\n'%(x,y,z)
+            return(g0)
+
+        def checkBounds(x,y,z,center,radius):
+            """check if coordinates are in sphere
+            returns True if x,y,z are in sphere
+            
+            * center - array of x,y,z coordinates of the center of the sphere
+            * radius - radius of the sphere """
+
+            r2 = (x-center[0])**2 + (y-center[1])**2 + (z-center[0])**2
+            if r2 < radius**2:
+                return True
+            else:
+                return False
 
         npoints = radius_npoints
 
-        x = np.linspace(center[0]-radius, center[0]+radius, 2*npoints)
-        y = np.linspace(center[1]-radius, center[1]+radius, 2*npoints)
-        z = np.linspace(center[2]-radius, center[2]+radius, 2*npoints)
-
-        xx, yy, zz = np.meshgrid(x,y,z)
-
-        res = (xx-center[0])**2+(yy-center[1])**2+(zz-center[2])**2<=radius**2
-        #print(np.shape(res))
-        #print(res)
-
+        xSteps = np.linspace(center[0]-radius, center[0]+radius, 2*npoints+1)
+        ySteps = np.linspace(center[1]-radius, center[1]+radius, 2*npoints+1)
+        zSteps = np.linspace(center[2]-radius, center[2]+radius, 2*npoints+1)
 
         with open(self.filename, 'w+') as f:
-            snakeup_x = True
-            snakeup_y = True
-            for iz in range(len(z)):
-                snakeup_y =  not snakeup_y
-                for iy in range(len(y)):
-                    snakeup_x =  not snakeup_x
-                    for ix in range(len(x)):
-                        if res[ix,iy,iz]:
-                            
-                            if snakeup_y:
-                                y_idx = iy
-                            else:
-                                y_idx = len(y)-iy
+            xIsReversed = False
+            yIsReversed = False
+            for z in zSteps:
+                if yIsReversed:
+                    yIsReversed = False
+                    for y in reversed(ySteps):
+                        if xIsReversed:
+                            xIsReversed = False
+                            for x in reversed(xSteps):
+                                if checkBounds(x,y,z,center,radius):
+                                    f.write( G0(x=x, y=y, z=z) )
+                        else:
+                            xIsReversed = True
+                            for x in xSteps:
+                                if checkBounds(x,y,z,center,radius):
+                                    f.write( G0(x=x, y=y, z=z) )
+                else:
+                    yIsReversed = True
+                    for y in ySteps:
+                        if xIsReversed:
+                            xIsReversed = False
+                            for x in reversed(xSteps):
+                                if checkBounds(x,y,z,center,radius):
+                                    f.write( G0(x=x, y=y, z=z) )
+                        else:
+                            xIsReversed = True
+                            for x in xSteps:
+                                if checkBounds(x,y,z,center,radius):
+                                    f.write( G0(x=x, y=y, z=z) )
 
-                            if snakeup_x:
-                                x_idx = ix
-                            else:
-                                x_idx = len(x)-ix
-                            
-                            g0 =  'x%.2f y%.2f z%.2f\n'%(x[x_idx],y[y_idx],z[iz])
-                            f.write( g0 ) 
-
+        
 
         print('Ball pathfile is written.')
