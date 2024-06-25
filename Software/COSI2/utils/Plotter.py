@@ -403,6 +403,9 @@ class PlotterCanvas(FigureCanvas):
                                
                 self.colorbar_object = plt.colorbar(matplotlib.cm.ScalarMappable(norm = norm,cmap = slice_color_map) ,ax=self.axes, orientation='horizontal',shrink=0.25)
                 self.colorbar_object.norm = norm
+                for im in plt.gca().get_images():
+                    im.set_clim(minval_of_b0,maxval_of_b0)
+                self.colorbar_object.ax.set_xlim([minval_of_b0,maxval_of_b0])
                 self.colorbar_object.set_ticks(np.linspace(minval_of_b0,maxval_of_b0,2))
                 self.colorbar_object.update_ticks()
                 self.fig.tight_layout()
@@ -410,7 +413,10 @@ class PlotterCanvas(FigureCanvas):
                 print('rescaling the colorbaron the 2d plot')
                 self.colorbar_object.mappable = img
                 self.colorbar_object.norm = norm
+                for im in plt.gca().get_images():
+                    im.set_clim(minval_of_b0,maxval_of_b0)
                 img.set_clim(minval_of_b0,maxval_of_b0)
+                self.colorbar_object.ax.set_xlim([minval_of_b0,maxval_of_b0])
                 self.colorbar_object.set_ticks(np.linspace(minval_of_b0,maxval_of_b0,2))
                 self.colorbar_object.update_ticks()
                 self.fig.tight_layout()
@@ -649,14 +655,27 @@ class PlotterCanvas(FigureCanvas):
             
             if self.colorbar_object is None:
                 self.colorbar_object = plt.colorbar(matplotlib.cm.ScalarMappable(norm = norm,cmap = slice_color_map) ,ax=self.axes, orientation='horizontal',label = '[mT]',shrink=0.7)
-                ctrf.set_clim(minval_of_b0,maxval_of_b0)
+                for im in self.axes.get_images():
+                    im.set_clim(minval_of_b0,maxval_of_b0)
+
+                self.colorbar_object.ax.set_xlim(minval_of_b0,maxval_of_b0)
                 self.fig.tight_layout()
             else:
                 self.fig.tight_layout()
                 self.colorbar_object.norm = norm
-                ctrf.set_clim(minval_of_b0,maxval_of_b0)
-                self.colorbar_object.set_clim(minval_of_b0,maxval_of_b0)
-                self.colorbar_object.set_ticks(np.arange(np.round(minval_of_b0,1),maxval_of_b0,0.05))
+                for im in self.axes.get_images():
+                    im.set_clim(minval_of_b0,maxval_of_b0)
+
+                self.colorbar_object.ax.set_xlim(minval_of_b0,maxval_of_b0)
+                if plot_raw or plot_sph:
+                    tickStep = 0.05
+                    roundDigits = 1
+                if plot_shim or plot_error:
+                    tickStep = 0.002
+                    roundDigits = 3
+                
+                self.colorbar_object.set_ticks(np.arange(np.round(minval_of_b0,roundDigits),maxval_of_b0,tickStep))
+                    
                 self.colorbar_object.update_ticks()
                 
             

@@ -336,7 +336,7 @@ class Ui(QtWidgets.QMainWindow):
         except:
             print('no filename iven, do it again.')
             return 0
-        
+
         base_filename = os.path.splitext(self.cosimeasure.pathfile_path)[0]
         
         self.cosimeasure.b0_filename=base_filename+'_bvals.csv'

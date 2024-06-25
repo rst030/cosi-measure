@@ -601,19 +601,15 @@ class b0():
         initialField = self.interpolatedField #np.load(r'./data/tmp/B0_interpolated.npy')
         self.errorField = self.interpolatedField+self.shimField-np.nanmean(self.interpolatedField)
         
+        print('realize the least square optimization of the magnet roatations.')
         
-        print('Da mangetic field in the magnet is pointing in the -Z direction,')
-        print('The plotted component in this gui is the -Z component of the magnetic field')
-        print('todo:')
-        print('place one shim magnet in the middle of the fine grid')
-        print('orient the magnet along the -Z axis.')
-        print('there it enhances the field maximally.')
-        print('orient the magnet along the +Z axis.')
-        print('there it compensates the field maximally.')
-        print('Calculate the field of the shim magnet in the fine grid')
-        print('take the +Z component of the field and plot it in the viever.')
-        print('See what you get.')
-        
+        vector_of_magnet_rotations = np.zeros(len(self.shim_magnets))
+ 
+        for idx, shim_magnet in enumerate(self.shim_magnets): 
+            vector_of_magnet_rotations[idx] = shim_magnet.rotation_yz
+            
+        print(vector_of_magnet_rotations)
+        print('TODO: optimize that vector.')
         
         
         
