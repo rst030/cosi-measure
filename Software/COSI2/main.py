@@ -334,7 +334,7 @@ class Ui(QtWidgets.QMainWindow):
             self.cosimeasure.working_directory = os.path.split(os.path.abspath(self.cosimeasure.pathfile_path))[0]
 
         except:
-            print('no filename given, do it again.')
+            print('no filename iven, do it again.')
             return 0
         
         base_filename = os.path.splitext(self.cosimeasure.pathfile_path)[0]

@@ -221,21 +221,28 @@
              <bool>true</bool>
             </property>
             <property name="text">
-             <string>Raw data</string>
+             <string>Raw</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QCheckBox" name="PlotSPHCheckBox">
             <property name="text">
-             <string>SPH fit</string>
+             <string>SPH</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QCheckBox" name="PlotShimFieldCheckBox">
             <property name="text">
-             <string>shim field</string>
+             <string>shim</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="PlotErrorFieldCheckBox">
+            <property name="text">
+             <string>Error</string>
             </property>
            </widget>
           </item>
@@ -333,6 +340,9 @@
             <property name="maximum">
              <number>64</number>
             </property>
+            <property name="value">
+             <number>7</number>
+            </property>
            </widget>
           </item>
          </layout>
@@ -358,7 +368,7 @@
              <number>1</number>
             </property>
             <property name="value">
-             <number>2</number>
+             <number>9</number>
             </property>
            </widget>
           </item>

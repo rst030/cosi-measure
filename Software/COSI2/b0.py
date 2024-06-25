@@ -65,6 +65,9 @@ class b0():
     
     b0Data = None # tasty, berry, what we need. 3D array. ordered. sliceable. fittable.
     
+    
+    interpolatedField = []
+    errorField = []
 
     def __init__(self,path_filename='', path:pth.pth = None, b0_filename='', magnet_object = ''):
         
@@ -291,7 +294,7 @@ class b0():
                 print('assigned: ',self.fieldDataAlongPath[idx,:], '<-----')
 
 
-            b0Data[xArg,yArg,zArg,:] = [abs(self.fieldDataAlongPath[idx,0]),abs(self.fieldDataAlongPath[idx,1]),abs(self.fieldDataAlongPath[idx,2]),abs(self.fieldDataAlongPath[idx,3])]
+            b0Data[xArg,yArg,zArg,:] = [self.fieldDataAlongPath[idx,0],self.fieldDataAlongPath[idx,1],self.fieldDataAlongPath[idx,2],self.fieldDataAlongPath[idx,3]]
 
                 
             
@@ -422,7 +425,7 @@ class b0():
         # order of sph harm to consider
         maxOrder = maxorder
         # Diameter spherical volume over which to do the spherical harmonic decomposition
-        DSV = dsv
+        self.DSV = dsv
         # resolution for rendering the sph harmonics
         resolution = resol
         
@@ -439,7 +442,7 @@ class b0():
 
         #Create a spherical mask for the data
         sphereMask = np.zeros(np.shape(coord[0]), dtype = bool)
-        sphereMask[np.square(coord[0]) + np.square(coord[1]) + np.square(coord[2]) <= (DSV/2)**2] = 1 
+        sphereMask[np.square(coord[0]) + np.square(coord[1]) + np.square(coord[2]) <= (self.DSV/2)**2] = 1 
         sphereMask = sphereMask*(~np.isnan(fieldMap))
 
         # Create a spherical shell mask to consider only data points on the surface of the sphere
@@ -452,8 +455,8 @@ class b0():
 
         #apply mask to data
         maskedField = np.multiply(sphereMask, fieldMap)
-        print("Mean field strength in %i cm sphere: %.2f mT"%(DSV/10, np.nanmean(maskedField)))
-        print("Inhomogeneity in %i cm sphere: %.0f ppm" %(DSV/10, 1e6*(np.nanmax(maskedField) - np.nanmin(maskedField))/np.nanmean(maskedField)))
+        print("Mean field strength in %i cm sphere: %.2f mT"%(self.DSV/10, np.nanmean(maskedField)))
+        print("Inhomogeneity in %i cm sphere: %.0f ppm" %(self.DSV/10, 1e6*(np.nanmax(maskedField) - np.nanmin(maskedField))/np.nanmean(maskedField)))
 
         #convert cartesian coordinates to spherical coordinates
         #spherCoord = cartToSpher(np.stack((coord[1],coord[0], coord[2]), axis = -1))
@@ -484,7 +487,7 @@ class b0():
 
         #calculate the field from the spherical harmonic decomposition
         decomposedField = np.matmul(spherHarm, spherHarmCoeff)
-        print("Inhomogeneity of fit: %.0f ppm" %(1e6*(np.max(decomposedField) - np.min(decomposedField))/np.mean(decomposedField)))
+        print("Inhomogeneity of fit: %.0f ppm" %(abs(1e6*(np.max(decomposedField) - np.min(decomposedField))/np.mean(decomposedField))))
 
         #See what the difference is between the two decomposed field
         shimmedField = maskedFieldShell - decomposedField
@@ -546,7 +549,7 @@ class b0():
         #calculate the field from the spherical harmonic decomposition
         decomposedField = np.matmul(spherHarm3D, coeffs)*sphereMask
 
-        print("Inhomogeneity of fit: %.0f ppm" %(1e6*(np.max(decomposedField) - np.min(decomposedField))/np.mean(decomposedField)))
+        print("Inhomogeneity of fit: %.0f ppm" %(abs(1e6*(np.max(decomposedField) - np.min(decomposedField))/np.mean(decomposedField))))
         self.interpolatedField = decomposedField
         DecomposedDataNumpyFilename = 'B0_interpolated.npy'
         saveTmpData(filename = DecomposedDataNumpyFilename,numpyData=self.interpolatedField) 
@@ -559,8 +562,8 @@ class b0():
         # create array of magnet coordinates in the rings
         # make an array of magnets
 
-        shimRadius          = 276*1e-3#276*1e-3 <- was set by Tom!      # radius on which the shim magnets are placed
-        ringPositions_along_x       = np.linspace(-0.1755,0.1755,4)          #np.linspace(-0.2295, .2295, 4) #Z positions to place shin rubgs
+        shimRadius          = 276*1e-3# 276*1e-3 <- was set by Tom!      # radius on which the shim magnets are placed
+        ringPositions_along_x     = np.linspace(-0.1755,0.1755,4) # <- iter 2          #np.linspace(-0.2295, .2295, 4) #Z positions to place shin rubgs
         magsPerSegment      = 7             # number of magnets peer shim tray segment
         anglePerSegment     = 19.25 #the angular distance in degrees between the furthest magnets in a shim tray (span of magnets in shim tray)
         numSegments         = 12 #corresponds to the number of shim trays
@@ -571,6 +574,7 @@ class b0():
         positions = []
         self.shim_magnets = []
         
+
         for ringPosition in ringPositions_along_x:
             for segmentAngle in segmentAngles:
                 for magAngle in magAngles:
@@ -578,18 +582,26 @@ class b0():
                     ypos = shimRadius*np.cos((segmentAngle+magAngle)*np.pi/180)
                     zpos = shimRadius*np.sin((segmentAngle+magAngle)*np.pi/180)
                     positions.append((xpos,ypos,zpos))
-                    my_magnet = shimming_magnet.shimming_magnet(position=[xpos,ypos,zpos], dipole_moment = 0.1, rotation_yz = 0)
+                    randangle = np.random.randint(-3,3)*np.pi/16
+                    my_magnet = shimming_magnet.shimming_magnet(position=[xpos,ypos,zpos], rotation_yz = randangle)
                     self.shim_magnets.append(my_magnet)
 
 
         print('%d shim magnets generated'%len(self.shim_magnets))
         grid = self.coord_grid_fine
         print('rendering the fields of the magnets on the grid, ',np.shape(grid))
+        
+        self.shimField = np.zeros(np.shape(grid[0]), dtype=np.float32)
+        
         for shim_magnet in self.shim_magnets:
-            shim_magnet.render_field(grid)
+            shim_magnet.render_field(grid,dsv=self.DSV)
+            self.shimField += shim_magnet.B0
 
 
         initialField = self.interpolatedField #np.load(r'./data/tmp/B0_interpolated.npy')
+        self.errorField = self.interpolatedField+self.shimField-np.nanmean(self.interpolatedField)
+        
+        
         print('Da mangetic field in the magnet is pointing in the -Z direction,')
         print('The plotted component in this gui is the -Z component of the magnetic field')
         print('todo:')
@@ -605,7 +617,7 @@ class b0():
         
         
         
-        self.shimField = -initialField
+        
 
 
 

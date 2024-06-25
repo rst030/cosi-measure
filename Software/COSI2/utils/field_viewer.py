@@ -71,6 +71,7 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         self.ShowRingsCheckBox.stateChanged.connect(self.plot_B0M_slice)
         self.PlotSPHCheckBox.stateChanged.connect(self.plot_B0M_slice)
         self.PlotShimFieldCheckBox.stateChanged.connect(self.plot_B0M_slice)
+        self.PlotErrorFieldCheckBox.stateChanged.connect(self.plot_B0M_slice)
         
 
         
@@ -139,6 +140,7 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         plot_RAW_flag = self.PlotRawCheckBox.isChecked() # plot the raw field
         plot_SPH_flag = self.PlotSPHCheckBox.isChecked() # plot the decomposed field
         plot_SHIM_FIELD_flag = self.PlotShimFieldCheckBox.isChecked() # plot the shim field
+        plot_ERROR_FIELD_flag = self.PlotErrorFieldCheckBox.isChecked() # plot the error field
         
         
         XY_slice_number = int(self.XYspinBox.value()) if plot_XY_sliceFlag else -1
@@ -158,9 +160,14 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         if numticks == 0 or numticks > 1:
             print('select only one plane!')
             return 0
-        self.plotter2d.plotB0slice(b0map_object=self.b0map, 
-                        slice_number_xy=XY_slice_number,slice_number_zx=ZX_slice_number,
-                        slice_number_yz=YZ_slice_number, plot_raw=plot_RAW_flag, plot_sph=plot_SPH_flag,plot_shim = plot_SHIM_FIELD_flag)
+        self.plotter2d.plotB0slice_2D(b0map_object=self.b0map, 
+                        slice_number_xy=XY_slice_number,
+                        slice_number_zx=ZX_slice_number,
+                        slice_number_yz=YZ_slice_number, 
+                        plot_raw=plot_RAW_flag, 
+                        plot_sph=plot_SPH_flag,
+                        plot_shim = plot_SHIM_FIELD_flag, 
+                        plot_error=plot_ERROR_FIELD_flag)
 
         
 
@@ -176,16 +183,24 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         plot_RAW_flag = self.PlotRawCheckBox.isChecked() # plot the raw field
         plot_SPH_flag = self.PlotSPHCheckBox.isChecked() # plot the decomposed field
         plot_SHIM_FIELD_flag = self.PlotShimFieldCheckBox.isChecked() # plot the shim field
-         
+        plot_ERROR_FIELD_flag = self.PlotErrorFieldCheckBox.isChecked() # plot the error field
+
+
         
         if plot_SPH_flag:
             self.XYspinBox.setMaximum(len(self.b0map.zDim_SPH_fine)-1)               
             self.ZXspinBox.setMaximum(len(self.b0map.yDim_SPH_fine)-1)           
             self.YZspinBox.setMaximum(len(self.b0map.xDim_SPH_fine)-1)       
-        else:
+        if plot_RAW_flag:
             self.XYspinBox.setMaximum(len(self.b0map.xPts)-1)               
             self.ZXspinBox.setMaximum(len(self.b0map.yPts)-1)           
             self.YZspinBox.setMaximum(len(self.b0map.xPts)-1)       
+        if plot_SHIM_FIELD_flag or plot_ERROR_FIELD_flag:
+            self.XYspinBox.setMaximum(len(self.b0map.zDim_SPH_fine)-1)               
+            self.ZXspinBox.setMaximum(len(self.b0map.yDim_SPH_fine)-1)           
+            self.YZspinBox.setMaximum(len(self.b0map.xDim_SPH_fine)-1)
+
+
         
         XY_slice_number = int(self.XYspinBox.value()) if plot_XY_sliceFlag else -1
         ZX_slice_number = int(self.ZXspinBox.value()) if plot_ZX_sliceFlag else -1
@@ -205,7 +220,8 @@ class field_viewer_gui(QtWidgets.QMainWindow):
                                coordinate_system='magnet',
                                plot_raw = plot_RAW_flag, 
                                plot_sph = plot_SPH_flag,
-                               plot_shim = plot_SHIM_FIELD_flag)
+                               plot_shim = plot_SHIM_FIELD_flag,
+                               plot_error = plot_ERROR_FIELD_flag)
         
 
 
