@@ -32,7 +32,7 @@ class field_viewer_gui(QtWidgets.QMainWindow):
 
         # binding methods to buttons:
         self.save_button.clicked.connect(self.save_rotated_path_in_a_csv_file)  # Remember to code the method in the class.
-        self.load_button.clicked.connect(self.load_b0)  # Remember to code the method in the class.
+        #self.load_button.clicked.connect(self.load_b0)  # old import, for COSI v.1
         self.load_csv_button.clicked.connect(self.load_csv)  # Remember to code the method in the class.
         self.show_2d_slice_btn.clicked.connect(self.plot_B0M_slice_2d)
         self.export_for_Tom_btn.clicked.connect(self.export_separately)
@@ -40,8 +40,9 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         # data transformation buttons
         self.SPH_button.clicked.connect(self.fit_sph)
         
-        # shimming button
+        # shimming buttons
         self.get_shim_positions_btn.clicked.connect(self.get_shim_positions)
+        self.save_rings_button.clicked.connect(self.save_shim_magnets_in_rings)
 
         # --- adding the plotter: ---
         # B0M plotter:
@@ -277,6 +278,25 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         self.b0map.make_cylindrical_anomaly_along_x(yz_of_the_cylinder_center=[-50,120],radius_of_cylinder=70,intensity=47.1, bg = 47)
         self.b0map.saveAsCsv_for_comsol(new_csv_path)
         #self.b0map.path.saveAs(new_csv_path)
+
+    def save_shim_magnets_in_rings(self):
+        print('file dialog for exporting the ring files for Freecad')
+        # open file dialog
+        try:
+            ring_filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, caption="file name for shim magnets export",
+                                                                   directory=self.workingFolder,
+                                                                   filter="text files (*.txt)")
+            self.workingFolder = os.path.split(os.path.abspath(ring_filename))[0]
+
+        except:
+            print('no filename given, do it again.')
+            return 0
+
+        try:
+            self.b0map.save_rings(ring_filename)
+        except Exception as e:
+            print(e)
+
 
 
     def export_separately(self):

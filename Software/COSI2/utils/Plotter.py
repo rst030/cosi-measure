@@ -667,10 +667,10 @@ class PlotterCanvas(FigureCanvas):
                     im.set_clim(minval_of_b0,maxval_of_b0)
 
                 self.colorbar_object.ax.set_xlim(minval_of_b0,maxval_of_b0)
-                if plot_raw or plot_sph:
+                if plot_raw or plot_sph or plot_error:
                     tickStep = 0.05
                     roundDigits = 1
-                if plot_shim or plot_error:
+                if plot_shim:
                     tickStep = 0.002
                     roundDigits = 3
                 

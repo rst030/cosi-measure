@@ -20,56 +20,62 @@ class shimming_magnet():
     def __init__(self,position=[0,0,0], rotation_yz = 0):
         self.position = position
         self.rotation_yz = rotation_yz
-        dip_mom = self.magnetization(self.bRem, self.magSizeOuter) 
-        self.dipole_vector = self.mu*dip_mom*np.array([0,np.cos(rotation_yz),np.sin(rotation_yz)]) # dipole moment in YZ plane!, initially - along Y
+        self.dip_mom = self.magnetization(self.bRem, self.magSizeOuter) 
+        self.dipole_vector = self.mu*self.dip_mom*np.array([0,1,0]) # dipole moment in YZ plane!, initially - along Y
         
         print('magnet created, dipole points to ',self.dipole_vector/np.linalg.norm(self.dipole_vector))
 
-    
-    def render_field(self,grid,dsv):
-        print('the magnet has a position and the dipole moment. calculate the components of the field on the grid.')
-        print('for now place the magnet in 0,0,0')
+    def update_rotation(self,rotation_yz):
+        self.dipole_vector = self.mu*self.dip_mom*np.array([0,np.cos(rotation_yz),np.sin(rotation_yz)]) # dipole moment in YZ plane!, initially - along Y
+        
+    def render_field(self,grid=None):
+        '''calculate the magnetic field of the magnet on the coordinate grin grid, leave only values within sphere of d=dsv mm'''
         # grid is a np.meshgrid with ij indexing, so x,y and z.
         
+        # if no updated rotation, the field is always pointing in the y direction! render the field in all cube
         
+        #print('expensive rendering dip to',self.rotation_yz)
+        self.update_rotation(self.rotation_yz)
 
         mx = self.dipole_vector[0]
         my = self.dipole_vector[1]
         mz = self.dipole_vector[2]
         
-        x = grid[0]*1e-3 - self.position[0] # [m]
-        y = grid[1]*1e-3 - self.position[1] # [m]
-        z = grid[2]*1e-3 - self.position[2] # [m]
+        if grid is not None:
+
+            self.x = grid[0]*1e-3 - self.position[0] # [m]
+            self.y = grid[1]*1e-3 - self.position[1] # [m]
+            self.z = grid[2]*1e-3 - self.position[2] # [m]
         
-        rvec = np.sqrt(np.square(x)+np.square(y)+np.square(z))
-        vec_dot_dip = 3*(np.multiply(mx,x) + np.multiply(my,y) + np.multiply(mz,z))
+            self.rvec = np.sqrt(np.square(self.x)+np.square(self.y)+np.square(self.z))
+            self.rvec5 = self.rvec**5
+            self.rvec3 = self.rvec**3
 
-        B0 = np.zeros(np.shape(x)+(3,), dtype=np.float32)
+            self.grid=grid
 
-        B0[:,:,:,0] = 0#np.divide(np.multiply(x,vec_dot_dip),rvec**5)# - np.divide(mx,rvec**3)
-        B0[:,:,:,1] = 0#np.divide(np.multiply(y,vec_dot_dip),rvec**5) - np.divide(my,rvec**3)
-        B0[:,:,:,2] = np.divide(np.multiply(z,vec_dot_dip),rvec**5) - np.divide(mz,rvec**3)
+            print('expensive render')
+
+        vec_dot_dip = 3*(0 + np.multiply(my,self.y) + np.multiply(mz,self.z)) # mx is 0 always, magnets rotate in yz plane
+
+        self.B0 = np.zeros(np.shape(self.x)+(3,), dtype=np.float32)
+
+        self.B0[:,:,:,0] = 0#np.divide(np.multiply(x,vec_dot_dip),rvec**5)# - np.divide(mx,rvec**3)
+        self.B0[:,:,:,1] = 0#np.divide(np.multiply(self.y,vec_dot_dip),self.rvec5) - np.divide(my,self.rvec3)
+        self.B0[:,:,:,2] = np.divide(np.multiply(self.z,vec_dot_dip),self.rvec5) - np.divide(mz,self.rvec3)
         
-        B0 *= 1e3
+        self.B0[:,:,:,2] = self.B0[:,:,:,2]*3e3
         
-        #Create a spherical mask for the data
-        sphereMask = np.zeros(np.shape(grid[0]), dtype = bool)
-        sphereMask[np.square(grid[0]) + np.square(grid[1]) + np.square(grid[2]) <= (dsv/2)**2] = 1 
-        sphereMask = sphereMask*(~np.isnan(B0[...,2]))
 
-        # Create a spherical shell mask to consider only data points on the surface of the sphere
-        erodedMask = cp.binary_erosion(sphereMask)  # remove the outer surface of the initial spherical mask
-        shellMask = np.array(sphereMask^erodedMask, dtype = float)   # create a new mask by looking at the difference between the inital and eroded mask
-        shellMask[shellMask == 0] = np.nan  # set points outside mask to 'NaN', works better than setting it to zero for calculating mean fields etc.
+    def rotate_field(self,rotation_yz):
+        # rotation by rotation_yz from Y to Z
 
-        sphereMask = np.asarray(sphereMask, dtype=float)
-        sphereMask[sphereMask == 0] = np.nan
+        if self.rotation_yz == 0: # safety
+            
+            By = self.B0[:,:,:,1]
+            Bz = self.B0[:,:,:,2]
 
-        #apply mask to data
-        B0_masked = np.multiply(sphereMask, B0[...,2])
-        
-        self.B0 = B0_masked
-
+            self.B0_rotated_Z = By*np.sin(rotation_yz)+Bz*np.cos(rotation_yz)
+            #print(rotation_yz)
 
 
     def magnetization(self,bRem, dimensions, shape = 'cube', evalDistance = 1):
