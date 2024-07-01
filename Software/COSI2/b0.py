@@ -71,6 +71,8 @@ class b0():
     interpolatedField = []
     errorField = []
 
+    vector_of_magnet_rotations = None
+
     def __init__(self,path_filename='', path:pth.pth = None, b0_filename='', magnet_object = ''):
         
         if path_filename!='':
@@ -559,15 +561,15 @@ class b0():
 
 
     
-    def get_shim_positions(self):
+    def get_shim_positions(self,dsv_for_opt_percent:int,verbose:bool):
         # get the magnets. All magnets. Plot the initial field of all magnets oriented along Y axis.
         from utils import shimming_magnet
         # create array of magnet coordinates in the rings
         # make an array of magnets
 
         shimRadius          = 276*1e-3# 276*1e-3 <- was set by Tom!      # radius on which the shim magnets are placed
-        ringPositions_along_x = np.linspace(-0.1755,0.1755,4) # <- iter 2          #np.linspace(-0.2295, .2295, 4) #Z positions to place shin rubgs
-        magsPerSegment      = 7             # number of magnets peer shim tray segment
+        ringPositions_along_x = [0]#np.linspace(-0.1755,0.1755,4) # <- iter 2          #np.linspace(-0.2295, .2295, 4) #Z positions to place shin rubgs
+        magsPerSegment      = 2#7             # number of magnets peer shim tray segment
         anglePerSegment     = 19.25 #the angular distance in degrees between the furthest magnets in a shim tray (span of magnets in shim tray)
         numSegments         = 12 #corresponds to the number of shim trays
 
@@ -577,7 +579,21 @@ class b0():
         positions = []
         self.shim_magnets = []
         
+        self.interpolatedField_masked = self.interpolatedField
+        self.interpolatedField_masked[self.interpolatedField==np.nan] = 0
 
+        # fields of shim magnets
+        initialField = self.interpolatedField
+
+        numMags = 0
+        for ringPosition in ringPositions_along_x:
+            for segmentAngle in segmentAngles:
+                for magAngle in magAngles:
+                    numMags+=1
+
+        magnetFields = np.zeros((np.shape(initialField)+(3,numMags)), dtype = np.float32)
+
+        idx1=0
         for ringPosition in ringPositions_along_x:
             for segmentAngle in segmentAngles:
                 for magAngle in magAngles:
@@ -589,10 +605,38 @@ class b0():
                     my_magnet = shimming_magnet.shimming_magnet(position=[xpos,ypos,zpos], rotation_yz = 0)
                     self.shim_magnets.append(my_magnet)
 
+                    magnetFields[:,:,:,:,idx1] = my_magnet.singleMagnetTom(X=self.xDim_SPH_fine, Y=self.yDim_SPH_fine, Z=self.zDim_SPH_fine)
+                    idx1+=1
+
+        ''' Mask generation'''
+        xDim = self.xDim_SPH_fine
+        yDim = self.yDim_SPH_fine
+        zDim = self.zDim_SPH_fine
+
+        xDim3D, yDim3D, zDim3D = np.meshgrid(xDim, yDim, zDim, indexing = 'ij')
+        spherCoord = cartToSpher(np.stack((xDim3D,yDim3D, zDim3D), axis = -1))
+
+        #Apply mask to data
+        DSV_mask = self.DSV*dsv_for_opt_percent/100
+
+        mask = (np.round(spherCoord[...,0],4) <= (DSV_mask/2)).astype(float)
+        # mask = (np.square(xDim3D)/((optVol[0]/2)**2) + np.square(yDim3D)/((optVol[1]/2)**2) + np.square(zDim3D)/((optVol[2]/2)**2)  <= 1).astype(float)
+        halfMask = mask#*((zDim3D<=0).astype(float))
+        erodedMask = cp.binary_erosion(halfMask.astype(bool))                    # remove the outer surface of the initial spherical mask
+        halfMask = np.array(halfMask.astype(bool)^erodedMask, dtype = float)   # create a new mask by looking at the difference between the inital and eroded mask
+        halfMask[halfMask == 0] = np.nan    
+        mask[mask == 0] = np.nan
+
+
+        self.maskedFields = magnetFields[halfMask == 1, :,:].astype(float)
+
+        self.maskedFields = np.hstack((self.maskedFields[:,1,:],self.maskedFields[:,2,:])) # WE HAVE Y AND Z
+
+
 
         print('%d shim magnets generated'%len(self.shim_magnets))
         grid = self.coord_grid_fine
-        print('rendering the fields of the magnets on the grid, ',np.shape(grid))
+        print('rendering the fields of the magnets on the grid, size ',np.shape(grid))
         
         self.shimField = np.zeros(np.shape(grid[0]), dtype=np.float32)
         
@@ -603,12 +647,12 @@ class b0():
         totfield = self.interpolatedField+self.shimField
         self.errorField = totfield-np.nanmean(totfield)
         
-        print('realize the least square optimization of the magnet roatations.')
+        print('least square optimization of the magnet roatations.')
                
-        self.optimize_magnet_rotations()
+        self.optimize_magnet_rotations(verbose=2 if verbose else 0)
         
 
-    def optimize_magnet_rotations(self):
+    def optimize_magnet_rotations(self,verbose=0):
         # this turns all magnets and looks at the inhomogeneity of the resulting shim.
         # best turning combination gives smallest inhomogeneity.
 
@@ -616,45 +660,58 @@ class b0():
 
         def _calculate_shimming_error(vector_of_magnet_rotations):
             '''calculate the shim field of shim magnets that are turned as vector_of_magnet_rotations says'''
-            shimField = self.shimField*0
+            #shimField = np.matmul(self.maskedFields,np.hstack((np.cos(vector_of_magnet_rotations), np.sin(vector_of_magnet_rotations)))) + self.interpolatedField_masked
+            self.cheapField = np.matmul(self.maskedFields,np.hstack((np.sin(vector_of_magnet_rotations), np.cos(vector_of_magnet_rotations)))) + self.interpolatedField_masked
+            return np.square(((self.cheapField)/np.mean(self.cheapField)) -1)*1e9
+            
+            
+            # # the long way:
+            
+            # shimField = self.shimField*0
 
-            for idx, shim_magnet in enumerate (self.shim_magnets):
-                angle = vector_of_magnet_rotations[idx]
-                rotation_yz = angle
-                #print('calculating field of magnet %d turned by %.2f rad'%(idx,angle))
+            # for idx, shim_magnet in enumerate (self.shim_magnets):
+            #     angle = vector_of_magnet_rotations[idx]
+            #     rotation_yz = angle
+            #     #print('calculating field of magnet %d turned by %.2f rad'%(idx,angle))
                 
-                # cheap 
-                #       shim_magnet.rotate_field(rotation_yz)                        #shim_magnet.render_field(grid=self.coord_grid_fine,dsv=self.DSV)
-                #       shimField += shim_magnet.B0_rotated_Z
+            #     # cheap 
+            #     #shim_magnet.rotate_field(rotation_yz)                        #shim_magnet.render_field(grid=self.coord_grid_fine,dsv=self.DSV)
+            #     #shimField += shim_magnet.B0_rotated_Z
 
-                # expensive
+            #     # expensive
 
-                shim_magnet.rotation_yz = rotation_yz
-                shim_magnet.render_field()
-                shimField += shim_magnet.B0[:,:,:,2]
+            #     shim_magnet.rotation_yz = rotation_yz
+            #     shim_magnet.render_field()
+            #     shimField += shim_magnet.B0[:,:,:,2]
 
-            # mask the ball of the shim field
-            #apply mask to data
-            shimField = np.multiply(self.sphere_mask, shimField)
+            # # mask the ball of the shim field
+            # #apply mask to data
+            # shimField = np.multiply(self.sphere_mask, shimField)
             
-            totfield = self.interpolatedField+shimField
+            # totfield = self.interpolatedField+shimField
 
-            # replace those nans
-            totfield[np.isnan(totfield)] = 0
+            # # replace those nans
+            # totfield[np.isnan(totfield)] = 0
 
-            cost = np.square(((totfield)/np.mean(totfield)) -1)*1e4
+            # cost = np.square(((totfield)/np.mean(totfield)) -1)*1e9
 
             
             
-            return cost.ravel()#inhomogeneity_of_shimmed_field
+            # return cost.ravel()#inhomogeneity_of_shimmed_field
 
 
+        if self.vector_of_magnet_rotations is None:
+            print('no vector of magnet rotations given, starting from 1.496 rad for all')
+            vector_of_magnet_rotations = np.zeros(len(self.shim_magnets))
+    
+            for idx, shim_magnet in enumerate(self.shim_magnets): 
+                vector_of_magnet_rotations[idx] = 0#1.4960
 
-        vector_of_magnet_rotations = np.zeros(len(self.shim_magnets))
- 
-        for idx, shim_magnet in enumerate(self.shim_magnets): 
-            vector_of_magnet_rotations[idx] = 1.4960
-            
+        else:
+            print('vector of rotations is given, starting with optimized values.')
+            vector_of_magnet_rotations = self.vector_of_magnet_rotations
+
+
         print('magnet rotations captured. %d magnets to rotate'%len(vector_of_magnet_rotations))
         print('initial field inhomogeneity: %d ppm'
               %abs((np.nanmax(self.interpolatedField[:,:,:])-
@@ -666,7 +723,7 @@ class b0():
 
         initialGuess = vector_of_magnet_rotations
 
-        lsqData = least_squares(_calculate_shimming_error, initialGuess, max_nfev=1000, verbose=2, bounds=(vector_of_magnet_rotations*0,vector_of_magnet_rotations*2*np.pi))
+        lsqData = least_squares(_calculate_shimming_error, initialGuess, ftol=1e-12, xtol=1e-12, max_nfev=10000, verbose=verbose, bounds=(vector_of_magnet_rotations*0,vector_of_magnet_rotations*0+2*np.pi))
 
         optimized_rotation_vector = lsqData.x
 
@@ -674,22 +731,34 @@ class b0():
 
         self.shimField = np.zeros(np.shape(self.coord_grid_fine[0]), dtype=np.float32)
 
+
         for idx, shim_magnet in enumerate(self.shim_magnets):
             shim_magnet.rotation_yz = optimized_rotation_vector[idx]
             shim_magnet.render_field(self.coord_grid_fine) # fair rendering
             self.shimField += shim_magnet.B0[:,:,:,2]
 
         self.shimField = np.multiply(self.sphere_mask, self.shimField)
-        print('shim field rendered.')
+        print('expensive shim field rendered.')
+
+        homocheap = (np.nanmax(self.cheapField)-np.nanmin(self.cheapField))/np.nanmean(self.cheapField)*1e6
+        print('homo of cheap shimmed field: %.0f ppm'%homocheap)
+
 
         self.errorField = self.interpolatedField + self.shimField
         print('error field rendered')
-        newhomo = abs(np.nanmax(self.errorField)-np.nanmin(self.errorField))/np.nanmean(self.errorField)*1e6
-        print('optimized homogeneity: %d ppm' %newhomo)
+        self.homogeneity_shimmed = abs(np.nanmax(self.errorField)-np.nanmin(self.errorField))/np.nanmean(self.errorField)*1e6
+        print('optimized homogeneity: %d ppm' %self.homogeneity_shimmed)
+        self.mean_field_shimmed = np.nanmean(self.errorField)
+        print('optimized mean field: %.3f mT' %self.mean_field_shimmed)
+        
 
 
         print('now save that rotating vector!!!')
-        print(optimized_rotation_vector)
+        #for rot in optimized_rotation_vector:
+        #    print('%.9f,'%rot)
+
+        print('optimized rotations assigned to class variable')
+        self.vector_of_magnet_rotations = optimized_rotation_vector
 
         def do_zeros_approximation():# zeros approximation gave rotation of 1.4960 for all magnets
             inhomos = []
@@ -711,10 +780,10 @@ class b0():
 
 
 
-# saving magnet positions into rings
+    # saving magnet positions into rings
     def save_rings(self,fname:str):
         print('save magnet positions and rotations to the file')
-        with open(fname+'.txt', 'w') as file:
+        with open(fname, 'w') as file:
             file.write('x[m],y[m],z[m],dirx[m^2A],diry[m^2A],dirz[m^2A],rotation_xy[rad]\n')
             for magnet in self.shim_magnets:
                  x=magnet.position[0]
@@ -729,7 +798,18 @@ class b0():
         file.close()
         print('exported magnet rotations/positions as *txt file')
         
-
+    def update_magnet_rotations(self, fname):
+        print('loading magnet rotations from file')
+        with open(fname, 'r') as file:
+            raw_data = file.readlines()[1:]
+            vec_mag_rots = []
+            for line in raw_data:
+                vals = line.split(',')
+                rot = float(vals[-1])        
+                vec_mag_rots.append(rot)
+        file.close()
+        self.vector_of_magnet_rotations = np.asarray(vec_mag_rots)
+        
             
         
         

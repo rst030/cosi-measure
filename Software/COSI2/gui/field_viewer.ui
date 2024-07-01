@@ -211,10 +211,7 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_8">
-          <property name="sizeConstraint">
-           <enum>QLayout::SetMaximumSize</enum>
-          </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_14">
           <item>
            <widget class="QCheckBox" name="PlotRawCheckBox">
             <property name="enabled">
@@ -233,16 +230,30 @@
            </widget>
           </item>
           <item>
+           <widget class="QCheckBox" name="PlotErrorFieldCheckBox">
+            <property name="text">
+             <string>Total</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMaximumSize</enum>
+          </property>
+          <item>
            <widget class="QCheckBox" name="PlotShimFieldCheckBox">
             <property name="text">
-             <string>shim</string>
+             <string>fair shim</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="PlotErrorFieldCheckBox">
+           <widget class="QCheckBox" name="PlotCheapFieldCheckBox">
             <property name="text">
-             <string>Error</string>
+             <string>cheap shim</string>
             </property>
            </widget>
           </item>
@@ -281,16 +292,37 @@
          </widget>
         </item>
         <item>
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>                    before   |   after</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QLabel" name="mean_field_label">
           <property name="text">
-           <string>Mean Field: N/A</string>
+           <string>Mean init: N/A</string>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QLabel" name="inhomogeneity_label">
           <property name="text">
-           <string>Inhomogeneity: N/A</string>
+           <string>Homo init: N/A</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="mean_field_shimmed_label">
+          <property name="text">
+           <string>Mean After: N/A</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="inhomogeneity_after_label">
+          <property name="text">
+           <string>Homo After: N/A</string>
           </property>
          </widget>
         </item>
@@ -338,10 +370,10 @@
              <number>1</number>
             </property>
             <property name="maximum">
-             <number>64</number>
+             <number>20</number>
             </property>
             <property name="value">
-             <number>7</number>
+             <number>15</number>
             </property>
            </widget>
           </item>
@@ -362,13 +394,13 @@
              <number>1</number>
             </property>
             <property name="maximum">
-             <number>64</number>
+             <number>250</number>
             </property>
             <property name="singleStep">
              <number>1</number>
             </property>
             <property name="value">
-             <number>9</number>
+             <number>30</number>
             </property>
            </widget>
           </item>
@@ -395,6 +427,34 @@
          </widget>
         </item>
         <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_10">
+          <item>
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>DSV for opt [%]</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="dsv_opt_spinbox">
+            <property name="maximum">
+             <number>200</number>
+            </property>
+            <property name="value">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="verbose_checkbox">
+          <property name="text">
+           <string>verbose</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="get_shim_positions_btn">
           <property name="text">
            <string>CALCULATE SHIM ROTATIONS</string>
@@ -405,6 +465,13 @@
          <widget class="QPushButton" name="save_rings_button">
           <property name="text">
            <string>Save Rings</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="load_rings_button">
+          <property name="text">
+           <string>Load Rings</string>
           </property>
          </widget>
         </item>

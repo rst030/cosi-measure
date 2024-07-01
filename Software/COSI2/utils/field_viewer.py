@@ -43,6 +43,7 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         # shimming buttons
         self.get_shim_positions_btn.clicked.connect(self.get_shim_positions)
         self.save_rings_button.clicked.connect(self.save_shim_magnets_in_rings)
+        self.load_rings_button.clicked.connect(self.load_shim_magnets_in_rings)
 
         # --- adding the plotter: ---
         # B0M plotter:
@@ -72,6 +73,7 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         self.ShowRingsCheckBox.stateChanged.connect(self.plot_B0M_slice)
         self.PlotSPHCheckBox.stateChanged.connect(self.plot_B0M_slice)
         self.PlotShimFieldCheckBox.stateChanged.connect(self.plot_B0M_slice)
+        self.PlotCheapFieldCheckBox.stateChanged.connect(self.plot_B0M_slice)
         self.PlotErrorFieldCheckBox.stateChanged.connect(self.plot_B0M_slice)
         
 
@@ -184,6 +186,7 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         plot_RAW_flag = self.PlotRawCheckBox.isChecked() # plot the raw field
         plot_SPH_flag = self.PlotSPHCheckBox.isChecked() # plot the decomposed field
         plot_SHIM_FIELD_flag = self.PlotShimFieldCheckBox.isChecked() # plot the shim field
+        plot_CHEAP_FIELD_flag = self.PlotCheapFieldCheckBox.isChecked() # plot the cheap field
         plot_ERROR_FIELD_flag = self.PlotErrorFieldCheckBox.isChecked() # plot the error field
 
 
@@ -196,7 +199,7 @@ class field_viewer_gui(QtWidgets.QMainWindow):
             self.XYspinBox.setMaximum(len(self.b0map.xPts)-1)               
             self.ZXspinBox.setMaximum(len(self.b0map.yPts)-1)           
             self.YZspinBox.setMaximum(len(self.b0map.xPts)-1)       
-        if plot_SHIM_FIELD_flag or plot_ERROR_FIELD_flag:
+        if plot_SHIM_FIELD_flag or plot_ERROR_FIELD_flag or plot_CHEAP_FIELD_flag:
             self.XYspinBox.setMaximum(len(self.b0map.zDim_SPH_fine)-1)               
             self.ZXspinBox.setMaximum(len(self.b0map.yDim_SPH_fine)-1)           
             self.YZspinBox.setMaximum(len(self.b0map.xDim_SPH_fine)-1)
@@ -222,6 +225,7 @@ class field_viewer_gui(QtWidgets.QMainWindow):
                                plot_raw = plot_RAW_flag, 
                                plot_sph = plot_SPH_flag,
                                plot_shim = plot_SHIM_FIELD_flag,
+                               plot_cheap = plot_CHEAP_FIELD_flag,
                                plot_error = plot_ERROR_FIELD_flag)
         
 
@@ -251,8 +255,8 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         self.YZspinBox.valueChanged.connect(self.plot_B0M_slice)
         
         # show field inmomogeneity and mean field in the labels
-        self.mean_field_label.setText('Mean field: %.3f [mT]'%float(self.b0map.mean_field))
-        self.inhomogeneity_label.setText('Ihmomogeneity: %.0f [ppm]'%float(self.b0map.homogeneity))
+        self.mean_field_label.setText('Init Mean: %.3f [mT]'%float(self.b0map.mean_field))
+        self.inhomogeneity_label.setText('Init Homo: %.0f [ppm]'%float(self.b0map.homogeneity))
         
         
         #self.plotter.plotB0Map(self.b0map,slice_number=0,coordinate_system='magnet')
@@ -298,6 +302,26 @@ class field_viewer_gui(QtWidgets.QMainWindow):
             print(e)
 
 
+    def load_shim_magnets_in_rings(self):
+        print('open filedialog, locate txt file, import ring locations and rotations')
+        try:
+            filename_to_import_rings_data_from, _ = QtWidgets.QFileDialog.getOpenFileName(self, caption="Select rings data in txt format",
+                                                                   directory=self.workingFolder,
+                                                                   filter="csv Files (*.txt)")
+            self.workingFolder = os.path.split(os.path.abspath(filename_to_import_rings_data_from))[0]
+
+        except:
+            print('no filename given, do it again.')
+            return 0
+        
+        # import b0map as an object
+        if self.b0map is not None:
+            print('updating shim magnets rotations from file')
+            self.b0map.update_magnet_rotations(fname = filename_to_import_rings_data_from)
+
+
+
+
 
     def export_separately(self):
         print('file dialog for exporting two files for Tom''s script')
@@ -337,8 +361,8 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         print('before that, even, plot the shim field.')
         print('First put all magnets in the rings with their b0 along Y.')
         print('and draw magnets in rings with their direcrion vectors.')
-        self.b0map.get_shim_positions()
-        
-              
+        self.b0map.get_shim_positions(dsv_for_opt_percent = int(self.dsv_opt_spinbox.value()),verbose = self.verbose_checkbox.isChecked())
+        self.mean_field_shimmed_label.setText('Mean After: %.3f [mT]'%float(self.b0map.mean_field_shimmed))
+        self.inhomogeneity_after_label.setText('Homo After: %.0f [ppm]'%float(self.b0map.homogeneity_shimmed))
 
         

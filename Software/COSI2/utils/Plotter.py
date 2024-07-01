@@ -429,7 +429,7 @@ class PlotterCanvas(FigureCanvas):
             print('2d plotter is going nuts')    
             
     
-    def plotB0Map(self,b0map_object:b0.b0,slice_number_xy=-1,slice_number_zx=-1,slice_number_yz=-1, show_sphere_radius = None, show_magnet = None,show_rings = None, coordinate_system=None, plot_raw = False, plot_sph = False, plot_shim = False, plot_error = False):
+    def plotB0Map(self,b0map_object:b0.b0,slice_number_xy=-1,slice_number_zx=-1,slice_number_yz=-1, show_sphere_radius = None, show_magnet = None,show_rings = None, coordinate_system=None, plot_raw = False, plot_sph = False, plot_shim = False, plot_cheap=False, plot_error = False):
         # plot only one slice of data. Slice at the middle of the scan
         self.axes.cla()
        
@@ -596,27 +596,30 @@ class PlotterCanvas(FigureCanvas):
             
 
             
-        if plot_shim or plot_error:
+        if plot_shim or plot_error or plot_cheap:
             # plot the interpolated field (SPH), contour plots with a color map
             self.update_plotter()
-            print('getting the SHIM field from the b0 object')
-            minval_of_b0 = np.nanmin(b0map_object.shimField[:,:,:]) if plot_shim else np.nanmin(b0map_object.errorField[:,:,:])
-            maxval_of_b0 = np.nanmax(b0map_object.shimField[:,:,:]) if plot_shim else np.nanmax(b0map_object.errorField[:,:,:])
-    
+            print('getting the field map from the b0 object')    
             
+            if plot_shim:
+                fieldmap = b0map_object.shimField
+                print('--- SHIM plotter is called --- ')
+            if plot_error:
+                fieldmap = b0map_object.errorField
+                print('--- ERROR plotter is called --- ')
+            if plot_cheap:
+                fieldmap = b0map_object.cheapField
+                print('--- CHEAP plotter is called --- ')
+
+            minval_of_b0 = np.nanmin(fieldmap[:,:,:])
+            maxval_of_b0 = np.nanmax(fieldmap[:,:,:])
             print('min b0 sph: %.3f mT'%minval_of_b0)
             print('max b0 sph: %.3f mT'%maxval_of_b0)
-            if plot_shim:
-                print('--- SHIM plotter is called --- ')
-            else:
-                print('--- ERROR plotter is called --- ')
             
             slice_color_map='viridis'
             
             nlevels = 32
             ctrf = None
-            
-            fieldmap = b0map_object.shimField if plot_shim else b0map_object.errorField
             
             if slice_number_xy >= 0:
                 # if slice number xy given, plot Z slice
@@ -671,7 +674,7 @@ class PlotterCanvas(FigureCanvas):
                     tickStep = 0.05
                     roundDigits = 1
                 if plot_shim:
-                    tickStep = 0.002
+                    tickStep = 0.01
                     roundDigits = 3
                 
                 self.colorbar_object.set_ticks(np.arange(np.round(minval_of_b0,roundDigits),maxval_of_b0,tickStep))
