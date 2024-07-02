@@ -26,12 +26,13 @@ class shimming_magnet():
         print('magnet created, dipole points to ',self.dipole_vector/np.linalg.norm(self.dipole_vector))
 
     def update_rotation(self,rotation_yz):
-        self.dipole_vector = self.mu*self.dip_mom*np.array([0,np.cos(rotation_yz),np.sin(rotation_yz)]) # dipole moment in YZ plane!, initially - along Y
+        self.dipole_vector = self.mu*self.dip_mom*np.array([0,np.sin(rotation_yz),np.cos(rotation_yz)]) # dipole moment in YZ plane!, initially - along Y
         
     def render_field(self,grid):
         '''calculate the magnetic field of the magnet on the coordinate grin grid, leave only values within sphere of d=dsv mm'''
 
         self.update_rotation(self.rotation_yz)
+
 
         mx = self.dipole_vector[0]
         my = self.dipole_vector[1]
@@ -53,6 +54,8 @@ class shimming_magnet():
         self.B0[:,:,:,0] = 0#np.divide(np.multiply(x,vec_dot_dip),rvec**5)# - np.divide(mx,rvec**3)
         self.B0[:,:,:,1] = 1e3*np.divide(np.multiply(self.y,vec_dot_dip),self.rvec5) - np.divide(my,self.rvec3)
         self.B0[:,:,:,2] = 1e3*np.divide(np.multiply(self.z,vec_dot_dip),self.rvec5) - np.divide(mz,self.rvec3)
+        
+        self.Brot = self.B0[:,:,:,2]*0
     
         return self.B0
         #self.B0 *= 7 # temp. 1 strong instead of 7 weak

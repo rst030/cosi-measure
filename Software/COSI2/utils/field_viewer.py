@@ -44,6 +44,9 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         self.get_shim_positions_btn.clicked.connect(self.get_shim_positions)
         self.save_rings_button.clicked.connect(self.save_shim_magnets_in_rings)
         self.load_rings_button.clicked.connect(self.load_shim_magnets_in_rings)
+        
+        # data export for echo
+        self.echo_export_button.clicked.connect(self.export_to_echo)
 
         # --- adding the plotter: ---
         # B0M plotter:
@@ -282,6 +285,12 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         self.b0map.make_cylindrical_anomaly_along_x(yz_of_the_cylinder_center=[-50,120],radius_of_cylinder=70,intensity=47.1, bg = 47)
         self.b0map.saveAsCsv_for_comsol(new_csv_path)
         #self.b0map.path.saveAs(new_csv_path)
+
+    def export_to_echo(self):
+        print('exporting files for ECHO')
+        self.b0map.save_for_echo()
+        print('data for ECHO exported')
+
 
     def save_shim_magnets_in_rings(self):
         print('file dialog for exporting the ring files for Freecad')
