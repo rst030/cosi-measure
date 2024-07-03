@@ -241,11 +241,11 @@ class PlotterCanvas(FigureCanvas):
         self.axes.cla()
         slice_color_map='viridis'
         
+        minval_of_b0 = np.nanmin(b0map_object.b0Data[:,:,:,0])
+        maxval_of_b0 = np.nanmax(b0map_object.b0Data[:,:,:,0])
         
         if plot_raw:
-        
-            minval_of_b0 = np.nanmin(b0map_object.b0Data[:,:,:,0])
-            maxval_of_b0 = np.nanmax(b0map_object.b0Data[:,:,:,0])
+    
             
             if slice_number_xy >= 0:
                 #x, y = np.meshgrid(b0map_object.xPts, b0map_object.yPts)
@@ -292,8 +292,8 @@ class PlotterCanvas(FigureCanvas):
                 self.update_plotter()
                 
         if plot_sph:
-            minval_of_b0 = np.nanmin(b0map_object.interpolatedField[:,:,:])
-            maxval_of_b0 = np.nanmax(b0map_object.interpolatedField[:,:,:])
+            #minval_of_b0 = np.nanmin(b0map_object.interpolatedField[:,:,:])
+            #maxval_of_b0 = np.nanmax(b0map_object.interpolatedField[:,:,:])
             
             if slice_number_xy >= 0:
                 #x, y = np.meshgrid(b0map_object.xPts, b0map_object.yPts)
@@ -343,10 +343,14 @@ class PlotterCanvas(FigureCanvas):
             
             fieldmap = b0map_object.shimField if plot_shim else b0map_object.errorField
             typestr = 'SHIM' if plot_shim else 'ERROR'
-            
-            minval_of_b0 = np.nanmin(fieldmap[:,:,:])
-            maxval_of_b0 = np.nanmax(fieldmap[:,:,:])
-            
+            if plot_shim:
+                minval_of_b0 = -0.4
+                maxval_of_b0 = 0.4
+            if plot_error:
+                minval_of_b0 = np.nanmin(b0map_object.b0Data[:,:,:,0]) - np.nanmean(b0map_object.b0Data[:,:,:,0]) + np.nanmean(b0map_object.errorField[:,:,:])
+                maxval_of_b0 = np.nanmax(b0map_object.b0Data[:,:,:,0]) - np.nanmean(b0map_object.b0Data[:,:,:,0]) + np.nanmean(b0map_object.errorField[:,:,:])
+                
+                    
             if slice_number_xy >= 0:
                 #x, y = np.meshgrid(b0map_object.xPts, b0map_object.yPts)
                 z = b0map_object.xDim_SPH_fine[slice_number_xy]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
@@ -485,11 +489,13 @@ class PlotterCanvas(FigureCanvas):
             
             self.update_plotter()
             
+            
+        minval_of_b0 = np.nanmin(b0map_object.b0Data[:,:,:,0])
+        maxval_of_b0 = np.nanmax(b0map_object.b0Data[:,:,:,0])
         # plot the measured field, contour plots with a color map
         if plot_raw: # if didnt tick or unticked the plot sph checkbox
             print('PLOTTING RAW DATA')
-            minval_of_b0 = np.nanmin(b0map_object.b0Data[:,:,:,0])
-            maxval_of_b0 = np.nanmax(b0map_object.b0Data[:,:,:,0])
+
             
             print('--- RAW plotter is called --- ')
             
@@ -556,8 +562,8 @@ class PlotterCanvas(FigureCanvas):
 
             self.update_plotter()
             print('getting the sph decomposed field from the b0 object')
-            minval_of_b0 = np.nanmin(b0map_object.decomposedField[:,:,:])
-            maxval_of_b0 = np.nanmax(b0map_object.decomposedField[:,:,:])
+            #minval_of_b0 = np.nanmin(b0map_object.decomposedField[:,:,:])
+            #maxval_of_b0 = np.nanmax(b0map_object.decomposedField[:,:,:])
             print('min b0 sph: %.3f mT'%minval_of_b0)
             print('max b0 sph: %.3f mT'%maxval_of_b0)
             print('--- SPH plotter is called --- ')
@@ -611,8 +617,8 @@ class PlotterCanvas(FigureCanvas):
                 fieldmap = b0map_object.cheapField
                 print('--- CHEAP plotter is called --- ')
 
-            minval_of_b0 = np.nanmin(fieldmap[:,:,:])
-            maxval_of_b0 = np.nanmax(fieldmap[:,:,:])
+            #minval_of_b0 = np.nanmin(fieldmap[:,:,:])
+            #maxval_of_b0 = np.nanmax(fieldmap[:,:,:])
             print('min b0 sph: %.3f mT'%minval_of_b0)
             print('max b0 sph: %.3f mT'%maxval_of_b0)
             
