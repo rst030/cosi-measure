@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1085</width>
-    <height>725</height>
+    <height>895</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -462,6 +462,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="echo_export_button">
+          <property name="text">
+           <string>export to ECHO</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="save_rings_button">
           <property name="text">
            <string>Save Rings</string>
@@ -596,7 +603,7 @@
      <x>0</x>
      <y>0</y>
      <width>1085</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
