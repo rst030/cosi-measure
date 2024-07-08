@@ -85,14 +85,44 @@ class shimming_magnet():
         return dip_mom
     
     
+    def singleMagnet(self,position,grid):
+        dip_mom = self.magnetization(self.bRem,self.magSizeOuter) 
+        mu = 1e-7
+        dip_vec = mu*np.array([0,dip_mom,0]) # dipole moment in YZ plane!, initially - along Y
+        
+        x = grid[0]*1e-3-position[0]
+        y = grid[1]*1e-3-position[1]
+        z = grid[2]*1e-3-position[2]
+
+        mx = dip_vec[0]
+        my = dip_vec[1]
+        mz = dip_vec[2]
+
+        rvec = np.sqrt(np.square(x)+np.square(y)+np.square(z))
+        vec_dot_dip = 3*(np.multiply(mx,x) + np.multiply(my,y) + np.multiply(mz,z))
+
+        B0 = np.zeros((np.shape(x)+(3,)),dtype = np.float32)
+
+
+        B0[:,:,:,0] = np.divide(np.multiply(x,vec_dot_dip),rvec**5)# - np.divide(mx,rvec**3)
+        B0[:,:,:,1] = np.divide(np.multiply(y,vec_dot_dip),rvec**5) - np.divide(my,rvec**3)
+        B0[:,:,:,2] = np.divide(np.multiply(z,vec_dot_dip),rvec**5) - np.divide(mz,rvec**3)
+
+        self.B0 = B0
+
+        return B0
+
+
     
-    def singleMagnet(position, dipoleMoment, simDimensions, resolution, plotFields=False):
+    def OLD_singleMagnet(self,position, dipoleMoment, simDimensions, resolution, plotFields=False):
         #based on the dipole approximation
         #create mesh coordinates
+        print('HALLO?!')
+        print(position)
     
         X = np.linspace(-simDimensions[0]/2 - position[0], simDimensions[0]/2 - position[0] , int(simDimensions[0]*resolution)+1, dtype=np.float32)
-        Y = np.linspace(-simDimensions[1]/2 - position[1], simDimensions[1]/2 - position[1] , int(simDimensions[1]*resolution)+1, dtype=np.float32)
-        Z = np.linspace(-simDimensions[2]/2 - position[2], simDimensions[2]/2 - position[2] , int(simDimensions[2]*resolution)+1, dtype=np.float32)
+        Z = np.linspace(-simDimensions[1]/2 - position[1], simDimensions[1]/2 - position[1] , int(simDimensions[1]*resolution)+1, dtype=np.float32)
+        Y = np.linspace(-simDimensions[2]/2 - position[2], simDimensions[2]/2 - position[2] , int(simDimensions[2]*resolution)+1, dtype=np.float32)
         
         print('x vector length in single magnet simulation: ',len(X))
         
@@ -114,14 +144,15 @@ class shimming_magnet():
 
         B0[:,:,:,0] = np.divide(np.multiply(x,vec_dot_dip),rvec**5)# - np.divide(mx,rvec**3)
         B0[:,:,:,1] = np.divide(np.multiply(y,vec_dot_dip),rvec**5) - np.divide(my,rvec**3)
-        B0[:,:,:,2] = np.divide(np.multiply(z,vec_dot_dip),rvec**5) - np.divide(mz,rvec**3)
+        B0[:,:,:,2] = np.divide(np.multiply(z,vec_dot_dip),rvec**5) - np.divide(mz,rvec**3) #1/(x**2+y**2+z**2)#
+
         
 
         if plotFields:
             # plot the field of one shim magnet in the YZ plane 
             from matplotlib import pyplot as plt
             ax = plt.figure().add_subplot(projection='3d')
-            ax.plot_surface(y2d,z2d,B0[int(len(X)/2),:,:,2],cmap='coolwarm',clim=[-1e-5,1e-5])
+            ax.plot_surface(y2d,z2d,B0[int(len(X)/2),:,:,2],cmap='coolwarm')#,clim=[-1e-5,1e-5])
             ax.set_xlabel('Y')
             ax.set_ylabel('Z')
             
@@ -129,6 +160,7 @@ class shimming_magnet():
 
             plt.show()
         
-        
+        self.grid = [x,y,z]
+        self.field = B0
 
         return B0

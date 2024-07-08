@@ -558,7 +558,7 @@ class b0():
         #calculate the field from the spherical harmonic decomposition
         decomposedField = np.matmul(spherHarm3D, coeffs)*sphereMask
 
-        print("Inhomogeneity of fit: %.0f ppm" %(abs(1e6*(np.max(decomposedField) - np.min(decomposedField))/np.mean(decomposedField))))
+        print("Inhomogeneity of fit: %.0f ppm" %(abs(1e6*(np.nanmax(decomposedField) - np.nanmin(decomposedField))/np.nanmean(decomposedField))))
         self.interpolatedField = decomposedField
         DecomposedDataNumpyFilename = 'B0_interpolated.npy'
         saveTmpData(filename = DecomposedDataNumpyFilename,numpyData=self.interpolatedField) 
@@ -736,7 +736,7 @@ class b0():
         else:
             initialGuess = np.zeros(int(np.size(maskedFields,-1)/2))
 
-        lsqData = least_squares(dataFitting, initialGuess, ftol=0, xtol=0,max_nfev=maxIter, verbose=2,bounds = (initialGuess*0,initialGuess*0+np.pi*2))
+        lsqData = least_squares(dataFitting, initialGuess, ftol=0, xtol=1e-12,max_nfev=maxIter, verbose=2,bounds = (initialGuess*0,initialGuess*0+np.pi*2))
         
         optimized_rotation_vector = lsqData.x
         self.vector_of_magnet_rotations = optimized_rotation_vector
