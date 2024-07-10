@@ -11,7 +11,7 @@ from scipy.optimize import least_squares
 from scipy.linalg import lstsq
 
 from shimming.scripts import b0V5
-
+from utils import shimming_magnet
 
 
 
@@ -135,7 +135,8 @@ class b0():
 
         if len(self.path.r) == len(self.fieldDataAlongPath[:,0]):
             self.reorder_field_to_cubic_grid() # make a cubic grid with xPts, yPts, zPts and define B0 on that
-    
+        else:
+            print('LEN of PATH and DATA', len(self.path.r), '   ',len(self.fieldDataAlongPath[:,0]))
         
     # ----------------- artificial data generation ----------------- 
     def make_cylindrical_anomaly_along_x(self,yz_of_the_cylinder_center,radius_of_cylinder,intensity,bg):
@@ -334,11 +335,18 @@ class b0():
     def parse_field_of_B0_file(self,field_lines):
         #-2.842000 48.057000 -2.319000 48.197000
         self.fieldDataAlongPath = np.zeros((len(field_lines),4))
+        
         for idx, line in enumerate(field_lines):
-            b0x = float(line.split(' ')[0])
-            b0y = float(line.split(' ')[1])
-            b0z = float(line.split(' ')[2])
-            b0abs = float(line.split(' ')[3])
+            try:
+                b0x = float(line.split(' ')[0])
+                b0y = float(line.split(' ')[1])
+                b0z = float(line.split(' ')[2])
+                b0abs = float(line.split(' ')[3])
+            except:
+                b0x = float(line.split(',')[0])
+                b0y = float(line.split(',')[1])
+                b0z = float(line.split(',')[2])
+                b0abs = float(line.split(',')[3])
 
             if b0abs == 0 :# sometimes gaussmeter doesnt give the vector
                 b0abs = np.sqrt(b0x**2+b0y**2+b0z**2)
@@ -939,9 +947,16 @@ class b0():
                 vec_mag_rots.append(rot)
         file.close()
         self.vector_of_magnet_rotations = np.asarray(vec_mag_rots)
-        
+        if self.shim_magnets is not None or self.shim_magnets == []:
+            for idx,magnet in enumerate(self.shim_magnets):
+                magnet.rotation_yz = self.vector_of_magnet_rotations[idx]
+                magnet.render_field(self.coord_grid_fine)            
+        else:
+            self.shim_magnets = []
             
-        
+            for idx,angle in enumerate(self.vector_of_magnet_rotations):
+                magnet = shimming_magnet.shimming_magnet(position=[0,0,0],rotation_yz=angle)
+                self.shim_magnets.append(magnet)              
         
         
 

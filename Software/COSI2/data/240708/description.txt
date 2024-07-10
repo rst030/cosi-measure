@@ -1,0 +1,10 @@
+scan of the Hamburg magnet v2.0
+Berk,s cosi
+center
+[244.39109361 210.05719149 310.15848617]
+
+
+
+R130mm bal
+245.5,140.6,179,130
+

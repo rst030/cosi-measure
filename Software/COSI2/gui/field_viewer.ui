@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1085</width>
-    <height>895</height>
+    <width>1093</width>
+    <height>912</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -509,6 +509,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="load_button">
+          <property name="text">
+           <string>Load Berk</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="coordinate_transform_btn">
           <property name="maximumSize">
            <size>
@@ -602,7 +609,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1085</width>
+     <width>1093</width>
      <height>22</height>
     </rect>
    </property>

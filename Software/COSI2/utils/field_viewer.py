@@ -32,7 +32,7 @@ class field_viewer_gui(QtWidgets.QMainWindow):
 
         # binding methods to buttons:
         self.save_button.clicked.connect(self.save_rotated_path_in_a_csv_file)  # Remember to code the method in the class.
-        #self.load_button.clicked.connect(self.load_b0)  # old import, for COSI v.1
+        self.load_button.clicked.connect(self.load_b0)  # old import, for COSI v.1
         self.load_csv_button.clicked.connect(self.load_csv)  # Remember to code the method in the class.
         self.show_2d_slice_btn.clicked.connect(self.plot_B0M_slice_2d)
         self.export_for_Tom_btn.clicked.connect(self.export_separately)
