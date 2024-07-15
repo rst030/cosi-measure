@@ -326,7 +326,8 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         # import b0map as an object
         if self.b0map is not None:
             print('updating shim magnets rotations from file')
-            self.b0map.update_magnet_rotations(fname = filename_to_import_rings_data_from)
+            #self.b0map.update_magnet_rotations(fname = filename_to_import_rings_data_from)
+            self.b0map.load_shim_magnets(fname = filename_to_import_rings_data_from)
 
 
 
@@ -349,12 +350,20 @@ class field_viewer_gui(QtWidgets.QMainWindow):
 
     # spherical harmonic things
     def fit_sph(self):
-        order = int(self.sph_spinbox.value())
-        print('FIT SPHERICAL HARMONICS up to %d TO THE DATA,\n DATA MUST BE IN THE MAGNET COORDINATES'%order)
+        # spherical decomposition
         diameter_of_sphere = self.b0map.path.radius*2
-        self.b0map.fitSphericalHarmonics(maxorder=order,dsv=diameter_of_sphere,resol=3)
+        order = int(self.sph_spinbox.value())        
+
+        resolution_of_sph_decomp = 10 # mm - standard map step size
+        print(diameter_of_sphere)
+        self.b0map.fitSphericalHarmonics(maxorder=order,dsv=diameter_of_sphere,resol=resolution_of_sph_decomp)
+
         resolution_of_sph_fit=int(self.resolution_SPH_spinbox.value())
+        print('interpolating field with sph order %d, resol %.0f mm'%(order,resolution_of_sph_fit))
+
         self.b0map.interpolateField(resol=resolution_of_sph_fit,dsv=diameter_of_sphere)
+        
+        
         print('spherical harmonic decomposition completed. coefficients extracted.')
         print('now perform field interpolation')
         print('You can now plot decomposed sph by ticking the SPH checkbox.')

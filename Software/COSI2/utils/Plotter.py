@@ -344,8 +344,8 @@ class PlotterCanvas(FigureCanvas):
             fieldmap = b0map_object.shimField if plot_shim else b0map_object.errorField
             typestr = 'SHIM' if plot_shim else 'ERROR'
             if plot_shim:
-                minval_of_b0 = -0.4
-                maxval_of_b0 = 0.4
+                minval_of_b0 = np.nanmin(fieldmap)
+                maxval_of_b0 = np.nanmax(fieldmap)
             if plot_error:
                 minval_of_b0 = np.nanmin(b0map_object.b0Data[:,:,:,0]) - np.nanmean(b0map_object.b0Data[:,:,:,0]) + np.nanmean(b0map_object.errorField[:,:,:])
                 maxval_of_b0 = np.nanmax(b0map_object.b0Data[:,:,:,0]) - np.nanmean(b0map_object.b0Data[:,:,:,0]) + np.nanmean(b0map_object.errorField[:,:,:])
@@ -608,6 +608,7 @@ class PlotterCanvas(FigureCanvas):
             print('getting the field map from the b0 object')    
             
             if plot_shim:
+                b0map_object.render_fair_shim_field()
                 fieldmap = b0map_object.shimField
                 print('--- SHIM plotter is called --- ')
             if plot_error:
@@ -617,10 +618,10 @@ class PlotterCanvas(FigureCanvas):
                 fieldmap = b0map_object.cheapField
                 print('--- CHEAP plotter is called --- ')
 
-            #minval_of_b0 = np.nanmin(fieldmap[:,:,:])
-            #maxval_of_b0 = np.nanmax(fieldmap[:,:,:])
-            print('min b0 sph: %.3f mT'%minval_of_b0)
-            print('max b0 sph: %.3f mT'%maxval_of_b0)
+            minval_of_b0 = np.nanmin(fieldmap[:,:,:])
+            maxval_of_b0 = np.nanmax(fieldmap[:,:,:])
+            print('min b0 shim: %.3f mT'%minval_of_b0)
+            print('max b0 shim: %.3f mT'%maxval_of_b0)
             
             slice_color_map='viridis'
             

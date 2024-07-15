@@ -41,8 +41,8 @@ class shimming_magnet():
         
         x = grid[0]*1e-3-self.position[0]
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        z = grid[1]*1e-3-self.position[1]
-        y = grid[2]*1e-3-self.position[2]
+        y = grid[1]*1e-3-self.position[1]
+        z = grid[2]*1e-3-self.position[2]
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         mx = dip_vec[0]

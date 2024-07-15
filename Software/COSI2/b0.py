@@ -68,7 +68,7 @@ class b0():
     filename = 'Dummy B0 map'
     
     b0Data = None # tasty, berry, what we need. 3D array. ordered. sliceable. fittable.
-    
+    shim_magnets = None
     
     interpolatedField = []
     errorField = []
@@ -572,8 +572,54 @@ class b0():
         saveTmpData(filename = DecomposedDataNumpyFilename,numpyData=self.interpolatedField) 
             
         
+    def load_shim_magnets(self,fname: str):
+        print('TODO: load the positions and rotations of the shim magnets.')
+        print('opening file %s'%fname)
+        #x[m],y[m],z[m],dirx[m^2A],diry[m^2A],dirz[m^2A],rotation_xy[rad]
+        #0.0000,0.2721,-0.0461,0.0000e+00,6.2104e-09,2.2358e-08,1.2999
+        print('save magnet positions and rotations to the file')
+        positions = []
+        rotations = []
+        
+        with open(fname, 'r') as file:
+            lines = file.readlines()
+            for idx,line in enumerate(lines):
+                if idx>0:
+                    x = float(line.split(',')[0])
+                    y = float(line.split(',')[1])
+                    z = float(line.split(',')[2])
+                    alpha = float(line.split(',')[-1])
+                    position = [x,y,z]
+                    rotation = alpha
+                    print('pos=',position)
+                    print('rotation=',rotation)
+                    positions.append(position)
+                    rotations.append(rotation)
 
+        file.close()
+        print('imported shim magnets rotations/positions from *txt file')
+        print('creating the shim magnets')
+        print('positions: ',len(positions))
+        print('rotations: ',len(rotations))
+        
+        self.shim_magnets = []
+        for idx,position in enumerate(positions):
+            magnet = shimming_magnet.shimming_magnet(position=positions[idx],rotation_yz=rotations[idx])
+            self.shim_magnets.append(magnet)
+        print(len(self.shim_magnets),' shim magnets generated.')        
+        print('TODO: render the fields')
+        
 
+    def render_fair_shim_field(self):
+        if self.shim_magnets is not None:
+            print('the shim magnets are loaded. rendering field.')
+            self.shimField = self.coord_grid_fine[0]*0
+            for magnet in self.shim_magnets:
+                magnet.render_field(grid=self.coord_grid_fine)
+                self.shimField+=magnet.B0[:,:,:,2]
+        else:
+            print('load shim nmagnets first!')
+            
     
     def get_shim_positions(self,dsv_for_opt_percent:int,verbose:bool):
         # get the magnets. All magnets. Plot the initial field of all magnets oriented along Y axis.
