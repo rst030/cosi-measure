@@ -32,7 +32,7 @@ class field_viewer_gui(QtWidgets.QMainWindow):
 
         # binding methods to buttons:
         self.save_button.clicked.connect(self.save_rotated_path_in_a_csv_file)  # Remember to code the method in the class.
-        self.load_button.clicked.connect(self.load_b0)  # Remember to code the method in the class.
+        self.load_button.clicked.connect(self.load_b0)  # old import, for COSI v.1
         self.load_csv_button.clicked.connect(self.load_csv)  # Remember to code the method in the class.
         self.show_2d_slice_btn.clicked.connect(self.plot_B0M_slice_2d)
         self.export_for_Tom_btn.clicked.connect(self.export_separately)
@@ -40,8 +40,13 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         # data transformation buttons
         self.SPH_button.clicked.connect(self.fit_sph)
         
-        # shimming button
+        # shimming buttons
         self.get_shim_positions_btn.clicked.connect(self.get_shim_positions)
+        self.save_rings_button.clicked.connect(self.save_shim_magnets_in_rings)
+        self.load_rings_button.clicked.connect(self.load_shim_magnets_in_rings)
+        
+        # data export for echo
+        self.echo_export_button.clicked.connect(self.export_to_echo)
 
         # --- adding the plotter: ---
         # B0M plotter:
@@ -70,6 +75,10 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         self.ShowMagnetCheckBox.stateChanged.connect(self.plot_B0M_slice)
         self.ShowRingsCheckBox.stateChanged.connect(self.plot_B0M_slice)
         self.PlotSPHCheckBox.stateChanged.connect(self.plot_B0M_slice)
+        self.PlotShimFieldCheckBox.stateChanged.connect(self.plot_B0M_slice)
+        self.PlotCheapFieldCheckBox.stateChanged.connect(self.plot_B0M_slice)
+        self.PlotErrorFieldCheckBox.stateChanged.connect(self.plot_B0M_slice)
+        
 
         
     def load_csv(self):
@@ -134,6 +143,12 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         plot_ZX_sliceFlag = self.ZXcheckBox.isChecked()
         plot_YZ_sliceFlag = self.YZcheckBox.isChecked()
         
+        plot_RAW_flag = self.PlotRawCheckBox.isChecked() # plot the raw field
+        plot_SPH_flag = self.PlotSPHCheckBox.isChecked() # plot the decomposed field
+        plot_SHIM_FIELD_flag = self.PlotShimFieldCheckBox.isChecked() # plot the shim field
+        plot_ERROR_FIELD_flag = self.PlotErrorFieldCheckBox.isChecked() # plot the error field
+        
+        
         XY_slice_number = int(self.XYspinBox.value()) if plot_XY_sliceFlag else -1
         ZX_slice_number = int(self.ZXspinBox.value()) if plot_ZX_sliceFlag else -1
         YZ_slice_number = int(self.YZspinBox.value()) if plot_YZ_sliceFlag else -1
@@ -151,8 +166,14 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         if numticks == 0 or numticks > 1:
             print('select only one plane!')
             return 0
-        self.plotter2d.plotB0slice(b0map_object=self.b0map, 
-                        slice_number_xy=XY_slice_number,slice_number_zx=ZX_slice_number,slice_number_yz=YZ_slice_number)
+        self.plotter2d.plotB0slice_2D(b0map_object=self.b0map, 
+                        slice_number_xy=XY_slice_number,
+                        slice_number_zx=ZX_slice_number,
+                        slice_number_yz=YZ_slice_number, 
+                        plot_raw=plot_RAW_flag, 
+                        plot_sph=plot_SPH_flag,
+                        plot_shim = plot_SHIM_FIELD_flag, 
+                        plot_error=plot_ERROR_FIELD_flag)
 
         
 
@@ -164,16 +185,29 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         plot_sphere_flag = self.ShowSphereCheckBox.isChecked()
         plot_magnet_flag = self.ShowMagnetCheckBox.isChecked()
         plot_rings_flag = self.ShowRingsCheckBox.isChecked()
+        
+        plot_RAW_flag = self.PlotRawCheckBox.isChecked() # plot the raw field
         plot_SPH_flag = self.PlotSPHCheckBox.isChecked() # plot the decomposed field
+        plot_SHIM_FIELD_flag = self.PlotShimFieldCheckBox.isChecked() # plot the shim field
+        plot_CHEAP_FIELD_flag = self.PlotCheapFieldCheckBox.isChecked() # plot the cheap field
+        plot_ERROR_FIELD_flag = self.PlotErrorFieldCheckBox.isChecked() # plot the error field
+
+
         
         if plot_SPH_flag:
             self.XYspinBox.setMaximum(len(self.b0map.zDim_SPH_fine)-1)               
             self.ZXspinBox.setMaximum(len(self.b0map.yDim_SPH_fine)-1)           
             self.YZspinBox.setMaximum(len(self.b0map.xDim_SPH_fine)-1)       
-        else:
+        if plot_RAW_flag:
             self.XYspinBox.setMaximum(len(self.b0map.xPts)-1)               
             self.ZXspinBox.setMaximum(len(self.b0map.yPts)-1)           
             self.YZspinBox.setMaximum(len(self.b0map.xPts)-1)       
+        if plot_SHIM_FIELD_flag or plot_ERROR_FIELD_flag or plot_CHEAP_FIELD_flag:
+            self.XYspinBox.setMaximum(len(self.b0map.zDim_SPH_fine)-1)               
+            self.ZXspinBox.setMaximum(len(self.b0map.yDim_SPH_fine)-1)           
+            self.YZspinBox.setMaximum(len(self.b0map.xDim_SPH_fine)-1)
+
+
         
         XY_slice_number = int(self.XYspinBox.value()) if plot_XY_sliceFlag else -1
         ZX_slice_number = int(self.ZXspinBox.value()) if plot_ZX_sliceFlag else -1
@@ -184,9 +218,18 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         
         # plot the slices according to the checked boxes
         self.plotter.plotB0Map(b0map_object=self.b0map, 
-                               slice_number_xy=XY_slice_number,slice_number_zx=ZX_slice_number,slice_number_yz=YZ_slice_number, 
-                               show_sphere_radius=showSphRad,show_magnet = showMagnet,
-                               show_rings = showRings, coordinate_system='magnet',plot_sph = plot_SPH_flag)
+                               slice_number_xy=XY_slice_number,
+                               slice_number_zx=ZX_slice_number,
+                               slice_number_yz=YZ_slice_number, 
+                               show_sphere_radius=showSphRad,
+                               show_magnet = showMagnet,
+                               show_rings = showRings, 
+                               coordinate_system='magnet',
+                               plot_raw = plot_RAW_flag, 
+                               plot_sph = plot_SPH_flag,
+                               plot_shim = plot_SHIM_FIELD_flag,
+                               plot_cheap = plot_CHEAP_FIELD_flag,
+                               plot_error = plot_ERROR_FIELD_flag)
         
 
 
@@ -215,8 +258,8 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         self.YZspinBox.valueChanged.connect(self.plot_B0M_slice)
         
         # show field inmomogeneity and mean field in the labels
-        self.mean_field_label.setText('Mean field: %.3f [mT]'%float(self.b0map.mean_field))
-        self.inhomogeneity_label.setText('Ihmomogeneity: %.0f [ppm]'%float(self.b0map.homogeneity))
+        self.mean_field_label.setText('Init Mean: %.3f [mT]'%float(self.b0map.mean_field))
+        self.inhomogeneity_label.setText('Init Homo: %.0f [ppm]'%float(self.b0map.homogeneity))
         
         
         #self.plotter.plotB0Map(self.b0map,slice_number=0,coordinate_system='magnet')
@@ -243,6 +286,52 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         self.b0map.saveAsCsv_for_comsol(new_csv_path)
         #self.b0map.path.saveAs(new_csv_path)
 
+    def export_to_echo(self):
+        print('exporting files for ECHO')
+        self.b0map.save_for_echo()
+        print('data for ECHO exported')
+
+
+    def save_shim_magnets_in_rings(self):
+        print('file dialog for exporting the ring files for Freecad')
+        # open file dialog
+        try:
+            ring_filename, _ = QtWidgets.QFileDialog.getSaveFileName(self, caption="file name for shim magnets export",
+                                                                   directory=self.workingFolder,
+                                                                   filter="text files (*.txt)")
+            self.workingFolder = os.path.split(os.path.abspath(ring_filename))[0]
+
+        except:
+            print('no filename given, do it again.')
+            return 0
+
+        try:
+            self.b0map.save_rings(ring_filename)
+        except Exception as e:
+            print(e)
+
+
+    def load_shim_magnets_in_rings(self):
+        print('open filedialog, locate txt file, import ring locations and rotations')
+        try:
+            filename_to_import_rings_data_from, _ = QtWidgets.QFileDialog.getOpenFileName(self, caption="Select rings data in txt format",
+                                                                   directory=self.workingFolder,
+                                                                   filter="csv Files (*.txt)")
+            self.workingFolder = os.path.split(os.path.abspath(filename_to_import_rings_data_from))[0]
+
+        except:
+            print('no filename given, do it again.')
+            return 0
+        
+        # import b0map as an object
+        if self.b0map is not None:
+            print('updating shim magnets rotations from file')
+            #self.b0map.update_magnet_rotations(fname = filename_to_import_rings_data_from)
+            self.b0map.load_shim_magnets(fname = filename_to_import_rings_data_from)
+
+
+
+
 
     def export_separately(self):
         print('file dialog for exporting two files for Tom''s script')
@@ -261,12 +350,20 @@ class field_viewer_gui(QtWidgets.QMainWindow):
 
     # spherical harmonic things
     def fit_sph(self):
-        order = int(self.sph_spinbox.value())
-        print('FIT SPHERICAL HARMONICS up to %d TO THE DATA,\n DATA MUST BE IN THE MAGNET COORDINATES'%order)
+        # spherical decomposition
         diameter_of_sphere = self.b0map.path.radius*2
-        self.b0map.fitSphericalHarmonics(maxorder=order,dsv=diameter_of_sphere,resol=3)
+        order = int(self.sph_spinbox.value())        
+
+        resolution_of_sph_decomp = 10 # mm - standard map step size
+        print(diameter_of_sphere)
+        self.b0map.fitSphericalHarmonics(maxorder=order,dsv=diameter_of_sphere,resol=resolution_of_sph_decomp)
+
         resolution_of_sph_fit=int(self.resolution_SPH_spinbox.value())
+        print('interpolating field with sph order %d, resol %.0f mm'%(order,resolution_of_sph_fit))
+
         self.b0map.interpolateField(resol=resolution_of_sph_fit,dsv=diameter_of_sphere)
+        
+        
         print('spherical harmonic decomposition completed. coefficients extracted.')
         print('now perform field interpolation')
         print('You can now plot decomposed sph by ticking the SPH checkbox.')
@@ -282,8 +379,8 @@ class field_viewer_gui(QtWidgets.QMainWindow):
         print('before that, even, plot the shim field.')
         print('First put all magnets in the rings with their b0 along Y.')
         print('and draw magnets in rings with their direcrion vectors.')
-        self.b0map.get_shim_positions()
-        
-              
+        self.b0map.get_shim_positions(dsv_for_opt_percent = int(self.dsv_opt_spinbox.value()),verbose = self.verbose_checkbox.isChecked())
+        self.mean_field_shimmed_label.setText('Mean After: %.3f [mT]'%float(self.b0map.mean_field_shimmed))
+        self.inhomogeneity_after_label.setText('Homo After: %.0f [ppm]'%float(self.b0map.homogeneity_shimmed))
 
         

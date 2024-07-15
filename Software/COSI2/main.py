@@ -341,7 +341,6 @@ class Ui(QtWidgets.QMainWindow):
         
         self.cosimeasure.b0_filename=base_filename+'_bvals.csv'
         # todo: do the path generator inside the pth class
-        #cross_path = ball_path.gradient_path(filename_input=self.cosimeasure.pathfile_path,center_point_input=(xc,yc,zc),radius_input=rad,radius_npoints_input=radpts)
         cross_path = ball_path.gradient_path(filename_input=self.cosimeasure.pathfile_path,center_point_input=(xc,yc,zc),radius_input=rad,radius_npoints_input=radpts,axis=axis) 
         
         self.cosimeasure.load_path() # change to automatic loading of path when the path filename is given
@@ -369,7 +368,7 @@ class Ui(QtWidgets.QMainWindow):
         
         self.cosimeasure.b0_filename=base_filename+'_bvals.csv'
         # todo: do the path generator inside the pth class
-        sphere_path = ball_path.ball_path(filename_input=self.cosimeasure.pathfile_path,center_point_input=(xc,yc,zc),radius_input=rad,radius_npoints_input=radpts)
+        sphere_path = ball_path.ball_path(filename_input=self.cosimeasure.pathfile_path,center_point_input=[xc,yc,zc],radius_input=rad,radius_npoints_input=radpts)
         self.cosimeasure.load_path() # change to automatic loading of path when the path filename is given
         self.pathPlotter.plot_head_on_path(cosimeasure=self.cosimeasure,magnet=self.magnet)
 
@@ -406,19 +405,12 @@ class Ui(QtWidgets.QMainWindow):
 
 
 
-
 if __name__ == "__main__":
     q = Queue()
 
     app = QtWidgets.QApplication(sys.argv)  # Create an instance of QtWidgets.QApplication
     window = Ui()  # Create an instance of our class
     app.exec_()  # Start the application
-
-    # p_generator = Process(target=window.app.exec, args=(q,))
-    # p_generator.start()
-    #
-    # p_generator.join()
-    
     
     
     

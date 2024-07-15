@@ -97,10 +97,11 @@ class ball_path(object):
             * center - array of x,y,z coordinates of the center of the sphere
             * radius - radius of the sphere """
 
-            r2 = (x-center[0])**2 + (y-center[1])**2 + (z-center[0])**2
-            if r2 < radius**2:
+            r2 = abs(x-center[0])**2 + abs(y-center[1])**2 + abs(z-center[2])**2
+            if r2 < abs(radius)**2:
                 return True
             else:
+                print(r2,'>',radius**2)
                 return False
 
         npoints = radius_npoints
@@ -108,6 +109,10 @@ class ball_path(object):
         xSteps = np.linspace(center[0]-radius, center[0]+radius, 2*npoints+1)
         ySteps = np.linspace(center[1]-radius, center[1]+radius, 2*npoints+1)
         zSteps = np.linspace(center[2]-radius, center[2]+radius, 2*npoints+1)
+
+        print(min(xSteps),max(xSteps))
+        print(min(ySteps),max(ySteps))
+        print(min(zSteps),max(zSteps))
 
         with open(self.filename, 'w+') as f:
             xIsReversed = False
@@ -139,6 +144,7 @@ class ball_path(object):
                             for x in xSteps:
                                 if checkBounds(x,y,z,center,radius):
                                     f.write( G0(x=x, y=y, z=z) )
+                                    
 
         
 
