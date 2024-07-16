@@ -18,17 +18,20 @@ class gaussmeter(object):
             
         if isfake:
             return
-
-        self.ser = serial.Serial(
-            port='/dev/ttyUSB0',
-            baudrate=9600,
-            parity=serial.PARITY_ODD,
-            stopbits=serial.STOPBITS_ONE,
-            bytesize=serial.SEVENBITS
-            )
-        
-        print('serial connection for gaussmeter opened')
-
+        try:
+            self.ser = serial.Serial(
+                port='/dev/ttyUSB0',
+                baudrate=9600,
+                parity=serial.PARITY_ODD,
+                stopbits=serial.STOPBITS_ONE,
+                bytesize=serial.SEVENBITS
+                )
+            
+            print('serial connection for gaussmeter opened')
+        except Exception as e:
+            print(str(e))
+            self.isfake = True
+            return
 
     def fast(self,state):
         if self.isfake:
