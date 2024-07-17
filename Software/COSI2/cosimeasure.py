@@ -272,11 +272,11 @@ class cosimeasure(object):
         self.path = self.b0.path
         
         print('cosimeasure uses path of the passed b0 object')
-        self.gaussmeter.fast(state=True)
+        self.gaussmeter.fast(state=False)
         print('running along path, no display on GM')
         if self.b0_filename: # if filename was given
             with open(self.b0_filename, 'w') as file: # open that file
-                if len(self.path.r): # if path was given
+                if len(self.path.r)>0: # if path was given
                     file.write('# COSI2 B0 scan\n')                    
                     # Convert date and time to string
                     dateTimeStr = str(datetime.now())
@@ -303,6 +303,7 @@ class cosimeasure(object):
                         self.moveto(pt[0],pt[1],pt[2]) # move the head physically to the position
                         if distance_to_prev_point > 50: 
                             time.sleep(3*self.measurement_time_delay)
+                            print('sleeping')
                             
                         pos = self.get_current_position(fakePosition=pt) # update head position of the cosimeasure object, used for live plotting
                         #print(pt) # if gui lags, the terminal still shows points
@@ -326,8 +327,6 @@ class cosimeasure(object):
                         
                         pt_prev = pt
                         ptidx +=1    
-                        
-
                         
                         
                     print('path scanning done. saving file')
