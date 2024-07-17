@@ -102,8 +102,8 @@ class shimming_magnet():
 
         X = np.linspace(-simDimensions[0]/2-position[0], simDimensions[0]/2-position[0], int(simDimensions[0]*resolution)+2, dtype=np.float32)
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        Z = np.linspace(-simDimensions[1]/2-position[1], simDimensions[1]/2-position[1], int(simDimensions[1]*resolution)+2, dtype=np.float32)
-        Y = np.linspace(-simDimensions[2]/2-position[2], simDimensions[2]/2-position[2], int(simDimensions[2]*resolution)+2, dtype=np.float32)
+        Y = np.linspace(-simDimensions[1]/2-position[1], simDimensions[1]/2-position[1], int(simDimensions[1]*resolution)+2, dtype=np.float32)
+        Z = np.linspace(-simDimensions[2]/2-position[2], simDimensions[2]/2-position[2], int(simDimensions[2]*resolution)+2, dtype=np.float32)
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!        
         print('x vector length in single magnet simulation: ',len(X))
         
@@ -157,7 +157,7 @@ class shimming_magnet():
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!        
         print('x vector length in single magnet simulation: ',len(X))
         
-        x,y,z = np.meshgrid(X,Y,Z,indexing='ij')
+        x,z,y = np.meshgrid(X,Y,Z,indexing='ij')
         y2d, z2d = np.meshgrid(Y,Z,indexing='ij')
 
         print('calculating field of one shim magnet at ',position[0],position[1],position[2])

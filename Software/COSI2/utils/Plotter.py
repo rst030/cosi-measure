@@ -241,8 +241,8 @@ class PlotterCanvas(FigureCanvas):
         self.axes.cla()
         slice_color_map='viridis'
         
-        minval_of_b0 = np.nanmin(b0map_object.b0Data[:,:,:,0])
-        maxval_of_b0 = np.nanmax(b0map_object.b0Data[:,:,:,0])
+        minval_of_b0 = -47.809 + np.nanmean(b0map_object.b0Data[:,:,:,0]) + 47.553 #np.nanmin(b0map_object.b0Data[:,:,:,0])
+        maxval_of_b0 = -47.394 + np.nanmean(b0map_object.b0Data[:,:,:,0]) + 47.553#np.nanmax(b0map_object.b0Data[:,:,:,0])
         
         if plot_raw:
     
