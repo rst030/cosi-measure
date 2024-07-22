@@ -204,7 +204,11 @@ class cosimeasure(object):
             else:
                 return 0,0,0
             
-        vals = self.command("M114").decode().split(' ') # b'X:386.620 Y:286.000 Z:558.280 E:0.000\n'
+        try:
+            vals = self.command("M114").decode().split(' ') # b'X:386.620 Y:286.000 Z:558.280 E:0.000\n'
+        except Exception as e:
+            print(str(e))
+            vals = ['x:-1','y:-1','z:-1']
         xpos = float(vals[0].split(':')[1])
         ypos = float(vals[1].split(':')[1])
         zpos = float(vals[2].split(':')[1])
