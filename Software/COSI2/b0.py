@@ -305,7 +305,7 @@ class b0():
 
                 
             
-        b0Data[b0Data==0]=np.NaN    
+        b0Data[b0Data==0]=np.nan    
         # getting mean field
         meanField = np.nanmean(b0Data[:,:,:,0])
         
@@ -462,7 +462,7 @@ class b0():
         # Create a spherical shell mask to consider only data points on the surface of the sphere
         erodedMask = cp.binary_erosion(sphereMask)  # remove the outer surface of the initial spherical mask
         shellMask = np.array(sphereMask^erodedMask, dtype = float)   # create a new mask by looking at the difference between the inital and eroded mask
-        shellMask[shellMask == 0] = np.nan  # set points outside mask to 'NaN', works better than setting it to zero for calculating mean fields etc.
+        shellMask[shellMask == 0] = np.nan  # set points outside mask to 'Nan', works better than setting it to zero for calculating mean fields etc.
 
         sphereMask = np.asarray(sphereMask, dtype=float)
         sphereMask[sphereMask == 0] = np.nan
