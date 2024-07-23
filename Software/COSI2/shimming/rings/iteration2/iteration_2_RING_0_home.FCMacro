@@ -4,6 +4,7 @@ import Draft
 import numpy as np
 
 magnetSize = 6.0
+insertSize = 8.42
 drawShapes 	= 4 #0 = draw all features, 1 = just cubes, 2 = just circles, 3 = just direction markers
 
 rotError = 0		#rotation correction, based on experimental estimates
@@ -14,11 +15,12 @@ cornerOffset 	= 0.45*np.sqrt(2)		#diagonal corner offset in mm
 
 dirMarkRadius = 1
 dirMarkOffset  = dirMarkRadius-2
+outerDirCircRadius = 1
 
 
 # ---------- RING 0  ---------- 
 
-filename = r'Q:\PTB\cosi-measure\Software\COSI2\shimming\rings\iteration2\/Iteration_2-RING_0.txt' 
+filename = r'C:\cosi-measure\Software\COSI2\shimming\/rings/iteration2_fixrot/B_Iteration_2-RING_0_FIXROT.txt' 
 
 
 magnetData = np.genfromtxt(filename, delimiter = ',')
@@ -46,10 +48,33 @@ ringGroup = App.ActiveDocument.addObject('App::DocumentObjectGroup', layerString
 for idx, center in enumerate(centers):
 	pl = Placement()
 	if drawShapes == 0 or drawShapes == 1 or drawShapes == 4:
+		#making the outer square insert
+		pl.Base = Vector(center) - Vector(insertSize/2, insertSize/2, 0)
+		rec_outer = Draft.makeRectangle(length=insertSize,height=insertSize,placement=pl,face=False,support=None)
+
+		pl.Base = Vector(center) - Vector(insertSize/2, 0, 0)
+		circ_outer_dir = Draft.makeCircle(outerDirCircRadius, placement = pl, face = False)
+
+		insertAngle = (np.arctan2(center[1],center[0]))*180/np.pi
+
+		Draft.rotate(circ_outer_dir, insertAngle, center = Vector(center))
+		
+		Draft.rotate(rec_outer, insertAngle, center = Vector(center))
+		ringGroup.addObject(rec_outer)
+		
+		
+		ringGroup.addObject(circ_outer_dir)
+		
+		
+		
+		
+		
 		pl.Base = Vector(center) + Vector(-magnetSize/2, -magnetSize/2, 0)
 		rec = Draft.makeRectangle(length=magnetSize,height=magnetSize,placement=pl,face=False,support=None)
 		Draft.rotate(rec, (angles[idx]+ rotError*np.sin(4*np.pi*idx/numMagnets)), center = Vector(center))
 		ringGroup.addObject(rec)
+
+		
 		if idx % 7 == 0:
 			t1 = "0"
 			px = Vector(center)
