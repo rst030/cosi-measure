@@ -241,9 +241,11 @@ class PlotterCanvas(FigureCanvas):
         self.axes.cla()
         slice_color_map='viridis'
         
-        minval_of_b0 = -47.809 + np.nanmean(b0map_object.b0Data[:,:,:,0]) + 47.553 #np.nanmin(b0map_object.b0Data[:,:,:,0])
-        maxval_of_b0 = -47.394 + np.nanmean(b0map_object.b0Data[:,:,:,0]) + 47.553#np.nanmax(b0map_object.b0Data[:,:,:,0])
-        
+        #minval_of_b0 = -47.809 + np.nanmean(b0map_object.b0Data[:,:,:,0]) + 47.553 #np.nanmin(b0map_object.b0Data[:,:,:,0])
+        #maxval_of_b0 = -47.394 + np.nanmean(b0map_object.b0Data[:,:,:,0]) + 47.553#np.nanmax(b0map_object.b0Data[:,:,:,0])
+        minval_of_b0 = np.nanmin(b0map_object.b0Data[:,:,:,0])
+        maxval_of_b0 = np.nanmax(b0map_object.b0Data[:,:,:,0])
+
         if plot_raw:
     
             
@@ -292,8 +294,8 @@ class PlotterCanvas(FigureCanvas):
                 self.update_plotter()
                 
         if plot_sph:
-            #minval_of_b0 = np.nanmin(b0map_object.interpolatedField[:,:,:])
-            #maxval_of_b0 = np.nanmax(b0map_object.interpolatedField[:,:,:])
+            minval_of_b0 = np.nanmin(b0map_object.interpolatedField[:,:,:])
+            maxval_of_b0 = np.nanmax(b0map_object.interpolatedField[:,:,:])
             
             if slice_number_xy >= 0:
                 #x, y = np.meshgrid(b0map_object.xPts, b0map_object.yPts)
@@ -562,8 +564,8 @@ class PlotterCanvas(FigureCanvas):
 
             self.update_plotter()
             print('getting the sph decomposed field from the b0 object')
-            #minval_of_b0 = np.nanmin(b0map_object.decomposedField[:,:,:])
-            #maxval_of_b0 = np.nanmax(b0map_object.decomposedField[:,:,:])
+            minval_of_b0 = np.nanmin(b0map_object.decomposedField[:,:,:])
+            maxval_of_b0 = np.nanmax(b0map_object.decomposedField[:,:,:])
             print('min b0 sph: %.3f mT'%minval_of_b0)
             print('max b0 sph: %.3f mT'%maxval_of_b0)
             print('--- SPH plotter is called --- ')
