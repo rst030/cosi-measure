@@ -1,0 +1,10 @@
+scan of the Hamburg magnet v2.0 with rotation of one magnet fixed
+Berk,s cosi
+center
+[250.02324094 214.50322592 313.25265994]
+
+
+
+R130mm bal
+250.0,214.5,313,3,130
+

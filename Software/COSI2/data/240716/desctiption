@@ -1,0 +1,14 @@
+mapping the v1 magnet with shims 2 iter on (rotation -90 deg of shim magnets)
+magnet center
+271.86668288 169.48122809 207.96424896
+
+g0 x271.86 y169.48 z207.96
+
+making sphere 120
+271.86,169.48,207.96,120
+pt per R
+10
+
+magnet positioning
+271.86,169.48,207.96
+-90,-90,0
