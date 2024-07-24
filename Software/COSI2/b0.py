@@ -291,14 +291,14 @@ class b0():
            # replacing the max point by neighbor
             if abs(self.fieldDataAlongPath[idx,0])/meanField_raw>1.25:
                 print(self.fieldDataAlongPath[idx,0],'is too big! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
-                self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
-                print('assigned: ',self.fieldDataAlongPath[idx,:], '<+++++')
+                #self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
+                #print('assigned: ',self.fieldDataAlongPath[idx,:], '<+++++')
            
            # replacing the min point by neighbor
             if meanField_raw/abs(self.fieldDataAlongPath[idx,0])>1.25:
                 print(self.fieldDataAlongPath[idx,0],'is too small! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
-                self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
-                print('assigned: ',self.fieldDataAlongPath[idx,:], '<-----')
+                #self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
+                #print('assigned: ',self.fieldDataAlongPath[idx,:], '<-----')
 
 
             b0Data[xArg,yArg,zArg,:] = [self.fieldDataAlongPath[idx,0],self.fieldDataAlongPath[idx,1],self.fieldDataAlongPath[idx,2],self.fieldDataAlongPath[idx,3]]
