@@ -537,7 +537,7 @@
            </size>
           </property>
           <property name="text">
-           <string>generate synthetic CSV</string>
+           <string>export in magnet coords</string>
           </property>
          </widget>
         </item>

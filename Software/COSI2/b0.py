@@ -291,21 +291,21 @@ class b0():
            # replacing the max point by neighbor
             if abs(self.fieldDataAlongPath[idx,0])/meanField_raw>1.25:
                 print(self.fieldDataAlongPath[idx,0],'is too big! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
-                self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
-                print('assigned: ',self.fieldDataAlongPath[idx,:], '<+++++')
+                #self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
+                #print('assigned: ',self.fieldDataAlongPath[idx,:], '<+++++')
            
            # replacing the min point by neighbor
             if meanField_raw/abs(self.fieldDataAlongPath[idx,0])>1.25:
                 print(self.fieldDataAlongPath[idx,0],'is too small! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
-                self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
-                print('assigned: ',self.fieldDataAlongPath[idx,:], '<-----')
+                #self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
+                #print('assigned: ',self.fieldDataAlongPath[idx,:], '<-----')
 
 
             b0Data[xArg,yArg,zArg,:] = [self.fieldDataAlongPath[idx,0],self.fieldDataAlongPath[idx,1],self.fieldDataAlongPath[idx,2],self.fieldDataAlongPath[idx,3]]
 
                 
             
-        b0Data[b0Data==0]=np.NaN    
+        b0Data[b0Data==0]=np.nan    
         # getting mean field
         meanField = np.nanmean(b0Data[:,:,:,0])
         
@@ -462,7 +462,7 @@ class b0():
         # Create a spherical shell mask to consider only data points on the surface of the sphere
         erodedMask = cp.binary_erosion(sphereMask)  # remove the outer surface of the initial spherical mask
         shellMask = np.array(sphereMask^erodedMask, dtype = float)   # create a new mask by looking at the difference between the inital and eroded mask
-        shellMask[shellMask == 0] = np.nan  # set points outside mask to 'NaN', works better than setting it to zero for calculating mean fields etc.
+        shellMask[shellMask == 0] = np.nan  # set points outside mask to 'Nan', works better than setting it to zero for calculating mean fields etc.
 
         sphereMask = np.asarray(sphereMask, dtype=float)
         sphereMask[sphereMask == 0] = np.nan
