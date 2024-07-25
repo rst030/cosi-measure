@@ -18,16 +18,15 @@ this is the bottom front of the magnet. X=min Y=min Z=0
 mapping the v3 magnet as built
 
 magnet center
-274.24351541 171.45308669 205.8209575
-g0 x274.24 y171.45 z205.82
+210.50098064 190.45000411 179.96273559
 
-making sphere 120
-274.24,171.45,205.82,120
+g0 x210.5 y190.45 z179.96
+
+making sphere 130
+210.5, 190.45, 179.96, 130
 pt per R
-5
 10
-
+ball_magnet_V3_R130_10pts
 
 magnet positioning
-274.24,171.45,205.82
--90,-90,0
+
