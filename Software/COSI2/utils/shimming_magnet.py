@@ -40,10 +40,8 @@ class shimming_magnet():
         dip_vec = self.dipole_vector#mu*np.array([0,dip_mom,0]) # dipole moment in YZ plane!, initially - along Y
         
         x = grid[0]*1e-3-self.position[0]
-        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         y = grid[1]*1e-3-self.position[1]
         z = grid[2]*1e-3-self.position[2]
-        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         mx = dip_vec[0]
         my = dip_vec[1]
@@ -56,9 +54,10 @@ class shimming_magnet():
 
 
         B0[:,:,:,0] = np.divide(np.multiply(x,vec_dot_dip),rvec**5)# - np.divide(mx,rvec**3)
+        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         B0[:,:,:,1] = np.divide(np.multiply(y,vec_dot_dip),rvec**5) - np.divide(my,rvec**3)
         B0[:,:,:,2] = np.divide(np.multiply(z,vec_dot_dip),rvec**5) - np.divide(mz,rvec**3)
-
+        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         self.B0 = B0
 
         return B0
@@ -147,20 +146,18 @@ class shimming_magnet():
     def OLD_singleMagnet(self,position, dipoleMoment, simDimensions, resolution, plotFields=False):
         #based on the dipole approximation
         #create mesh coordinates
-        print('HALLO?!')
-        print(position)
-    
+        
         X = np.linspace(-simDimensions[0]/2 - position[0], simDimensions[0]/2 - position[0] , int(simDimensions[0]*resolution)+1, dtype=np.float32)
-        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         Y = np.linspace(-simDimensions[1]/2 - position[1], simDimensions[1]/2 - position[1] , int(simDimensions[1]*resolution)+1, dtype=np.float32)
         Z = np.linspace(-simDimensions[2]/2 - position[2], simDimensions[2]/2 - position[2] , int(simDimensions[2]*resolution)+1, dtype=np.float32)
-        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!        
+   
         print('x vector length in single magnet simulation: ',len(X))
-        
-        x,z,y = np.meshgrid(X,Y,Z,indexing='ij')
+        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!     
+        x,y,z = np.meshgrid(X,Y,Z,indexing='ij')
+        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!     
         y2d, z2d = np.meshgrid(Y,Z,indexing='ij')
 
-        print('calculating field of one shim magnet at ',position[0],position[1],position[2])
+        print('computing field of one shim magnet at ',position[0],position[1],position[2])
 
         #vec_dot_dip = 3*(x*dipoleMoment[0] + y*dipoleMoment[1]) # was in Tom's script, where the shim magnet was in the xy plane
         
