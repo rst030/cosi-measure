@@ -1,0 +1,141 @@
+
+from FreeCAD import Vector, Placement, Part
+import Draft
+import numpy as np
+
+magnetSize = 6.0
+insertSize = 8.42
+drawShapes 	= 4 #0 = draw all features, 1 = just cubes, 2 = just circles, 3 = just direction markers
+
+rotError = 0		#rotation correction, based on experimental estimates
+
+
+cornerRadius 	= 1	#radius of corner circle in mm
+cornerOffset 	= 0.45*np.sqrt(2)		#diagonal corner offset in mm
+
+dirMarkRadius = 0.6
+dirMarkOffset  = dirMarkRadius-1.2
+outerDirCircRadius = 1
+
+
+# ---------- RING 0  ---------- 
+
+filename = r'C:\cosi-measure\Software\COSI2\shimming\/rings/iteration2_attempt3/B_Iteration_2-RING_0_XY.txt' 
+
+
+magnetData = np.genfromtxt(filename, delimiter = ',')
+
+print(np.shape(magnetData))
+
+angles = magnetData[:,-1]		#get the rotation angle of the magnet TEST WITH 0s
+
+zPos = np.zeros(np.shape(angles))
+numMagnets = np.size(angles)
+
+centers = np.stack((magnetData[:,1],magnetData[:,2], zPos), axis = -1)
+
+if drawShapes == 1:
+	layerString = "Magnets"
+elif drawShapes == 2:
+	layerString = "Dog bones"
+elif drawShapes == 3:
+	layerString = "Orientation markers"
+else:
+	layerString = "Everything"
+
+ringGroup = App.ActiveDocument.addObject('App::DocumentObjectGroup', layerString)
+
+for idx, center in enumerate(centers):
+	pl = Placement()
+	if drawShapes == 0 or drawShapes == 1 or drawShapes == 4:
+		#making the outer square insert
+		#pl.Base = Vector(center) - Vector(insertSize/2, insertSize/2, 0)
+		#rec_outer = Draft.makeRectangle(length=insertSize,height=insertSize,placement=pl,face=False,support=None)
+
+		#pl.Base = Vector(center) - Vector(insertSize/2, 0, 0)
+		#circ_outer_dir = Draft.makeCircle(outerDirCircRadius, placement = pl, face = False)
+
+		#insertAngle = (np.arctan2(center[1],center[0]))*180/np.pi
+
+		#Draft.rotate(circ_outer_dir, insertAngle, center = Vector(center))
+		
+		#Draft.rotate(rec_outer, insertAngle, center = Vector(center))
+		#ringGroup.addObject(rec_outer)
+		
+		
+		#ringGroup.addObject(circ_outer_dir)
+		
+		
+		
+		
+		
+		pl.Base = Vector(center) + Vector(-magnetSize/2, -magnetSize/2, 0)
+		rec = Draft.makeRectangle(length=magnetSize,height=magnetSize,placement=pl,face=False,support=None)
+		Draft.rotate(rec, (angles[idx]+ rotError*np.sin(4*np.pi*idx/numMagnets)), center = Vector(center))
+		ringGroup.addObject(rec)
+
+		
+		if idx % 7 == 0:
+			t1 = "0"
+			px = Vector(center)
+			t2 = ["First line", "second line"]
+			text1 = Draft.make_text(t1, px)
+			text1.ViewObject.FontSize = 6
+			Draft.rotate(text1,idx/7*360/12+90,center=center)
+			Draft.rotate(text1,-1.52,center=Vector(0,0,0))
+			t2 = "%d"%int((idx/7+6)%12)
+			if t2 == "0": t2 = "12"
+			if t2 == "6": t2 = "6."
+			text2 = Draft.make_text(t2, px)
+			text2.ViewObject.FontSize = 4.5
+			Draft.rotate(text2,idx/7*360/12+90,center=center)
+			Draft.rotate(text2,+1.1+19.25,center=Vector(0,0,0))
+			Draft.rotate(text2,40,center=centers[idx+6])
+
+
+
+	# TMP: draw direction of shim field
+	#p1 = Vector(center)
+	#p2 = Vector(center)+Vector(10*magnetSize, 0, 0)
+	#line1 = Draft.make_line(p1, p2)
+	#Draft.rotate(line1, (angles[idx]+ rotError*np.sin(4*np.pi*idx/numMagnets)), center = Vector(center))
+	#ringGroup.addObject(line1)
+
+	if drawShapes == 0 or drawShapes == 2:
+		pl.Base = Vector(center) + Vector((magnetSize/2 - np.sqrt(2)/2 *cornerOffset), (magnetSize/2 - np.sqrt(2)/2 *cornerOffset),0)
+		circ1 = Draft.makeCircle(cornerRadius, placement = pl, face = False)
+		Draft.rotate(circ1, angles[idx]+ rotError*np.sin(4*np.pi*idx/numMagnets), center = Vector(center))
+		circObj = ringGroup.addObject(circ1)
+	
+		pl.Base = Vector(center) + Vector((magnetSize/2 - np.sqrt(2)/2 *cornerOffset), -(magnetSize/2 - np.sqrt(2)/2 *cornerOffset),0)
+		circ2 = Draft.makeCircle(cornerRadius, placement = pl, face = False)
+		Draft.rotate(circ2, angles[idx]+ rotError*np.sin(4*np.pi*idx/numMagnets), center = Vector(center))
+		ringGroup.addObject(circ2)
+	
+		pl.Base = Vector(center) + Vector(-(magnetSize/2 - np.sqrt(2)/2 *cornerOffset), (magnetSize/2 - np.sqrt(2)/2 *cornerOffset),0)
+		circ3 = Draft.makeCircle(cornerRadius, placement = pl, face = False)
+		Draft.rotate(circ3, angles[idx]+ rotError*np.sin(4*np.pi*idx/numMagnets), center = Vector(center))
+		ringGroup.addObject(circ3)
+	
+		pl.Base = Vector(center) + Vector(-(magnetSize/2 - np.sqrt(2)/2 *cornerOffset), -(magnetSize/2 - np.sqrt(2)/2 *cornerOffset),0)
+		circ4 = Draft.makeCircle(cornerRadius, placement = pl, face = False)
+		Draft.rotate(circ4, angles[idx] + rotError*np.sin(4*np.pi*idx/numMagnets), center = Vector(center))
+		ringGroup.addObject(circ4)
+
+	if idx==-1:
+		pl.Base = Vector(center) + Vector(-(magnetSize/2 - np.sqrt(2) *cornerOffset), -(magnetSize/2 - np.sqrt(2)/2 *cornerOffset),0)
+		circ_IND = Draft.makeCircle(5*cornerRadius, placement = pl, face = True)
+		Draft.rotate(circ_IND, angles[idx] + rotError*np.sin(4*np.pi*idx/numMagnets), center = Vector(center))
+		ringGroup.addObject(circ_IND)
+
+	if drawShapes == 0 or drawShapes == 3 or drawShapes == 4:
+		pl.Base = Vector(center) + Vector((magnetSize/2 - dirMarkOffset),0,0)
+		circ1 = Draft.makeCircle(dirMarkRadius, placement = pl, face = True)
+		Draft.rotate(circ1, (angles[idx]+ rotError*np.sin(4*np.pi*idx/numMagnets)), center = Vector(center))
+		circObj = ringGroup.addObject(circ1)
+		
+
+
+
+
+App.ActiveDocument.recompute()

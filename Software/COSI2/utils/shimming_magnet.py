@@ -34,8 +34,9 @@ class shimming_magnet():
 
         self.update_rotation(self.rotation_yz)
 
-
         self.dip_mom = self.magnetization(self.bRem,self.magSizeOuter) 
+        print('!!!!!!!!!!!!!!!!!!!!!!',self.bRem)
+        
         mu = 1e-7
         dip_vec = self.dipole_vector#mu*np.array([0,dip_mom,0]) # dipole moment in YZ plane!, initially - along Y
         
@@ -54,10 +55,8 @@ class shimming_magnet():
 
 
         B0[:,:,:,0] = np.divide(np.multiply(x,vec_dot_dip),rvec**5)# - np.divide(mx,rvec**3)
-        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         B0[:,:,:,1] = np.divide(np.multiply(y,vec_dot_dip),rvec**5) - np.divide(my,rvec**3)
         B0[:,:,:,2] = np.divide(np.multiply(z,vec_dot_dip),rvec**5) - np.divide(mz,rvec**3)
-        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         self.B0 = B0
 
         return B0
@@ -100,10 +99,8 @@ class shimming_magnet():
         simDimensions[2] = np.max((grid[2])-np.min(grid[2]))*1e-3
 
         X = np.linspace(-simDimensions[0]/2-position[0], simDimensions[0]/2-position[0], int(simDimensions[0]*resolution)+2, dtype=np.float32)
-        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         Y = np.linspace(-simDimensions[1]/2-position[1], simDimensions[1]/2-position[1], int(simDimensions[1]*resolution)+2, dtype=np.float32)
         Z = np.linspace(-simDimensions[2]/2-position[2], simDimensions[2]/2-position[2], int(simDimensions[2]*resolution)+2, dtype=np.float32)
-        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!        
         print('x vector length in single magnet simulation: ',len(X))
         
         x,y,z = np.meshgrid(X,Y,Z,indexing='ij')
@@ -153,7 +150,7 @@ class shimming_magnet():
    
         print('x vector length in single magnet simulation: ',len(X))
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!     
-        x,y,z = np.meshgrid(X,Y,Z,indexing='ij')
+        x,z,y = np.meshgrid(X,Y,Z,indexing='ij')
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!     
         y2d, z2d = np.meshgrid(Y,Z,indexing='ij')
 
@@ -188,7 +185,7 @@ class shimming_magnet():
 
             plt.show()
         
-        self.grid = [x,y,z]
+        #self.grid = [x,y,z]
         self.field = B0
 
         return B0

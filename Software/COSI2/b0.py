@@ -244,11 +244,11 @@ class b0():
         # so there are unique_x x values between x_min and x_max
         # lets make a linspace
         self.xPts = np.arange(start=x_min,stop=x_max,step=step_size_x) #linspace(start=x_min,stop=x_max,num=num_steps_x)
-        print("xPts: ", self.xPts[0:10])
+        print("10 xPts: ", self.xPts[0:10])
         self.yPts = np.arange(start=y_min,stop=y_max,step=step_size_y) #linspace(start=y_min,stop=y_max,num=num_steps_y)
-        print("yPts: ", self.yPts[0:10])
+        print("10 yPts: ", self.yPts[0:10])
         self.zPts = np.arange(start=z_min,stop=z_max,step=step_size_z) #linspace(start=z_min,stop=z_max,num=num_steps_z)
-        print("zPts: ", self.zPts[0:10])
+        print("10 zPts: ", self.zPts[0:10])
         
                 
         # now we do a trick
@@ -290,13 +290,13 @@ class b0():
            
            # replacing the max point by neighbor
             if abs(self.fieldDataAlongPath[idx,0])/meanField_raw>1.25:
-                print(self.fieldDataAlongPath[idx,0],'is too big! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
+                print(self.fieldDataAlongPath[idx,0],'is too big! NOT assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
                 #self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
                 #print('assigned: ',self.fieldDataAlongPath[idx,:], '<+++++')
            
            # replacing the min point by neighbor
             if meanField_raw/abs(self.fieldDataAlongPath[idx,0])>1.25:
-                print(self.fieldDataAlongPath[idx,0],'is too small! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
+                print(self.fieldDataAlongPath[idx,0],'is too small! NOT assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
                 #self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
                 #print('assigned: ',self.fieldDataAlongPath[idx,:], '<-----')
 
@@ -453,7 +453,7 @@ class b0():
         self.zDim_SPH_decomp = np.linspace(0, resolution*(fieldMapDims[2]-1), fieldMapDims[2]) - resolution*(fieldMapDims[2] -1)/2
 
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        x,z,y = np.meshgrid(self.xDim_SPH_decomp, self.yDim_SPH_decomp, self.zDim_SPH_decomp, indexing='ij')
+        x,y,z = np.meshgrid(self.xDim_SPH_decomp, self.yDim_SPH_decomp, self.zDim_SPH_decomp, indexing='ij')
         coord = [x,y,z]
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -508,7 +508,7 @@ class b0():
 
         #See what the difference is between the two decomposed field
         shimmedField = maskedFieldShell - decomposedField
-        print("Error: %.0f ppm" %(1e6*(np.max(shimmedField) - np.min(shimmedField))/np.mean(maskedFieldShell)))
+        print("Error: %.0f ppm" %(1e6*(np.max(shimmedField) - np.min(shimmedField))/np.mean(shimmedField)))
 
         #generate spherical coordinates over entire sphere, not just shell, for plotting
         spherCoordSphere = np.copy(spherCoord)
@@ -553,7 +553,7 @@ class b0():
         
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         x,y,z = np.meshgrid(self.xDim_SPH_fine, self.yDim_SPH_fine, self.zDim_SPH_fine, indexing='ij') 
-        self.coord_grid_fine = [x,z,y]
+        self.coord_grid_fine = [x,y,z]
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         
                 #Create a spherical mask for the data

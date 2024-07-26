@@ -1,0 +1,6 @@
+mapping of the Hamburg magnet, inner rings.
+
+scanned ф260 mm sphere
+mean field 39.86 mT
+homogeneity 640000 ppm
+strong, symmetric distortion along the bore.

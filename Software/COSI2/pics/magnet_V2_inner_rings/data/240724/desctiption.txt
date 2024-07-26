@@ -1,0 +1,32 @@
+mapping in the air to ensure coordinates are ok.
+path center X:140.000 Y:280.000 Z:180.000
+g0 x140 y280 z180
+
+path sphere
+R100 3 pts
+140,280,180,100
+
+'magnet' positioning
+140,280,180
+first point with huge field
+this is the bottom front of the magnet. X=min Y=min Z=0
+
+
+
+
+------------------------------------
+mapping the v2 magnet, inner rings, after re-assembly
+
+magnet center
+210.50098064 190.45000411 179.96273559
+
+g0 x210.5 y190.45 z179.96
+
+making sphere R130 mm
+210.5, 190.45, 179.96, 130
+pt per R: 10
+path: ball_magnet_V3_R130_10pts
+
+magnet positioning
+xyz 210.5, 190.45, 179.96
+ampha beta gamma 90,90,0
