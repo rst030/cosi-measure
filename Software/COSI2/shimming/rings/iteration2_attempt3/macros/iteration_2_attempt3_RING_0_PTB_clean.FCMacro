@@ -17,6 +17,8 @@ dirMarkRadius = 0.6
 dirMarkOffset  = dirMarkRadius-1.2
 outerDirCircRadius = 1
 
+plot_arrows = 0
+
 
 # ---------- RING 0  ---------- 
 
@@ -95,11 +97,12 @@ for idx, center in enumerate(centers):
 
 
 	# TMP: draw direction of shim field
-	#p1 = Vector(center)
-	#p2 = Vector(center)+Vector(10*magnetSize, 0, 0)
-	#line1 = Draft.make_line(p1, p2)
-	#Draft.rotate(line1, (angles[idx]+ rotError*np.sin(4*np.pi*idx/numMagnets)), center = Vector(center))
-	#ringGroup.addObject(line1)
+	if plot_arrows:
+		p1 = Vector(center)
+		p2 = Vector(center)+Vector(10*magnetSize, 0, 0)
+		line1 = Draft.make_line(p1, p2)
+		Draft.rotate(line1, (angles[idx]+ rotError*np.sin(4*np.pi*idx/numMagnets)), center = Vector(center))
+		ringGroup.addObject(line1)
 
 	if drawShapes == 0 or drawShapes == 2:
 		pl.Base = Vector(center) + Vector((magnetSize/2 - np.sqrt(2)/2 *cornerOffset), (magnetSize/2 - np.sqrt(2)/2 *cornerOffset),0)
