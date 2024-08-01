@@ -4,12 +4,19 @@ Ring 0 reprinted
 
 magnet center
 233.52353772 269.45871049 300.87464341
+g0 x233.52 z300.87
 g0 x233.52 y269.45 z300.87
 
 making sphere 120
 233.52,269.45,300.87,120
 pt per R
 10
+
+making ball 120
+233.52,269.45,300.87,120
+pt per theta/phi
+10
+40
 
 
 magnet positioning
