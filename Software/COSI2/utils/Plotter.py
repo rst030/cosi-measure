@@ -687,9 +687,9 @@ class PlotterCanvas(FigureCanvas):
                     tickStep = 0.01
                     roundDigits = 3
                 
-                self.colorbar_object.set_ticks(np.arange(np.round(minval_of_b0,roundDigits),maxval_of_b0,tickStep))
+                #self.colorbar_object.set_ticks(np.arange(np.round(minval_of_b0,roundDigits),maxval_of_b0,tickStep))
                     
-                self.colorbar_object.update_ticks()
+                #self.colorbar_object.update_ticks()
                 
             
 

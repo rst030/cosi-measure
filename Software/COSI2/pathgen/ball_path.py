@@ -101,7 +101,7 @@ class ball_path(object):
             if r2 < abs(radius)**2:
                 return True
             else:
-                print(r2,'>',radius**2)
+                #print(r2,'>',radius**2)
                 return False
 
         npoints = radius_npoints
@@ -110,9 +110,9 @@ class ball_path(object):
         ySteps = np.linspace(center[1]-radius, center[1]+radius, 2*npoints+1)
         zSteps = np.linspace(center[2]-radius, center[2]+radius, 2*npoints+1)
 
-        print(min(xSteps),max(xSteps))
-        print(min(ySteps),max(ySteps))
-        print(min(zSteps),max(zSteps))
+        #print(min(xSteps),max(xSteps))
+        #print(min(ySteps),max(ySteps))
+        #print(min(zSteps),max(zSteps))
 
         with open(self.filename, 'w+') as f:
             xIsReversed = False
