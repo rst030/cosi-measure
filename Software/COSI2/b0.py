@@ -223,7 +223,9 @@ class b0():
         step_size_z_list = []
         
         for idx in range(2,len(self.path.r)):
-            step = self.path.r[idx,:] - self.path.r[idx-1,:]
+            step = abs(self.path.r[idx,:] - self.path.r[idx-1,:])
+            if step[2]>0:
+                print('z step:',step[2])
             if step[0] > 1e-3:
                 step_size_x_list.append(step[0])
             if step[1] > 1e-3:
@@ -233,6 +235,7 @@ class b0():
                   
         step_size_x = min(step_size_x_list)
         step_size_y = min(step_size_y_list)
+        print(step_size_z_list)
         step_size_z = min(step_size_z_list)
         
         print('path step size: ',step_size_x,step_size_y,step_size_z)
@@ -253,7 +256,9 @@ class b0():
                 
         # now we do a trick
         # we will go through the snake. 
-        # for each (3-valued) point see snake we take the its 0th value and scan xPts searching which is the closest.
+        # for each (3-valued) point see snake we 
+        # take its 0th value and scan xPts searching 
+        # which is the closest.
         # that is, less than epsilon
         
         epsx = (self.xPts[1]-self.xPts[0])/3

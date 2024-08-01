@@ -44,7 +44,7 @@ class sphere_path(object):
         fileID = self.filename#Path.joinpath(path2file, self.filename).with_suffix('.path')
         import os
         print('pathgen module is in:')
-        input(os.getcwd())
+        #input(os.getcwd())
 
 
         phiRad, thetaRad = calcAngles(self.phiNumber, self.thetaNumber)

@@ -297,7 +297,7 @@ class cosimeasure(object):
                     time.sleep(0.5)
                     self.moveto(self.path.r[0,0],self.path.r[0,1],self.path.r[0,2]) # move the head physically to the position
                     pt_prev = self.path.r[0]
-                    dummy_data_likely_zero = self.gaussmeter.read_gaussmeter(fakeField=[0,100,0,0]) # after waiting get the averaged field vals                    
+                    dummy_data_likely_zero = self.gaussmeter.read_gaussmeter(fakeField=[np.random.randint(100),100,100,100]) # after waiting get the averaged field vals                    
                     time.sleep(5)
                     ptidx = 0 # index of the point along the path
                     for pt in self.path.r: # follow the path
@@ -312,7 +312,7 @@ class cosimeasure(object):
                         pos = self.get_current_position(fakePosition=pt) # update head position of the cosimeasure object, used for live plotting
                         #print(pt) # if gui lags, the terminal still shows points
                         time.sleep(self.measurement_time_delay) # adjust according to the #averages of the gaussmeter
-                        bx,by,bz,babs = self.gaussmeter.read_gaussmeter(fakeField=[0,100,0,0]) # after waiting get the averaged field vals
+                        bx,by,bz,babs = self.gaussmeter.read_gaussmeter(fakeField=[np.random.randint(100),100,100,100]) # after waiting get the averaged field vals
                         time.sleep(self.measurement_time_delay/3) # serial needs time to read the buffer of the gaussmeter
                         print('pt %d of %d'%(ptidx,len(self.path.r)),pos,'mm reached, B0=[%.1f,%.4f,%.1f] mT'%(bx,by,bz))
                         self.b0.path.current_index  = ptidx

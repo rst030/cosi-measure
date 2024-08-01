@@ -207,7 +207,8 @@ class Ui(QtWidgets.QMainWindow):
 
         ''' PATH GENERATOR '''
         self.load_path_file_btn.clicked.connect(self.load_path)
-        self.path_gen_btn.clicked.connect(self.gen_ball_path)
+        self.ball_path_gen_btn.clicked.connect(self.gen_ball_path)
+        self.sphere_path_gen_btn.clicked.connect(self.gen_sphere_path)
         self.grad_path_gen_btn.clicked.connect(self.gen_gradient_path)
         
 
@@ -372,6 +373,32 @@ class Ui(QtWidgets.QMainWindow):
         self.cosimeasure.load_path() # change to automatic loading of path when the path filename is given
         self.pathPlotter.plot_head_on_path(cosimeasure=self.cosimeasure,magnet=self.magnet)
 
+
+    def gen_sphere_path(self):
+        xc = float(self.path_dim_edit.text().split(",")[0])
+        yc = float(self.path_dim_edit.text().split(",")[1])
+        zc = float(self.path_dim_edit.text().split(",")[2])
+        rad = float(self.path_dim_edit.text().split(",")[3]) # mm
+        radpts = int(self.path_res_edit.text())
+        
+        print('generate a sphere path at the center %.2f,%.2f,%.2f with radius %.2fand %d pts along radius'%(xc,yc,zc,rad,radpts))
+        try:
+            self.cosimeasure.pathfile_path, _ = QtWidgets.QFileDialog.getSaveFileName(self, caption="path filename",
+                                                            directory=self.cosimeasure.working_directory,
+                                                            filter="path Files (*.path);;CSV Files (*.csv)")
+            self.cosimeasure.working_directory = os.path.split(os.path.abspath(self.cosimeasure.pathfile_path))[0]
+
+        except:
+            print('no filename given, do it again.')
+            return 0
+        
+        base_filename = os.path.splitext(self.cosimeasure.pathfile_path)[0]
+        
+        self.cosimeasure.b0_filename=base_filename+'_bvals.csv'
+        # todo: do the path generator inside the pth class
+        sph_path = sphere_path.sphere_path(filename_input=self.cosimeasure.pathfile_path,center_point_input=[xc,yc,zc],radius_input=rad,maxradius_input=rad,phinumber_input=radpts,thetanumber_input=radpts)
+        self.cosimeasure.load_path() # change to automatic loading of path when the path filename is given
+        self.pathPlotter.plot_head_on_path(cosimeasure=self.cosimeasure,magnet=self.magnet)
 
     def load_path(self,pathfilename=None):
         print('load the path file.')
