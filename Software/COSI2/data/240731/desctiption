@@ -34,7 +34,11 @@ g0 x232.80 y187.46 z301.29
 
 making sphere
 232.80,187.46,301.29,120
-16pts sphere_centered_2ringsnew_2rings_old_R120_16pts
+16 pts sphere_centered_2ringsnew_2rings_old_R120_16pts
+
+making ball, coarse, 3 sec delay
+232.80,187.46,301.29,120
+5 pts
 
 magnet positioning
 232.80,187.46,301.29

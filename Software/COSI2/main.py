@@ -234,6 +234,10 @@ class Ui(QtWidgets.QMainWindow):
 
         print('connecting to COSI.')
 
+        print(self.gaussmeter.read_gaussmeter())
+        sleep(1)
+        print(self.gaussmeter.read_gaussmeter())
+        
         self.cosimeasure = cosimeasure.cosimeasure(isfake=self.isfake,gaussmeter=self.gaussmeter,magnet=self.magnet,queue=self.qGlob) 
         #isfake for testing mode, queue is where it puts the b0 object.
 
