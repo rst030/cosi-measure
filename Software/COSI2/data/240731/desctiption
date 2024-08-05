@@ -10,7 +10,8 @@ g0 x233.52 y269.45 z300.87
 making sphere 120
 233.52,269.45,300.87,120
 pt per R
-10
+10 strong inhomo at position of new ring0
+20 weekend
 
 making ball 120
 233.52,269.45,300.87,120
