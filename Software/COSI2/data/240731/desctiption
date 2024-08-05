@@ -12,6 +12,7 @@ making sphere 120
 pt per R
 10 strong inhomo at position of new ring0
 20 weekend
+16 after 2 rings new inserted /sphere_after_weekend_2rings_inserted_2and3_old
 
 making ball 120
 233.52,269.45,300.87,120
@@ -22,4 +23,19 @@ pt per theta/phi
 
 magnet positioning
 233.52,269.45,300.87
+-90,-90,0
+
+!!! WRONG center, displaced along ox
+corrected center:
+
+232.80735963 187.46293564 301.29890109
+g0 x232.80 z301.29
+g0 x232.80 y187.46 z301.29
+
+making sphere
+232.80,187.46,301.29,120
+16pts sphere_centered_2ringsnew_2rings_old_R120_16pts
+
+magnet positioning
+232.80,187.46,301.29
 -90,-90,0
