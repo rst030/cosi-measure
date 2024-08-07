@@ -1,0 +1,10 @@
+# COSI2 B0 scan
+# time 2024-08-05 17:48:10.101630
+# MAGNET CENTER IN LAB: x 232.800 mm, y 187.460 mm, z 301.290 mm
+# MAGNET AXES WRT LAB: alpha -90.00 deg, beta -90.00 deg, gamma 0.00 deg
+# path: /home/cosi/cosi-measure/Software/COSI2/dummies/pathfiles/tst67
+# X[mm],Y[mm],Z[mm],B0_x[mT],B0_y[mT],B0_z[mT],B0_abs[mT]
+330.780,187.460,370.570,-47.2330,-0.9200,0.1500,47.2420
+134.820,187.460,370.570,-47.2280,-0.9200,0.1500,47.2370
+330.780,187.460,232.010,-47.1920,-0.8800,0.1200,47.2000
+134.820,187.460,232.010,-47.2150,-0.9000,0.1600,47.2240

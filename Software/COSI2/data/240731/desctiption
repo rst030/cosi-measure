@@ -36,9 +36,12 @@ making sphere
 232.80,187.46,301.29,120
 16 pts sphere_centered_2ringsnew_2rings_old_R120_16pts
 
-making ball, coarse, 3 sec delay
+making ball
 232.80,187.46,301.29,120
-5 pts
+
+5 pts, coarse, 3 sec delay
+12 pts, fine, 2 sec delay OVERNIGHT_PRECISE...
+
 
 magnet positioning
 232.80,187.46,301.29

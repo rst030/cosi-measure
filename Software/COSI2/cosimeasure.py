@@ -61,7 +61,7 @@ class cosimeasure(object):
         
         self.magnet = magnet
 
-        self.measurement_time_delay = 3 #s
+        self.measurement_time_delay = 2.8 #s
         if isfake:
             self.measurement_time_delay = 0.25 # for quick testing
             return
@@ -334,10 +334,18 @@ class cosimeasure(object):
                         
                         
                     print('path scanning done. saving file')
+                    print('moving head away from magnet')
+                    self.home_axis(axis='y',dir=1)
+                    time.sleep(5)
+                    self.home_axis(axis='x',dir=1)
+
                     #write shim orientations to file
+
 
                 else:
                     print('give path! No scan without path!')
+
+                file.close()
         else:
             print('give B0 filename! No scan without filename!')
         self.gaussmeter.fast(state=False)
