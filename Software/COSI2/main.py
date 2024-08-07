@@ -118,8 +118,12 @@ class data_visualisation_thread(QThread): # this is the data vis thread. Reads d
                 print('vis thread sleeping for %.2f s'%slp)
                 sleep(slp)
             else: # if no data in queue, wait longer
-                sleep(2*slp)
+                for k in range(20):
+                    sleep(2*slp)  
+                    if not self.q.empty():
+                        continue
                 if self.q.empty():
+                    print('vis thread: no data after ',2*slp*k,' sec, quit plotting')
                     break
         self.quit()
         #self.wait()
