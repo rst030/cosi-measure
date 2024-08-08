@@ -46,3 +46,7 @@ making ball
 magnet positioning
 232.80,187.46,301.29
 -90,-90,0
+
+mapping shell 
+0,1,2 rings new 3 ring old: homo xxxx ppm
+0,1,2 rings new 3 ring out: homo xxxx ppm
