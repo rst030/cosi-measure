@@ -314,7 +314,7 @@ class cosimeasure(object):
                         time.sleep(self.measurement_time_delay) # adjust according to the #averages of the gaussmeter
                         bx,by,bz,babs = self.gaussmeter.read_gaussmeter(fakeField=[np.random.randint(100),100,100,100]) # after waiting get the averaged field vals
                         time.sleep(self.measurement_time_delay/3) # serial needs time to read the buffer of the gaussmeter
-                        print('pt %d of %d'%(ptidx,len(self.path.r)),pos,'mm reached, B0=[%.1f,%.4f,%.1f] mT'%(bx,by,bz))
+                        print('pt %d of %d'%(ptidx,len(self.path.r)),pos,'mm reached, B0=[%.4f,%.4f,%.4f] mT'%(bx,by,bz))
                         self.b0.path.current_index  = ptidx
                         
                         # first write to file: failsafe
