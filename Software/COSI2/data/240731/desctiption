@@ -50,3 +50,10 @@ magnet positioning
 mapping shell 
 0,1,2 rings new 3 ring old: homo xxxx ppm
 0,1,2 rings new 3 ring out: homo xxxx ppm
+
+240809 found yz mess, fixed, flipped rings against y=z plane.
+no repulsion of inserts
+recentering magnet to old position
+
+ball map
+ball_240809_flipped_rings_R120_5pts
