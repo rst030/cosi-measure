@@ -25,7 +25,14 @@ magnet positioning
 233.52,269.45,300.87
 -90,-90,0
 
+
+
+
 !!! WRONG center, displaced along ox
+
+
+
+-------------------------------------------------
 corrected center:
 
 232.80735963 187.46293564 301.29890109
@@ -57,3 +64,16 @@ recentering magnet to old position
 
 ball map
 ball_240809_flipped_rings_R120_5pts
+ball_240809_flipped_rings_R120_24pts_PRECISE_MAP
+
+wrong.
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!
+see simulation
+all rings removed
+inserted one insert in tray 3, ring 0, all magnet against the field. 
+
+ball R120 12 pts
+ball_no_rings_one_insert3_ALONG_field_12pts_R120
+
+magnets look into the wall and help the field.
