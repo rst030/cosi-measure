@@ -20,7 +20,7 @@ perform_git_operations() {
 
     # Commit the changes with a timestamp
     #while true; do
-    git commit -m "COSI2 automated commit on $(date)" # change msg as needed
+    git -c user.name='rst' -c user.email='rst030@protonmail.com' commit -m "COSI2 automated commit on $(date)" # change msg as needed
     #sleep 6h # change 6 with any value
     #done
 }
