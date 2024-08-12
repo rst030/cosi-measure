@@ -29,9 +29,10 @@ perform_git_operations() {
 for repo_dir in "${repo_dirs[@]}"; do
     # Run the script initially for each repo directory
     perform_git_operations "$repo_dir" &
+    git push origin main
 done
 
-git push origin main
+
 
 # Loop indefinitely and push any changes, every few minutes
 #while true; do
