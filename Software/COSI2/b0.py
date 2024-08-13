@@ -458,12 +458,12 @@ class b0():
         self.zDim_SPH_decomp = np.linspace(0, resolution*(fieldMapDims[2]-1), fieldMapDims[2]) - resolution*(fieldMapDims[2] -1)/2
 
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        x,y,z = np.meshgrid(self.xDim_SPH_decomp, self.yDim_SPH_decomp, self.zDim_SPH_decomp, indexing='xy')
-        coord = [x,y,z]
+        x,y,z = np.meshgrid(self.xDim_SPH_decomp, self.yDim_SPH_decomp, self.zDim_SPH_decomp, indexing='ij')
+        coord = [x,z,y]
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         #Create a spherical mask for the data
-        sphereMask = np.zeros(np.shape(coord[0]), dtype = bool)
+        sphereMask = np.zeros(np.shape(coord[2]), dtype = bool)
         sphereMask[np.square(coord[0]) + np.square(coord[1]) + np.square(coord[2]) <= (self.DSV/2)**2] = 1 
         sphereMask = sphereMask*(~np.isnan(fieldMap))
 
@@ -557,8 +557,8 @@ class b0():
         self.zDim_SPH_fine = np.linspace(-DSV/2, DSV/2, int(DSV/resolution+1))
         
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        x,y,z = np.meshgrid(self.xDim_SPH_fine, self.yDim_SPH_fine, self.zDim_SPH_fine, indexing='xy') 
-        self.coord_grid_fine = [x,y,z]
+        x,y,z = np.meshgrid(self.xDim_SPH_fine, self.yDim_SPH_fine, self.zDim_SPH_fine, indexing='ij') 
+        self.coord_grid_fine = [x,z,y]
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         
                 #Create a spherical mask for the data
