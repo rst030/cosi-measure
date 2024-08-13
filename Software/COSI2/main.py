@@ -90,6 +90,8 @@ class data_generating_thread(QThread):
 
         self.cosimeasure.run_measurement()
 
+        print('TODO: commit and push with ./autocommit.sh')
+
         self.quit()
         #self.wait()
         
