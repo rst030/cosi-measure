@@ -459,11 +459,11 @@ class b0():
 
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!
         x,y,z = np.meshgrid(self.xDim_SPH_decomp, self.yDim_SPH_decomp, self.zDim_SPH_decomp, indexing='ij')
-        coord = [x,y,z]
+        coord = [x,z,y]
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         #Create a spherical mask for the data
-        sphereMask = np.zeros(np.shape(coord[0]), dtype = bool)
+        sphereMask = np.zeros(np.shape(coord[2]), dtype = bool)
         sphereMask[np.square(coord[0]) + np.square(coord[1]) + np.square(coord[2]) <= (self.DSV/2)**2] = 1 
         sphereMask = sphereMask*(~np.isnan(fieldMap))
 
@@ -558,7 +558,7 @@ class b0():
         
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         x,y,z = np.meshgrid(self.xDim_SPH_fine, self.yDim_SPH_fine, self.zDim_SPH_fine, indexing='ij') 
-        self.coord_grid_fine = [x,y,z]
+        self.coord_grid_fine = [x,z,y]
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         
                 #Create a spherical mask for the data
