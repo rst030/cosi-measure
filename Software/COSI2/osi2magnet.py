@@ -116,7 +116,7 @@ def rotatePoint_xyz(point:np.array, origin:np.array, gamma, beta, alpha):
     origin_point = np.array([origin[0], origin[1], origin[2]])
         
     r = R.from_euler('xyz', [gamma, beta, alpha], degrees=True)
-        
+         
     rotation_matrix = r.as_matrix()
     #print(rotation_matrix)
 
