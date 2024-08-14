@@ -98,7 +98,7 @@ class ball_path(object):
             * radius - radius of the sphere """
 
             r2 = abs(x-center[0])**2 + abs(y-center[1])**2 + abs(z-center[2])**2
-            if r2 < abs(radius)**2:
+            if r2 <= abs(radius)**2:
                 return True
             else:
                 #print(r2,'>',radius**2)
