@@ -301,9 +301,9 @@ class b0():
            
            # replacing the min point by neighbor
             if meanField_raw/abs(self.fieldDataAlongPath[idx,0])>1.25:
-                print(self.fieldDataAlongPath[idx,0],'is too small! NOT assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
-                #self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
-                #print('assigned: ',self.fieldDataAlongPath[idx,:], '<-----')
+                print(self.fieldDataAlongPath[idx,0],'is too small! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
+                self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
+                print('assigned: ',self.fieldDataAlongPath[idx,:], '<-----')
 
 
             b0Data[xArg,yArg,zArg,:] = [self.fieldDataAlongPath[idx,0],self.fieldDataAlongPath[idx,1],self.fieldDataAlongPath[idx,2],self.fieldDataAlongPath[idx,3]]
@@ -334,6 +334,8 @@ class b0():
         self.mean_field = meanField
         self.b0Data = b0Data
         print('B0.B0 DATA GENERATED ON A RECT GRID')
+        
+        print('generating a mesh grid')
 
     # ------------------- data parsers -------------------
                 
@@ -459,7 +461,7 @@ class b0():
 
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!
         x,y,z = np.meshgrid(self.xDim_SPH_decomp, self.yDim_SPH_decomp, self.zDim_SPH_decomp, indexing='ij')
-        coord = [x,z,y]
+        coord = [x,y,z]
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         #Create a spherical mask for the data
@@ -505,6 +507,7 @@ class b0():
 
 
         lsqFit = lstsq(spherHarm, maskedFieldShell)
+        #print(lsqFit[:])
         #spherHarmCoeff = lsqFit[0]
 
         #calculate the field from the spherical harmonic decomposition
@@ -512,9 +515,8 @@ class b0():
         print("Inhomogeneity of fit: %.0f ppm" %(abs(1e6*(np.max(decomposedField) - np.min(decomposedField))/np.mean(decomposedField))))
 
         #See what the difference is between the two decomposed field
-        shimmedField = maskedFieldShell - decomposedField
-        print("Error: %.0f ppm" %(1e6*(np.max(shimmedField) - np.min(shimmedField))/np.mean(shimmedField)))
-
+        diffSph =  maskedFieldShell - decomposedField
+      
         #generate spherical coordinates over entire sphere, not just shell, for plotting
         spherCoordSphere = np.copy(spherCoord)
         spherCoordSphere[spherCoord[...,0] == 0,:] = np.nan
@@ -527,6 +529,7 @@ class b0():
 
         # calculate difference between decomposed field and measured field
         errorField = maskedField - decomposedField
+        print("Error: %.0f ppm" %(1e6*(np.nanmax(errorField) - np.nanmin(errorField))/np.nanmean(errorField)))
 
         # --- assigning class variables ---
         self.maskedField = maskedField
@@ -558,7 +561,7 @@ class b0():
         
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         x,y,z = np.meshgrid(self.xDim_SPH_fine, self.yDim_SPH_fine, self.zDim_SPH_fine, indexing='ij') 
-        self.coord_grid_fine = [x,z,y]
+        self.coord_grid_fine = [x,y,z]
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         
                 #Create a spherical mask for the data
