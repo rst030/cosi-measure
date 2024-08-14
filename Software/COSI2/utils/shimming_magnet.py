@@ -35,7 +35,7 @@ class shimming_magnet():
         self.update_rotation(self.rotation_yz)
 
         self.dip_mom = self.magnetization(self.bRem,self.magSizeOuter) 
-       
+        print(self.bRem)
         
         mu = 1e-7
         dip_vec = self.dipole_vector#mu*np.array([0,dip_mom,0]) # dipole moment in YZ plane!, initially - along Y
