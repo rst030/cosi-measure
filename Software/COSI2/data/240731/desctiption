@@ -79,3 +79,20 @@ ball_no_rings_one_insert3_ALONG_field_12pts_R120
 magnets look into the wall and help the field.
 
 ball_R0I3_240813_R120_12pts_fixed_rotations
+
+240819
+one ring simulated, inserted.
+magnet strength corrected, shim radius corrected.
+expected ppm 3720
+
+recentered. same center.
+making ball
+232.80,187.46,301.29,120
+12 pts
+
+magnet positioning
+232.80,187.46,301.29
+-90,-90,0
+
+then inserted one insert R0I3 and measured another ball
+240819_R0I3_one_ring_opt_ball_R120_12pts
