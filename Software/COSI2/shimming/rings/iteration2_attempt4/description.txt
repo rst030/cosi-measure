@@ -1,0 +1,8 @@
+simulated one insert
+shim radius reduced to 260 mm
+strength of magnets incerased by a factor of 1.35*2 = 2.7
+run shim script on one insert, all rotations in the insert against z
+shim gives rotations along z which is correct.
+ran same script for full map, fresh, no inserts. (only the 4 rings of iter1 are in)
+4 rings generated.
+svgs in /svg 
