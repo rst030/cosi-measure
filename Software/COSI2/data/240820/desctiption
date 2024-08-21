@@ -1,0 +1,21 @@
+mapping the v2.1 magnet
+
+center
+[234.30717523 232.95268587 204.90588943]
+g0 x234.4 y233 z204.91
+
+cosi coordinates are magnet coordinates
+
+ball 240 mm DSV
+
+center: 48.40
+back: 48.83
+front: 48.37
+top: 49.67
+bottom: 48.99
+left: 47.09
+right: 47.10
+
+making a ball
+b
+
