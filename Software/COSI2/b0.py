@@ -374,7 +374,7 @@ class b0():
         # 315.17	152.35	113.75	0	100	0	0
         self.fieldDataAlongPath = np.zeros((len(field_lines),4))
         for idx, line in enumerate(field_lines):
-            b0x = float(line.split(',')[3])
+            b0x = -float(line.split(',')[3])
             b0y = float(line.split(',')[4])
             b0z = float(line.split(',')[5])
             b0abs = float(line.split(',')[6])
