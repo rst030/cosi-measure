@@ -61,7 +61,7 @@ class cosimeasure(object):
         
         self.magnet = magnet
 
-        self.measurement_time_delay = 2.8 #s
+        self.measurement_time_delay = 1 #s
         if isfake:
             self.measurement_time_delay = 0.25 # for quick testing
             return
@@ -298,7 +298,7 @@ class cosimeasure(object):
                     self.moveto(self.path.r[0,0],self.path.r[0,1],self.path.r[0,2]) # move the head physically to the position
                     pt_prev = self.path.r[0]
                     dummy_data_likely_zero = self.gaussmeter.read_gaussmeter(fakeField=[np.random.randint(100),100,100,100]) # after waiting get the averaged field vals                    
-                    time.sleep(5)
+                    time.sleep(3)
                     ptidx = 0 # index of the point along the path
                     for pt in self.path.r: # follow the path
                         
@@ -306,14 +306,15 @@ class cosimeasure(object):
                                            
                         self.moveto(pt[0],pt[1],pt[2]) # move the head physically to the position
                         if distance_to_prev_point > 50: 
-                            time.sleep(3*self.measurement_time_delay)
+                            time.sleep(7+distance_to_prev_point/20)
                             print('sleeping')
-                            
+                        
+                        time.sleep(self.measurement_time_delay) # adjust according to the #averages of the gaussmeter
                         pos = self.get_current_position(fakePosition=pt) # update head position of the cosimeasure object, used for live plotting
                         #print(pt) # if gui lags, the terminal still shows points
-                        time.sleep(self.measurement_time_delay) # adjust according to the #averages of the gaussmeter
+                        
                         bx,by,bz,babs = self.gaussmeter.read_gaussmeter(fakeField=[np.random.randint(100),100,100,100]) # after waiting get the averaged field vals
-                        time.sleep(self.measurement_time_delay/3) # serial needs time to read the buffer of the gaussmeter
+                        #time.sleep(self.measurement_time_delay/3) # serial needs time to read the buffer of the gaussmeter
                         print('pt %d of %d'%(ptidx,len(self.path.r)),pos,'mm reached, B0=[%.4f,%.4f,%.4f] mT'%(bx,by,bz))
                         self.b0.path.current_index  = ptidx
                         

@@ -72,6 +72,8 @@ class gradient_path(object):
 
 
 class ball_path(object):
+    # 
+
     points = np.array([]) # 0,0,0; 1,1,1; 2,2,2; ...
 
     def __init__(self,filename_input,center_point_input,radius_input,radius_npoints_input) -> None:
@@ -81,10 +83,10 @@ class ball_path(object):
         self.radius_npoints = radius_npoints_input
 
         # writes to a file already
-        self.make_ball(center = self.center, radius = self.radius, radius_npoints = self.radius_npoints)
+        self.make_ball(center = self.center, radius = self.radius, radius_npoints = self.radius_npoints,check_extremes=True)
 
 
-    def make_ball(self, center, radius:float, radius_npoints:int):
+    def make_ball(self, center, radius:float, radius_npoints:int,check_extremes: bool):
 
         def G0(x:float,y:float,z:float):
             g0 =  'x%.2f y%.2f z%.2f\n'%(x,y,z)
@@ -104,6 +106,36 @@ class ball_path(object):
                 #print(r2,'>',radius**2)
                 return False
 
+        def write_extremes(): # write extreme points of the path to the path file
+            xc = center[0]
+            yc = center[1]
+            zc = center[2]
+            
+            center_pt   = [xc,yc,zc] # center point
+            right_pt    = [xc-radius,yc,zc] # right pt
+            left_pt     = [xc+radius,yc,zc] # left pt
+            back_pt     = [xc,yc-radius,zc] # back pt
+            front_pt    = [xc,yc+radius,zc] # front pt
+            top_pt      = [xc,yc,zc+radius] # top pt
+            bottom_pt   = [xc,yc,zc-radius] # bottom pt
+            
+            
+            x,y,z = center_pt
+            f.write( G0(x=x, y=y, z=z) )
+            x,y,z = right_pt
+            f.write( G0(x=x, y=y, z=z) )
+            x,y,z = left_pt
+            f.write( G0(x=x, y=y, z=z) )
+            x,y,z = back_pt
+            f.write( G0(x=x, y=y, z=z) )
+            x,y,z = front_pt
+            f.write( G0(x=x, y=y, z=z) )
+            x,y,z = top_pt
+            f.write( G0(x=x, y=y, z=z) )
+            x,y,z = bottom_pt
+            f.write( G0(x=x, y=y, z=z) )
+
+
         npoints = radius_npoints
 
         xSteps = np.linspace(center[0]-radius, center[0]+radius, 2*npoints+1)
@@ -115,6 +147,10 @@ class ball_path(object):
         #print(min(zSteps),max(zSteps))
 
         with open(self.filename, 'w+') as f:
+
+            if check_extremes:
+                write_extremes()
+
             xIsReversed = False
             yIsReversed = False
             for z in zSteps:
@@ -143,9 +179,9 @@ class ball_path(object):
                             xIsReversed = True
                             for x in xSteps:
                                 if checkBounds(x,y,z,center,radius):
-                                    f.write( G0(x=x, y=y, z=z) )
-                                    
-
-        
+                                    f.write( G0(x=x, y=y, z=z) )              
+            if check_extremes:
+                write_extremes()
+                print('extreme points written to path file.')
 
         print('Ball pathfile is written.')
