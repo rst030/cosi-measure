@@ -57,7 +57,7 @@ class gaussmeter(object):
         
         self.ser.write('ALLF?'.encode())
         value = ''
-        sleep(0.1)
+        sleep(0.2)
         while self.ser.inWaiting() > 0:
             prey = self.ser.read(1)
             value += prey.decode()

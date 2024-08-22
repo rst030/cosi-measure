@@ -61,7 +61,8 @@ class cosimeasure(object):
         
         self.magnet = magnet
 
-        self.measurement_time_delay = 1 #s
+        self.measurement_time_delay = 3 #s
+        
         if isfake:
             self.measurement_time_delay = 0.25 # for quick testing
             return
@@ -95,6 +96,7 @@ class cosimeasure(object):
             line = self.ser.readline()
             print(line)
             if line == b'ok\n':
+                print(command, ' executed.')
                 return lastline
 
     '''====== MOVING HEAD ======'''
@@ -186,7 +188,7 @@ class cosimeasure(object):
                 self.command("G0 Z%.2f"%maxz) # homing max z               
 
     def moveto(self,x:float,y:float,z:float):
-        #print('moving head to %.2f, %.2f, %.2f'%(x,y,z))
+
         self.command("G0 X%.2f Y%.2f Z%.2f"%(x,y,z))
         self.head_position = self.get_current_position(fakePosition=[x,y,z])
 
@@ -213,9 +215,9 @@ class cosimeasure(object):
         ypos = float(vals[1].split(':')[1])
         zpos = float(vals[2].split(':')[1])
         
-        print('x: ',xpos, 'mm')
-        print('y: ',ypos, 'mm')
-        print('z: ',zpos, 'mm')
+        print('GCP x: ',xpos, 'mm')
+        print('GCP y: ',ypos, 'mm')
+        print('GCP z: ',zpos, 'mm')
 
         self.head_position=[xpos,ypos,zpos]
 
@@ -276,7 +278,7 @@ class cosimeasure(object):
         self.path = self.b0.path
         
         print('cosimeasure uses path of the passed b0 object')
-        self.gaussmeter.fast(state=False)
+        self.gaussmeter.fast(state=True)
         print('running along path, no display on GM')
         if self.b0_filename: # if filename was given
             with open(self.b0_filename, 'w') as file: # open that file
@@ -296,25 +298,26 @@ class cosimeasure(object):
                     self.command('G90') ### SEND G90 before any path movement to make sure we are in absolute mode
                     time.sleep(0.5)
                     self.moveto(self.path.r[0,0],self.path.r[0,1],self.path.r[0,2]) # move the head physically to the position
-                    pt_prev = self.path.r[0]
+                    
                     dummy_data_likely_zero = self.gaussmeter.read_gaussmeter(fakeField=[np.random.randint(100),100,100,100]) # after waiting get the averaged field vals                    
                     time.sleep(3)
                     ptidx = 0 # index of the point along the path
+                    speed = 20 # [mm/s]
+                    t_offset = 1 # [s]
+                    t_meas = 1 # [s] measurement
+
                     for pt in self.path.r: # follow the path
-                        
-                        distance_to_prev_point = np.sqrt(np.dot(pt-pt_prev,pt-pt_prev))  
-                                           
+                        pt_prev = self.get_current_position(fakePosition=pt)
+                        dist = np.linalg.norm(np.add(np.asarray(pt),-np.asarray(pt_prev)))
+                        t = dist/speed + t_offset + t_meas
+
                         self.moveto(pt[0],pt[1],pt[2]) # move the head physically to the position
-                        if distance_to_prev_point > 50: 
-                            time.sleep(7+distance_to_prev_point/20)
-                            print('sleeping')
+                        time.sleep(t)
                         
-                        time.sleep(self.measurement_time_delay) # adjust according to the #averages of the gaussmeter
-                        pos = self.get_current_position(fakePosition=pt) # update head position of the cosimeasure object, used for live plotting
-                        #print(pt) # if gui lags, the terminal still shows points
-                        
+
                         bx,by,bz,babs = self.gaussmeter.read_gaussmeter(fakeField=[np.random.randint(100),100,100,100]) # after waiting get the averaged field vals
-                        #time.sleep(self.measurement_time_delay/3) # serial needs time to read the buffer of the gaussmeter
+                        pos = self.get_current_position(fakePosition=pt)
+
                         print('pt %d of %d'%(ptidx,len(self.path.r)),pos,'mm reached, B0=[%.4f,%.4f,%.4f] mT'%(bx,by,bz))
                         self.b0.path.current_index  = ptidx
                         
@@ -322,7 +325,8 @@ class cosimeasure(object):
                         bval_str = '%f %f %f %f\n'%(bx,by,bz,babs)
                         self.bvalues.append(bval_str) # save bvalues to ram
                         
-                        file.write('%.3f,%.3f,%.3f,%.4f,%.4f,%.4f,%.4f\n'%(pt[0],pt[1],pt[2],bx,by,bz,babs))
+                        #file.write('%.3f,%.3f,%.3f,%.4f,%.4f,%.4f,%.4f\n'%(pt[0],pt[1],pt[2],bx,by,bz,babs))
+                        file.write('%.3f,%.3f,%.3f,%.4f,%.4f,%.4f,%.4f\n'%(pos[0],pos[1],pos[2],bx,by,bz,babs))
 
                         
                         # then write to object
@@ -330,7 +334,8 @@ class cosimeasure(object):
                     
                         self.q.put(self.b0) # spit b0 object to the queue every time a new point is measured
                         
-                        pt_prev = pt
+                        #pt_prev = pt
+                        pt_prev = pos
                         ptidx +=1    
                         
                         
