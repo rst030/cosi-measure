@@ -8,14 +8,19 @@ cosi coordinates are magnet coordinates
 
 ball 240 mm DSV
 
-center: 48.40
-back: 48.83
-front: 48.37
+center: 48.40 irl: -48.698
+back: 48.83 x234.4 y233-120=113 z204. irl: -48.804
+front: 48.37 
 top: 49.67
 bottom: 48.99
-left: 47.09
+left: 47.09 x234.4+120=354.4 y233 z204 irl: -48.237
 right: 47.10
 
 making a ball
 b
 
+fix plotting, plot 1st component
+get quicker map coarse, less waiting, 1s
+1-2 hr
+
+add 6 extreme points before and after the map
