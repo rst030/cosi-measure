@@ -374,7 +374,7 @@ class b0():
         # 315.17	152.35	113.75	0	100	0	0
         self.fieldDataAlongPath = np.zeros((len(field_lines),4))
         for idx, line in enumerate(field_lines):
-            b0x = float(line.split(',')[3])
+            b0x = -float(line.split(',')[3])
             b0y = float(line.split(',')[4])
             b0z = float(line.split(',')[5])
             b0abs = float(line.split(',')[6])
@@ -386,7 +386,7 @@ class b0():
             self.fieldDataAlongPath[idx,:] = [b0x,b0y,b0z,b0abs]
             
             
-    def parse_header_of_CSV_file(self,header_lines):
+    def parse_header_of_CSV_file(self,header_lines,eulers=None):
         # COSI2 B0 scan						
         # time 2024-05-17 13:21:45.456312						
         # MAGNET CENTER IN LAB: x 265.170 mm	 y 182.350 mm	 z 163.750 mm				
@@ -399,10 +399,15 @@ class b0():
         mag_center_y = float(mg_cor_str.split(',')[1].split(' ')[2])
         mag_center_z= float(mg_cor_str.split(',')[2].split(' ')[2])
         
+        # euler angles are rotation of the magnet wrt cosi
         mg_euler_str = header_lines[3].split(':')[1]
         mag_alpha = float(mg_euler_str.split(',')[0].split(' ')[2])
         mag_beta = float(mg_euler_str.split(',')[1].split(' ')[2])
         mag_gamma= float(mg_euler_str.split(',')[2].split(' ')[2])
+        if eulers is not None:
+            mag_alpha = float(eulers[0])
+            mag_beta = float(eulers[0])
+            mag_gamma= float(eulers[0])
 
         self.magnet = osi2magnet.osi2magnet(origin=[mag_center_x,mag_center_y,mag_center_z],euler_angles_zyx=[mag_alpha,mag_beta,mag_gamma])
 
@@ -748,7 +753,7 @@ class b0():
                 bi = self.fieldDataAlongPath[i,:]
                 file.write('%.3f,%.3f,%.3f,%.4f,%.4f,%.4f,%.4f\n'%(ri[0],ri[1],ri[2],bi[0],bi[1],bi[2],bi[3]))
         
-    def import_from_csv(self,b0_filename: str):
+    def import_from_csv(self,b0_filename: str,eulers=None):
         print('importing b0 object from csv file%s'%b0_filename)
 
         # make an empty instance of b0 and get the b0 values from the csv file.
@@ -763,7 +768,7 @@ class b0():
                         
                 header_lines = raw_B0_data[0:headerlength]    
                 field_lines = raw_B0_data[headerlength:]
-                self.parse_header_of_CSV_file(header_lines)
+                self.parse_header_of_CSV_file(header_lines,eulers=eulers)
                 self.parse_field_of_CSV_file(field_lines) 
          
         # import the path from the path file
