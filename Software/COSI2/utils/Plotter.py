@@ -251,10 +251,10 @@ class PlotterCanvas(FigureCanvas):
             
             if slice_number_xy >= 0:
                 #x, y = np.meshgrid(b0map_object.xPts, b0map_object.yPts)
-                z = b0map_object.zPts[slice_number_xy]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
+                z = b0map_object.zPts[slice_number_xy]#(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
             
-                #vals = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,1])
-                imgdata = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,0])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
+                #vals = (b0map_object.b0Data[:,:,slice_number_xy,1])
+                imgdata = (b0map_object.b0Data[:,:,slice_number_xy,0])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
                 img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
                                     origin = 'lower', 
                                     extent=[min(b0map_object.xPts),max(b0map_object.xPts),min(b0map_object.yPts),max(b0map_object.yPts)])
@@ -266,10 +266,10 @@ class PlotterCanvas(FigureCanvas):
                 
             if slice_number_zx >= 0:
                 #x, y = np.meshgrid(b0map_object.xPts, b0map_object.yPts)
-                y = b0map_object.yPts[slice_number_zx]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
+                y = b0map_object.yPts[slice_number_zx]#(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
             
-                #vals = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,1])
-                imgdata = np.transpose(b0map_object.b0Data[:,slice_number_zx,:,0])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
+                #vals = (b0map_object.b0Data[:,:,slice_number_xy,1])
+                imgdata = (b0map_object.b0Data[:,slice_number_zx,:,0])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
                 img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
                                     origin = 'lower',
                                     extent=[min(b0map_object.xPts),max(b0map_object.xPts),min(b0map_object.zPts),max(b0map_object.zPts)])
@@ -280,10 +280,10 @@ class PlotterCanvas(FigureCanvas):
                 self.update_plotter()
                 
             if slice_number_yz >= 0:
-                x = b0map_object.yPts[slice_number_yz]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
+                x = b0map_object.yPts[slice_number_yz]#(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
             
-                #vals = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,1])
-                imgdata = np.transpose(b0map_object.b0Data[slice_number_yz,:,:,0])
+                #vals = (b0map_object.b0Data[:,:,slice_number_xy,1])
+                imgdata = (b0map_object.b0Data[slice_number_yz,:,:,0])
                 img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
                                     origin = 'lower',
                                     extent=[min(b0map_object.yPts),max(b0map_object.yPts),min(b0map_object.zPts),max(b0map_object.zPts)])
@@ -299,10 +299,10 @@ class PlotterCanvas(FigureCanvas):
             
             if slice_number_xy >= 0:
                 #x, y = np.meshgrid(b0map_object.xPts, b0map_object.yPts)
-                z = b0map_object.xDim_SPH_fine[slice_number_xy]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
+                z = b0map_object.xDim_SPH_fine[slice_number_xy]#(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
             
-                #vals = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,1])
-                imgdata = np.transpose(b0map_object.interpolatedField[:,:,slice_number_xy])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
+                #vals = (b0map_object.b0Data[:,:,slice_number_xy,1])
+                imgdata = (b0map_object.interpolatedField[:,:,slice_number_xy])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
                 img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
                                     origin = 'lower', 
                                     extent=[min(b0map_object.xDim_SPH_fine),max(b0map_object.xDim_SPH_fine),min(b0map_object.yDim_SPH_fine),max(b0map_object.yDim_SPH_fine)])
@@ -314,10 +314,10 @@ class PlotterCanvas(FigureCanvas):
                 
             if slice_number_zx >= 0:
                 #x, y = np.meshgrid(b0map_object.xPts, b0map_object.yPts)
-                y = b0map_object.zDim_SPH_fine[slice_number_zx]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
+                y = b0map_object.zDim_SPH_fine[slice_number_zx]#(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
             
-                #vals = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,1])
-                imgdata = np.transpose(b0map_object.interpolatedField[:,slice_number_zx,:])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
+                #vals = (b0map_object.b0Data[:,:,slice_number_xy,1])
+                imgdata = (b0map_object.interpolatedField[:,slice_number_zx,:])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
                 img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
                                     origin = 'lower',
                                     extent=[min(b0map_object.xDim_SPH_fine),max(b0map_object.xDim_SPH_fine),min(b0map_object.zDim_SPH_fine),max(b0map_object.zDim_SPH_fine)])
@@ -328,10 +328,10 @@ class PlotterCanvas(FigureCanvas):
                 self.update_plotter()
                 
             if slice_number_yz >= 0:
-                x = b0map_object.yDim_SPH_fine[slice_number_yz]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
+                x = b0map_object.yDim_SPH_fine[slice_number_yz]#(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
             
-                #vals = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,1])
-                imgdata = np.transpose(b0map_object.interpolatedField[slice_number_yz,:,:])
+                #vals = (b0map_object.b0Data[:,:,slice_number_xy,1])
+                imgdata = (b0map_object.interpolatedField[slice_number_yz,:,:])
                 img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
                                     origin = 'lower',
                                     extent=[min(b0map_object.yDim_SPH_fine),max(b0map_object.yDim_SPH_fine),min(b0map_object.zDim_SPH_fine),max(b0map_object.zDim_SPH_fine)])
@@ -355,10 +355,10 @@ class PlotterCanvas(FigureCanvas):
                     
             if slice_number_xy >= 0:
                 #x, y = np.meshgrid(b0map_object.xPts, b0map_object.yPts)
-                z = b0map_object.xDim_SPH_fine[slice_number_xy]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
+                z = b0map_object.xDim_SPH_fine[slice_number_xy]#(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
             
-                #vals = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,1])
-                imgdata = np.transpose(fieldmap[:,:,slice_number_xy])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
+                #vals = (b0map_object.b0Data[:,:,slice_number_xy,1])
+                imgdata = (fieldmap[:,:,slice_number_xy])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
                 img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
                                     origin = 'lower', 
                                     extent=[min(b0map_object.xDim_SPH_fine),max(b0map_object.xDim_SPH_fine),min(b0map_object.yDim_SPH_fine),max(b0map_object.yDim_SPH_fine)])
@@ -371,10 +371,10 @@ class PlotterCanvas(FigureCanvas):
                 
             if slice_number_zx >= 0:
                 #x, y = np.meshgrid(b0map_object.xPts, b0map_object.yPts)
-                y = b0map_object.zDim_SPH_fine[slice_number_zx]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
+                y = b0map_object.zDim_SPH_fine[slice_number_zx]#(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
             
-                #vals = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,1])
-                imgdata = np.transpose(fieldmap[:,slice_number_zx,:])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
+                #vals = (b0map_object.b0Data[:,:,slice_number_xy,1])
+                imgdata = (fieldmap[:,slice_number_zx,:])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
                 img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
                                     origin = 'lower',
                                     extent=[min(b0map_object.xDim_SPH_fine),max(b0map_object.xDim_SPH_fine),min(b0map_object.zDim_SPH_fine),max(b0map_object.zDim_SPH_fine)])
@@ -385,10 +385,10 @@ class PlotterCanvas(FigureCanvas):
                 self.update_plotter()
                 
             if slice_number_yz >= 0:
-                x = b0map_object.yDim_SPH_fine[slice_number_yz]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
+                x = b0map_object.yDim_SPH_fine[slice_number_yz]#(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
             
-                #vals = np.transpose(b0map_object.b0Data[:,:,slice_number_xy,1])
-                imgdata = np.transpose(fieldmap[slice_number_yz,:,:])
+                #vals = (b0map_object.b0Data[:,:,slice_number_xy,1])
+                imgdata = (fieldmap[slice_number_yz,:,:])
                 img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
                                     origin = 'lower',
                                     extent=[min(b0map_object.yDim_SPH_fine),max(b0map_object.yDim_SPH_fine),min(b0map_object.zDim_SPH_fine),max(b0map_object.zDim_SPH_fine)])
@@ -510,9 +510,9 @@ class PlotterCanvas(FigureCanvas):
                 # if slice number xy given, plot Z slice
 
                 x,y = np.meshgrid(b0map_object.xPts, b0map_object.yPts,indexing='ij')
-                z = b0map_object.zPts[slice_number_xy]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
+                z = b0map_object.zPts[slice_number_xy]#(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
             
-                vals =(b0map_object.b0Data[:,:,slice_number_xy,0])#np.transpose(b0map_object.b0Data[:,:,slice_number_xy,1])
+                vals =(b0map_object.b0Data[:,:,slice_number_xy,0])#(b0map_object.b0Data[:,:,slice_number_xy,1])
             
                 
                 ctrf = self.axes.contourf(x,y,vals, offset = z, zdir = 'z', alpha=0.5,cmap=slice_color_map,edgecolor='black',vmin = minval_of_b0, vmax = maxval_of_b0,levels=nlevels)
@@ -524,7 +524,7 @@ class PlotterCanvas(FigureCanvas):
                 # if slice number zx given, plot Y slice
 
                 x,z = np.meshgrid(b0map_object.xPts, b0map_object.zPts,indexing='ij')      
-                y = b0map_object.yPts[slice_number_zx]#np.transpose(np.ones((len(b0map_object.xPts), len(b0map_object.zPts)))*b0map_object.yPts[slice_number_zx])
+                y = b0map_object.yPts[slice_number_zx]#(np.ones((len(b0map_object.xPts), len(b0map_object.zPts)))*b0map_object.yPts[slice_number_zx])
             
                 vals = (b0map_object.b0Data[:,slice_number_zx,:,0])
                 
@@ -539,7 +539,7 @@ class PlotterCanvas(FigureCanvas):
                 
                 y,z = np.meshgrid(b0map_object.yPts, b0map_object.zPts,indexing='ij')
             
-                x = b0map_object.xPts[slice_number_yz]#np.transpose(np.ones((len(b0map_object.yPts), len(b0map_object.zPts)))*b0map_object.xPts[slice_number_yz])
+                x = b0map_object.xPts[slice_number_yz]#(np.ones((len(b0map_object.yPts), len(b0map_object.zPts)))*b0map_object.xPts[slice_number_yz])
             
                 vals = (b0map_object.b0Data[slice_number_yz,:,:,0])
             

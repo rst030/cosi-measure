@@ -301,9 +301,9 @@ class b0():
            
            # replacing the min point by neighbor
             if meanField_raw/abs(self.fieldDataAlongPath[idx,0])>1.25:
-                print(self.fieldDataAlongPath[idx,0],'is too small! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
-                self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
-                print('assigned: ',self.fieldDataAlongPath[idx,:], '<-----')
+                print(self.fieldDataAlongPath[idx,0],'is too small! NOT assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
+                #self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
+                #print('assigned: ',self.fieldDataAlongPath[idx,:], '<-----')
 
 
             b0Data[xArg,yArg,zArg,:] = [self.fieldDataAlongPath[idx,0],self.fieldDataAlongPath[idx,1],self.fieldDataAlongPath[idx,2],self.fieldDataAlongPath[idx,3]]

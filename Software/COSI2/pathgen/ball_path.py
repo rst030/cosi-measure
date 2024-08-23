@@ -76,20 +76,22 @@ class ball_path(object):
 
     points = np.array([]) # 0,0,0; 1,1,1; 2,2,2; ...
 
-    def __init__(self,filename_input,center_point_input,radius_input,radius_npoints_input) -> None:
+    def __init__(self,filename_input,center_point_input,radius_input,radius_npoints_input,check_extremes=None) -> None:
         self.filename = filename_input
         self.center = center_point_input
         self.radius = radius_input
         self.radius_npoints = radius_npoints_input
+        self.r = []
 
         # writes to a file already
-        self.make_ball(center = self.center, radius = self.radius, radius_npoints = self.radius_npoints,check_extremes=True)
+        self.make_ball(center = self.center, radius = self.radius, radius_npoints = self.radius_npoints,check_extremes=check_extremes)
 
 
     def make_ball(self, center, radius:float, radius_npoints:int,check_extremes: bool):
 
         def G0(x:float,y:float,z:float):
             g0 =  'x%.2f y%.2f z%.2f\n'%(x,y,z)
+            self.r.append([x,y,z])
             return(g0)
 
         def checkBounds(x,y,z,center,radius):
