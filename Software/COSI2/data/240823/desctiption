@@ -1,0 +1,39 @@
+mapping the v2.1 magnet
+ref measurements for coordinate rotations
+
+center
+[234.30717523 232.95268587 204.90588943]
+[232.29337611 232.95256202 201.88362858]
+g0 x232.29 z201.88
+g0 x232.29 y232.95 z201.88
+
+cosi coordinates are magnet coordinates
+
+ball 240 mm DSV
+
+
+        240820 / 240821 / 240823
+center: 48.40 / 48.45 / 48.27
+back: 48.83 / 48.89 / 48.70
+front: 48.37 / 48.43 / 48.25
+top: 49.67 / 49.76 / 48.49
+bottom: 48.99 / 49.03 / 48.90
+left: 47.09 / 47.12 / 46.93
+right: 47.10 / 47.20 / 47.01
+
+making a ball
+g0 x232.29 y232.95 z201.88
+232.29,232.95,201.88,120
+2
+232.29,232.95,201.88
+0,0,0
+
+
+240823_RIGHT right point singularity
+240823_LEFT left point singular
+240823_TOP top point singular
+240823_FRONT front point singular 2pts careful
+240823_BACK back point singular !!! 2pts careful
+240823_BOTTOM bottom point singular
+
+
