@@ -120,14 +120,17 @@ class b0():
         # is called by btn on gui     
         print('ROTATING THE PATH NOW!')
         # rotate path according to the euler angles of the magnet, but backwards
-        self.path.rotate_euler_backwards(gamma=self.magnet.gamma,beta=self.magnet.beta,alpha=self.magnet.alpha) 
+        #self.path.rotate_euler_backwards(gamma=self.magnet.gamma,beta=self.magnet.beta,alpha=self.magnet.alpha) 
+        self.path.rotate_euler_forwards(gamma=self.magnet.gamma,beta=self.magnet.beta,alpha=self.magnet.alpha)
+        
         # center the path to the origin, as the origin of the path is the origin of the magnet
-        temp_origin_offset = [0,0,0]
-        self.path.center(origin=self.magnet.origin+temp_origin_offset)
+        self.path.center(origin=self.magnet.origin)
         print('ROTATING THE MAGNET NOW!')
         # rotate the magnet
-        self.magnet.rotate_euler_backwards(gamma=self.magnet.gamma,beta=self.magnet.beta,alpha=self.magnet.alpha) # for the backwards euler rotation rotate by negative values in the reversed order: was zyx, now xyz
-        self.magnet.set_origin(temp_origin_offset[0],temp_origin_offset[1],temp_origin_offset[2])    
+        #self.magnet.rotate_euler_backwards(gamma=self.magnet.gamma,beta=self.magnet.beta,alpha=self.magnet.alpha) # for the backwards euler rotation rotate by negative values in the reversed order: was zyx, now xyz
+        self.magnet.rotate_euler(gamma=self.magnet.gamma,beta=self.magnet.beta,alpha=self.magnet.alpha)
+        
+        self.magnet.set_origin(0,0,0)    
         
          # now that we have the path and the b0 lets compare number of points in both.
         print('len(path.r)=',len(self.path.r))
@@ -295,13 +298,13 @@ class b0():
            
            # replacing the max point by neighbor
             if abs(self.fieldDataAlongPath[idx,0])/meanField_raw>1.25:
-                print(self.fieldDataAlongPath[idx,0],'is too big! NOT assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
+                print(self.fieldDataAlongPath[idx,0],'is too high! NOT assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
                 #self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
                 #print('assigned: ',self.fieldDataAlongPath[idx,:], '<+++++')
            
            # replacing the min point by neighbor
             if meanField_raw/abs(self.fieldDataAlongPath[idx,0])>1.25:
-                print(self.fieldDataAlongPath[idx,0],'is too small! NOT assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
+                print(self.fieldDataAlongPath[idx,0],'is too low! NOT assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
                 #self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
                 #print('assigned: ',self.fieldDataAlongPath[idx,:], '<-----')
 
@@ -374,7 +377,7 @@ class b0():
         # 315.17	152.35	113.75	0	100	0	0
         self.fieldDataAlongPath = np.zeros((len(field_lines),4))
         for idx, line in enumerate(field_lines):
-            b0x = -float(line.split(',')[3])
+            b0x = float(line.split(',')[3])
             b0y = float(line.split(',')[4])
             b0z = float(line.split(',')[5])
             b0abs = float(line.split(',')[6])
@@ -534,7 +537,7 @@ class b0():
 
         # calculate difference between decomposed field and measured field
         errorField = maskedField - decomposedField
-        print("Error: %.0f ppm" %(1e6*(np.nanmax(errorField) - np.nanmin(errorField))/np.nanmean(errorField)))
+        print("Error: %.0f ppm" %(1e6*(np.nanmax(errorField) - np.nanmin(errorField))/np.nanmean(maskedField)))
 
         # --- assigning class variables ---
         self.maskedField = maskedField

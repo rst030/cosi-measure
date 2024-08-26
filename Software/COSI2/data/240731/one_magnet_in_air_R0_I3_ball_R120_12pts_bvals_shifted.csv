@@ -1,7 +1,7 @@
 # COSI2 B0 scan,,,,,,
 # time 2024-08-14 16:42:19.285340,,,,,,
 # MAGNET CENTER IN LAB: x 232.800 mm, y 187.460 mm, z 301.290 mm,,,,
-# MAGNET AXES WRT LAB: alpha -90.00 deg, beta -90.00 deg, gamma 0.00 deg,,,,
+# MAGNET AXES WRT LAB: alpha 90.00 deg, beta 90.00 deg, gamma 0.00 deg,,,,
 # path: /home/cosi/cosi-measure/Software/COSI2/data/240731/one_magnet_in_air_R0_I3_ball_R120_12pts,,,,,,
 # X[mm],Y[mm],Z[mm],B0_x[mT],B0_y[mT],B0_z[mT],B0_abs[mT]
 252.8,227.46,191.29,-0.167,0.17,-0.06,0.246
