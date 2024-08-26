@@ -100,3 +100,17 @@ then inserted one insert R0I3 and measured another ball
 240820 recalculated one-ring shim
 240820_coarse_ball_recalculated_one_ring
 ball 3 pts per radius
+
+240826
+one ring 0
+with inserts as simulated with correct ? euler rotations
+quick scan coarse ball
+
+232.80735963 187.46293564 301.29890109
+g0 x232.80 z301.29
+g0 x232.80 y187.46 z301.29
+
+
+232.80,187.46,301.29,120
+3 pts
+240826_MAP_ONERING_NEGATIVE_ANGLES
