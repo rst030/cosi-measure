@@ -252,46 +252,58 @@ class PlotterCanvas(FigureCanvas):
             if slice_number_xy >= 0:
                 #x, y = np.meshgrid(b0map_object.xPts, b0map_object.yPts)
                 z = b0map_object.zPts[slice_number_xy]#(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
-            
                 #vals = (b0map_object.b0Data[:,:,slice_number_xy,1])
                 imgdata = (b0map_object.b0Data[:,:,slice_number_xy,0])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
+                 # Scale colormap to current slice
+                minval_of_b0 = np.nanmin(imgdata)                
+                maxval_of_b0 = np.nanmax(imgdata)                
                 img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
                                     origin = 'lower', 
-                                    extent=[min(b0map_object.xPts),max(b0map_object.xPts),min(b0map_object.yPts),max(b0map_object.yPts)])
+                                    extent=[min(b0map_object.yPts),max(b0map_object.yPts),min(b0map_object.xPts),max(b0map_object.xPts)])
                 
                 self.title = 'XY slice #%d z=%.2f mm'%(slice_number_xy,z)
-                self.xlabel = 'X [mm]'
-                self.ylabel = 'Y [mm]'
+                self.xlabel = 'Y [mm]' #!!!!
+                self.ylabel = 'X [mm]' #!!!!
                 self.update_plotter()
+
                 
             if slice_number_zx >= 0:
                 #x, y = np.meshgrid(b0map_object.xPts, b0map_object.yPts)
-                y = b0map_object.yPts[slice_number_zx]#(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
-            
+                y = b0map_object.yPts[slice_number_zx]#(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])         
                 #vals = (b0map_object.b0Data[:,:,slice_number_xy,1])
                 imgdata = (b0map_object.b0Data[:,slice_number_zx,:,0])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
+                minval_of_b0 = np.nanmin(imgdata)                
+                maxval_of_b0 = np.nanmax(imgdata)           
+                #vals = (b0map_object.b0Data[:,:,slice_number_xy,1])                
                 img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
                                     origin = 'lower',
-                                    extent=[min(b0map_object.xPts),max(b0map_object.xPts),min(b0map_object.zPts),max(b0map_object.zPts)])
+                                    extent=[min(b0map_object.zPts),max(b0map_object.zPts),min(b0map_object.xPts),max(b0map_object.xPts)])
                 
                 self.title = 'ZX slice #%d y=%.2f mm'%(slice_number_zx,y)
-                self.xlabel = 'X [mm]'
-                self.ylabel = 'Z [mm]'
+                self.xlabel = 'Z [mm]' #!!!!
+                self.ylabel = 'X [mm]' #!!!!
                 self.update_plotter()
+
                 
             if slice_number_yz >= 0:
                 x = b0map_object.yPts[slice_number_yz]#(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
-            
-                #vals = (b0map_object.b0Data[:,:,slice_number_xy,1])
+                # Scale colormap to current slice
+
                 imgdata = (b0map_object.b0Data[slice_number_yz,:,:,0])
+                minval_of_b0 = np.nanmin(imgdata)                
+                maxval_of_b0 = np.nanmax(imgdata)           
+                #vals = (b0map_object.b0Data[:,:,slice_number_xy,1])
                 img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
                                     origin = 'lower',
-                                    extent=[min(b0map_object.yPts),max(b0map_object.yPts),min(b0map_object.zPts),max(b0map_object.zPts)])
+                                    extent=[min(b0map_object.zPts),max(b0map_object.zPts),min(b0map_object.yPts),max(b0map_object.yPts)])
                 
                 self.title = 'YZ slice #%d x=%.2f mm'%(slice_number_yz,x)
-                self.xlabel = 'Y [mm]'
-                self.ylabel = 'Z [mm]'
+                self.xlabel = 'Z [mm]'
+                self.ylabel = 'Y [mm]'
                 self.update_plotter()
+
+                
+            
                 
         if plot_sph:
             minval_of_b0 = np.nanmin(b0map_object.interpolatedField[:,:,:])
@@ -305,11 +317,11 @@ class PlotterCanvas(FigureCanvas):
                 imgdata = (b0map_object.interpolatedField[:,:,slice_number_xy])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
                 img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
                                     origin = 'lower', 
-                                    extent=[min(b0map_object.xDim_SPH_fine),max(b0map_object.xDim_SPH_fine),min(b0map_object.yDim_SPH_fine),max(b0map_object.yDim_SPH_fine)])
+                                    extent=[min(b0map_object.yDim_SPH_fine),max(b0map_object.yDim_SPH_fine),min(b0map_object.xDim_SPH_fine),max(b0map_object.xDim_SPH_fine)]) #!!! AND ALL ABOVE
                 
                 self.title = 'FIT. XY slice #%d z=%.2f mm'%(slice_number_xy,z)
-                self.xlabel = 'X [mm]'
-                self.ylabel = 'Y [mm]'
+                self.xlabel = 'Y [mm]' #!!!
+                self.ylabel = 'X [mm]' #!!!
                 self.update_plotter()
                 
             if slice_number_zx >= 0:
@@ -320,11 +332,11 @@ class PlotterCanvas(FigureCanvas):
                 imgdata = (b0map_object.interpolatedField[:,slice_number_zx,:])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
                 img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
                                     origin = 'lower',
-                                    extent=[min(b0map_object.xDim_SPH_fine),max(b0map_object.xDim_SPH_fine),min(b0map_object.zDim_SPH_fine),max(b0map_object.zDim_SPH_fine)])
+                                    extent=[min(b0map_object.zDim_SPH_fine),max(b0map_object.zDim_SPH_fine),min(b0map_object.xDim_SPH_fine),max(b0map_object.xDim_SPH_fine)])
                 
                 self.title = 'FIT ZX slice #%d y=%.2f mm'%(slice_number_zx,y)
-                self.xlabel = 'X [mm]'
-                self.ylabel = 'Z [mm]'
+                self.xlabel = 'Z [mm]'
+                self.ylabel = 'X [mm]'
                 self.update_plotter()
                 
             if slice_number_yz >= 0:
@@ -334,11 +346,11 @@ class PlotterCanvas(FigureCanvas):
                 imgdata = (b0map_object.interpolatedField[slice_number_yz,:,:])
                 img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
                                     origin = 'lower',
-                                    extent=[min(b0map_object.yDim_SPH_fine),max(b0map_object.yDim_SPH_fine),min(b0map_object.zDim_SPH_fine),max(b0map_object.zDim_SPH_fine)])
+                                    extent=[min(b0map_object.zDim_SPH_fine),max(b0map_object.zDim_SPH_fine),min(b0map_object.yDim_SPH_fine),max(b0map_object.yDim_SPH_fine)])
                 
                 self.title = 'FIT YZ slice #%d x=%.2f mm'%(slice_number_yz,x)
-                self.xlabel = 'Y [mm]'
-                self.ylabel = 'Z [mm]'
+                self.xlabel = 'Z [mm]'
+                self.ylabel = 'Y [mm]'
                 self.update_plotter()
                 
         if plot_shim or plot_error:
@@ -356,48 +368,61 @@ class PlotterCanvas(FigureCanvas):
             if slice_number_xy >= 0:
                 #x, y = np.meshgrid(b0map_object.xPts, b0map_object.yPts)
                 z = b0map_object.xDim_SPH_fine[slice_number_xy]#(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
-            
+                # Scale colormap to current slice
+                minval_of_b0 = np.nanmin(imgdata)                
+                maxval_of_b0 = np.nanmax(imgdata)
+                            
                 #vals = (b0map_object.b0Data[:,:,slice_number_xy,1])
                 imgdata = (fieldmap[:,:,slice_number_xy])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
                 img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
                                     origin = 'lower', 
-                                    extent=[min(b0map_object.xDim_SPH_fine),max(b0map_object.xDim_SPH_fine),min(b0map_object.yDim_SPH_fine),max(b0map_object.yDim_SPH_fine)])
+                                    extent=[min(b0map_object.yDim_SPH_fine),max(b0map_object.yDim_SPH_fine),min(b0map_object.xDim_SPH_fine),max(b0map_object.xDim_SPH_fine)])
                 
                 
                 self.title = '%s. XY slice #%d z=%.2f mm'%(typestr, slice_number_xy,z) 
-                self.xlabel = 'X [mm]'
-                self.ylabel = 'Y [mm]'
+                self.xlabel = 'Y [mm]'
+                self.ylabel = 'X [mm]'
                 self.update_plotter()
+
                 
             if slice_number_zx >= 0:
                 #x, y = np.meshgrid(b0map_object.xPts, b0map_object.yPts)
                 y = b0map_object.zDim_SPH_fine[slice_number_zx]#(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
-            
+                # Scale colormap to current slice
+                minval_of_b0 = np.nanmin(imgdata)                
+                maxval_of_b0 = np.nanmax(imgdata)
                 #vals = (b0map_object.b0Data[:,:,slice_number_xy,1])
                 imgdata = (fieldmap[:,slice_number_zx,:])#self.axes.imshow(x,y,vals,cmap=slice_color_map)
                 img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
                                     origin = 'lower',
-                                    extent=[min(b0map_object.xDim_SPH_fine),max(b0map_object.xDim_SPH_fine),min(b0map_object.zDim_SPH_fine),max(b0map_object.zDim_SPH_fine)])
+                                    extent=[min(b0map_object.zDim_SPH_fine),max(b0map_object.zDim_SPH_fine),min(b0map_object.xDim_SPH_fine),max(b0map_object.xDim_SPH_fine)])
                 
                 self.title = '%s ZX slice #%d y=%.2f mm'%(typestr,slice_number_zx,y)
-                self.xlabel = 'X [mm]'
-                self.ylabel = 'Z [mm]'
+                self.xlabel = 'Z [mm]'
+                self.ylabel = 'X [mm]'
                 self.update_plotter()
+
                 
             if slice_number_yz >= 0:
                 x = b0map_object.yDim_SPH_fine[slice_number_yz]#(np.ones((len(b0map_object.xPts), len(b0map_object.yPts)))*b0map_object.zPts[slice_number_xy])
             
                 #vals = (b0map_object.b0Data[:,:,slice_number_xy,1])
+                # Scale colormap to current slice
+                minval_of_b0 = np.nanmin(imgdata)                
+                maxval_of_b0 = np.nanmax(imgdata)
+                
                 imgdata = (fieldmap[slice_number_yz,:,:])
                 img = self.axes.imshow(imgdata,cmap=slice_color_map,vmin = minval_of_b0, vmax= maxval_of_b0,
                                     origin = 'lower',
-                                    extent=[min(b0map_object.yDim_SPH_fine),max(b0map_object.yDim_SPH_fine),min(b0map_object.zDim_SPH_fine),max(b0map_object.zDim_SPH_fine)])
+                                    extent=[min(b0map_object.zDim_SPH_fine),max(b0map_object.zDim_SPH_fine),min(b0map_object.yim_SPH_fine),max(b0map_object.yDim_SPH_fine)])
                 
                 self.title = '%s YZ slice #%d x=%.2f mm'%(typestr,slice_number_yz,x)
-                self.xlabel = 'Y [mm]'
-                self.ylabel = 'Z [mm]'
+                self.xlabel = 'Z [mm]'
+                self.ylabel = 'Y [mm]'
                 self.update_plotter()
-            
+               
+        
+        
          
         try:
             norm = matplotlib.colors.Normalize(vmin=minval_of_b0, vmax=maxval_of_b0)

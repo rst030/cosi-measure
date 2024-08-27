@@ -55,9 +55,9 @@ class osi2magnet():
 
     def rotate_euler_backwards(self,alpha,beta,gamma):
         
-        self.xvector = rotatePoint_xyz(point = self.xvector,origin=self.origin,gamma=-gamma,beta=-beta,alpha=-alpha)
-        self.yvector = rotatePoint_xyz(point = self.yvector,origin=self.origin,gamma=-gamma,beta=-beta,alpha=-alpha)
-        self.zvector = rotatePoint_xyz(point = self.zvector,origin=self.origin,gamma=-gamma,beta=-beta,alpha=-alpha)
+        self.xvector = rotatePoint_xyz(point = self.xvector,origin=self.origin,gamma=-gamma,beta=-beta,alpha=-alpha) #!!!!!
+        self.yvector = rotatePoint_xyz(point = self.yvector,origin=self.origin,gamma=-gamma,beta=-beta,alpha=-alpha) #!!!!!
+        self.zvector = rotatePoint_xyz(point = self.zvector,origin=self.origin,gamma=-gamma,beta=-beta,alpha=-alpha) #!!!!!
 
         self.make_bores()
 
@@ -93,18 +93,18 @@ def rotatePoint_zyx(point:np.array, origin:np.array, alpha, beta, gamma):
     init_point = np.array([point[0], point[1], point[2]])
     origin_point = np.array([origin[0], origin[1], origin[2]])
         
-    r = R.from_euler('zyx', [alpha, beta, gamma], degrees=True)
+    r = R.from_euler('ZYX', [alpha, beta, gamma], degrees=True) # INTRINSIC!!! rotations. in the global frame.
         
     rotation_matrix = r.as_matrix()
     #print(rotation_matrix)
 
-    turned_point = np.add(rotation_matrix@np.add(init_point,-origin_point),origin_point) 
+    turned_point = np.add(rotation_matrix@(np.add(init_point,-origin_point)),origin_point) 
 
     return turned_point
 
 
 def rotatePoint_xyz(point:np.array, origin:np.array, gamma, beta, alpha):
-    # all rotations are extrinsic rotations in the laboratory frame of reference   
+    # all rotations are INTRINSIC rotations in the rotating frame of reference   
 
     # 1. rotate about x by gamma
     # 2. rotate about y by beta
@@ -115,12 +115,12 @@ def rotatePoint_xyz(point:np.array, origin:np.array, gamma, beta, alpha):
     init_point = np.array([point[0], point[1], point[2]])
     origin_point = np.array([origin[0], origin[1], origin[2]])
         
-    r = R.from_euler('xyz', [gamma, beta, alpha], degrees=True)
+    r = R.from_euler('ZYX', [gamma, beta, alpha], degrees=True)
          
     rotation_matrix = r.as_matrix()
     #print(rotation_matrix)
 
-    turned_point = np.add(rotation_matrix@np.add(init_point,-origin_point),origin_point) 
+    turned_point = np.add(rotation_matrix@(np.add(init_point,-origin_point)),origin_point) 
 
     return turned_point
  
