@@ -134,3 +134,16 @@ making ball
 2 hours to go
 
 'so far homogeneity display'- to implement
+
+240827 map recorded in the morning
+shell scan
+240827_positive_rotations_sphere_shell_20pts_R120
+~5500 ppm
+no inserts shell:
+240827_NO_INSERTS_sphere_shell_20pts_R120
+
+one banana R0*I3 z -260mm y0 x~ -90mm
+t_meas 0.2
+t_offset 0.2
+R120 12 pts
+ONE_INSERT_Z-260Y0X-90_R120_12pts
