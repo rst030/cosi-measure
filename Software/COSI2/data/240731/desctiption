@@ -114,3 +114,23 @@ g0 x232.80 y187.46 z301.29
 232.80,187.46,301.29,120
 3 pts
 240826_MAP_ONERING_NEGATIVE_ANGLES
+
+240826
+RECENTERED
+[230.63610158 199.48804072 302.23492438]
+g0 x230.63 y199.48 z302.23  
+
+making ball
+12 pts R120
+230.64,199.49,302.24,120
+12
+240826_MAP_ONERING_POSITIVE_ANGLES
+
+#WARNING! magnet in main gui rotated with external rotations not internal rotations!#
+
+21:15
+7153 pts to record
+2.5 sec per pt
+2 hours to go
+
+'so far homogeneity display'- to implement
