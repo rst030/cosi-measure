@@ -53,20 +53,6 @@ class osi2magnet():
 
         self.make_bores()
 
-    def rotate_euler_backwards(self,alpha,beta,gamma):
-        
-        self.xvector = rotatePoint_xyz(point = self.xvector,origin=self.origin,gamma=-gamma,beta=-beta,alpha=-alpha) #!!!!!
-        self.yvector = rotatePoint_xyz(point = self.yvector,origin=self.origin,gamma=-gamma,beta=-beta,alpha=-alpha) #!!!!!
-        self.zvector = rotatePoint_xyz(point = self.zvector,origin=self.origin,gamma=-gamma,beta=-beta,alpha=-alpha) #!!!!!
-
-        self.make_bores()
-
-        self.alpha = self.alpha - alpha
-        self.beta = self.beta - beta
-        self.gamma = self.gamma - gamma
-        print('warning! euler angles of the magnet changed!')
-        
-
 
 
 
@@ -88,40 +74,26 @@ def rotatePoint_zyx(point:np.array, origin:np.array, alpha, beta, gamma):
     # 2. rotate about y by beta
     # 3. rotate about x by gamma
 
-    # https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.from_euler.html
+    r = np.asarray(point)
+    #print('init pt: ',r)
+    center = np.asarray(origin)
+    #print('center: ',center)
+    r_centered = r-center
+    #print('centered pt: ',r_centered)
+    
+    a = alpha
+    b = beta
+    y = gamma
 
-    init_point = np.array([point[0], point[1], point[2]])
-    origin_point = np.array([origin[0], origin[1], origin[2]])
-        
-    r = R.from_euler('ZYX', [alpha, beta, gamma], degrees=True) # INTRINSIC!!! rotations. in the global frame.
-        
-    rotation_matrix = r.as_matrix()
-    #print(rotation_matrix)
+    from scipy.spatial.transform import Rotation
 
-    turned_point = np.add(rotation_matrix@(np.add(init_point,-origin_point)),origin_point) 
+    A = Rotation.from_euler('XYZ',[y, b, a], degrees=True)
 
-    return turned_point
+    rotation_matrix = A.as_matrix()
+    #print('rotation matrix: ',rotation_matrix)
+    r_centered_rotated = rotation_matrix@r_centered
+    #print('rotated centered pt: ',r_centered_rotated)
+    r_centered_rotated_shifted = r_centered_rotated+center
+    #print('rotated centered shifted pt: ',r_centered_rotated_shifted)
 
-
-def rotatePoint_xyz(point:np.array, origin:np.array, gamma, beta, alpha):
-    # all rotations are INTRINSIC rotations in the rotating frame of reference   
-
-    # 1. rotate about x by gamma
-    # 2. rotate about y by beta
-    # 3. rotate about z by alpha
-
-    # https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.from_euler.html
-
-    init_point = np.array([point[0], point[1], point[2]])
-    origin_point = np.array([origin[0], origin[1], origin[2]])
-        
-    r = R.from_euler('ZYX', [gamma, beta, alpha], degrees=True)
-         
-    rotation_matrix = r.as_matrix()
-    #print(rotation_matrix)
-
-    turned_point = np.add(rotation_matrix@(np.add(init_point,-origin_point)),origin_point) 
-
-    return turned_point
- 
-
+    return r_centered_rotated_shifted

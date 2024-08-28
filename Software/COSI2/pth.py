@@ -113,19 +113,12 @@ class pth():
         print('path center set to: ',self.pathCenter)  
 
 
-    def rotate_euler_forwards(self,alpha,beta,gamma):
+    def rotate_euler(self,alpha,beta,gamma): #!!!!!!!!!!!!!
         for i in range(len(self.r[:,0])):
-            self.r[i,:] = osi2magnet.rotatePoint_zyx(point = self.r[i,:],origin=self.pathCenter,gamma=gamma,beta=beta,alpha=alpha) #!!!!!!!!!!!
-       
-
-    def rotate_euler_backwards(self,alpha,beta,gamma):
-        # uses the method defined in osi2magnet. todo: move to utils
-        #orgn = [self.pathCenter[0],self.pathCenter[1],self.pathCenter[2]]
-        
-        for i in range(len(self.r[:,0])):
-            self.r[i,:] = osi2magnet.rotatePoint_xyz(point = self.r[i,:],origin=self.pathCenter,gamma=-gamma,beta=-beta,alpha=-alpha) #!!!!!!!!!!!
-
-            # warning! here something is not right.
+            pt = self.r[i,:]
+            rotated_pt = osi2magnet.rotatePoint_zyx(point = pt,origin=self.pathCenter,gamma=gamma,beta=beta,alpha=alpha) 
+            self.r[i,:] = rotated_pt
+            
             
 
     def saveAs(self,filename: str):
