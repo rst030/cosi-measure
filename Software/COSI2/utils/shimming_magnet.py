@@ -21,7 +21,7 @@ class shimming_magnet():
         self.position = position
         self.rotation_yz = rotation_yz
         self.dip_mom = self.magnetization(self.bRem, self.magSizeOuter) 
-        self.dipole_vector = np.array([0,np.cos(-rotation_yz),np.sin(-rotation_yz)])*self.mu*self.dip_mom # dipole moment in YZ plane!, initially - along Y
+        self.dipole_vector = np.array([0,np.cos(rotation_yz),np.sin(rotation_yz)])*self.mu*self.dip_mom # dipole moment in YZ plane!, initially - along Y
         
         print('magnet created, dipole points to ',self.dipole_vector/np.linalg.norm(self.dipole_vector))
 

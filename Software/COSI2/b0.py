@@ -121,7 +121,7 @@ class b0():
         print('ROTATING THE PATH NOW!')
         # rotate path according to the euler angles of the magnet, but backwards
         #self.path.rotate_euler_backwards(gamma=self.magnet.gamma,beta=self.magnet.beta,alpha=self.magnet.alpha) 
-        self.path.rotate_euler_forwards(gamma=self.magnet.gamma,beta=self.magnet.beta,alpha=self.magnet.alpha)
+        self.path.rotate_euler(gamma=self.magnet.gamma,beta=self.magnet.beta,alpha=self.magnet.alpha)
         
         # center the path to the origin, as the origin of the path is the origin of the magnet
         self.path.center(origin=self.magnet.origin)
@@ -227,8 +227,7 @@ class b0():
         
         for idx in range(2,len(self.path.r)):
             step = abs(self.path.r[idx,:] - self.path.r[idx-1,:])
-            if step[2]>0:
-                print('z step:',step[2])
+            
             if step[0] > 1e-3:
                 step_size_x_list.append(step[0])
             if step[1] > 1e-3:
@@ -243,18 +242,15 @@ class b0():
         
         print('path step size: ',step_size_x,step_size_y,step_size_z)
 
-        #num_steps_x = round((x_max-x_min)/step_size_x)+1
-        #num_steps_y = round((x_max-x_min)/step_size_y)+1
-        #num_steps_z = round((x_max-x_min)/step_size_z)+1
 
         # so there are unique_x x values between x_min and x_max
         # lets make a linspace
         self.xPts = np.arange(start=x_min,stop=x_max,step=step_size_x) #linspace(start=x_min,stop=x_max,num=num_steps_x)
-        print("10 xPts: ", self.xPts[0:10])
+        #print("10 xPts: ", self.xPts[0:10])
         self.yPts = np.arange(start=y_min,stop=y_max,step=step_size_y) #linspace(start=y_min,stop=y_max,num=num_steps_y)
-        print("10 yPts: ", self.yPts[0:10])
+        #print("10 yPts: ", self.yPts[0:10])
         self.zPts = np.arange(start=z_min,stop=z_max,step=step_size_z) #linspace(start=z_min,stop=z_max,num=num_steps_z)
-        print("10 zPts: ", self.zPts[0:10])
+        #print("10 zPts: ", self.zPts[0:10])
         
                 
         # now we do a trick
@@ -384,7 +380,7 @@ class b0():
 
             if b0abs == 0 :# sometimes gaussmeter doesnt give the vector
                 b0abs = np.sqrt(b0x**2+b0y**2+b0z**2)
-                print('OOPS')
+                print('OOPS, |Bo|=0')
             
             self.fieldDataAlongPath[idx,:] = [b0x,b0y,b0z,b0abs]
             
@@ -404,13 +400,14 @@ class b0():
         
         # euler angles are rotation of the magnet wrt cosi
         mg_euler_str = header_lines[3].split(':')[1]
+
         mag_alpha = float(mg_euler_str.split(',')[0].split(' ')[2])
         mag_beta = float(mg_euler_str.split(',')[1].split(' ')[2])
         mag_gamma= float(mg_euler_str.split(',')[2].split(' ')[2])
         if eulers is not None:
             mag_alpha = float(eulers[0])
-            mag_beta = float(eulers[0])
-            mag_gamma= float(eulers[0])
+            mag_beta = float(eulers[1])
+            mag_gamma= float(eulers[2])
 
         self.magnet = osi2magnet.osi2magnet(origin=[mag_center_x,mag_center_y,mag_center_z],euler_angles_zyx=[mag_alpha,mag_beta,mag_gamma])
 
