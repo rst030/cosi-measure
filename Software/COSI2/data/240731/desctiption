@@ -147,3 +147,10 @@ t_meas 0.2
 t_offset 0.2
 R120 12 pts
 ONE_INSERT_Z-260Y0X-90_R120_12pts
+
+flipped alphas in inserts, mapping shell
+240827_negative_rotations_sphere_shell_20pts_R120
+
+18:01
+inserted inserts after sims that ARE capable of matching ONE INSERT that was MAPPED outside magnet
+240827_NEWINSERTS_EULERSIM_R120_12pts
