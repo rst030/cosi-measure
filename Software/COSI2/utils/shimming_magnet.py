@@ -35,15 +35,15 @@ class shimming_magnet():
         self.update_rotation(self.rotation_yz)
 
         self.dip_mom = self.magnetization(self.bRem,self.magSizeOuter) 
-        print(self.bRem)
+        #print(self.bRem)
         
         mu = 1e-7
         dip_vec = self.dipole_vector#mu*np.array([0,dip_mom,0]) # dipole moment in YZ plane!, initially - along Y
-        print('!!!!!!!!!!!!!!!!!!!!!!',dip_vec)
+        #print('expensive render',dip_vec)
          
-        x = grid[0]*1e-3-self.position[0]
-        z = grid[1]*1e-3-self.position[1] #!!!!!!!!!!!!!!!!!!!!!! 
-        y = grid[2]*1e-3-self.position[2] #!!!!!!!!!!!!!!!!!!!!!! 
+        x = grid[0]*1e-3-self.position[0] #!!!!!!!!!!!!!!!!!!!!!!
+        y = grid[1]*1e-3-self.position[1] #!!!!!!!!!!!!!!!!!!!!!! 
+        z = grid[2]*1e-3-self.position[2] #!!!!!!!!!!!!!!!!!!!!!! 
         
 
         mx = dip_vec[0]
@@ -57,8 +57,8 @@ class shimming_magnet():
 
 
         B0[:,:,:,0] += np.divide(np.multiply(x,vec_dot_dip),rvec**5)# - np.divide(mx,rvec**3)
-        B0[:,:,:,1] += np.divide(np.multiply(y,vec_dot_dip),rvec**5) - np.divide(my,rvec**3)
-        B0[:,:,:,2] += np.divide(np.multiply(z,vec_dot_dip),rvec**5) - np.divide(mz,rvec**3)
+        B0[:,:,:,1] += np.divide(np.multiply(y,vec_dot_dip),rvec**5) - np.divide(my,rvec**3) #!!!!!!!!!
+        B0[:,:,:,2] += np.divide(np.multiply(z,vec_dot_dip),rvec**5) - np.divide(mz,rvec**3) #!!!!!!!!!
         self.B0 = B0
 
         return B0
@@ -100,13 +100,17 @@ class shimming_magnet():
         simDimensions[1] = np.max((grid[1])-np.min(grid[1]))*1e-3
         simDimensions[2] = np.max((grid[2])-np.min(grid[2]))*1e-3
 
-        X = np.linspace(-simDimensions[0]/2-position[0], simDimensions[0]/2-position[0], int(simDimensions[0]*resolution)+2, dtype=np.float32)
-        Y = np.linspace(-simDimensions[1]/2-position[1], simDimensions[1]/2-position[1], int(simDimensions[1]*resolution)+2, dtype=np.float32)
-        Z = np.linspace(-simDimensions[2]/2-position[2], simDimensions[2]/2-position[2], int(simDimensions[2]*resolution)+2, dtype=np.float32)
+        X = np.linspace(-simDimensions[0]/2, simDimensions[0]/2, int(simDimensions[0]*resolution)+2, dtype=np.float32)
+        Y = np.linspace(-simDimensions[1]/2, simDimensions[1]/2, int(simDimensions[1]*resolution)+2, dtype=np.float32)
+        Z = np.linspace(-simDimensions[2]/2, simDimensions[2]/2, int(simDimensions[2]*resolution)+2, dtype=np.float32)
         print('x vector length in single magnet simulation: ',len(X))
         
-        x,y,z = np.meshgrid(X,Y,Z,indexing='ij')
-        y2d, z2d = np.meshgrid(Y,Z,indexing='ij')
+        grid = np.meshgrid(X,Y,Z,indexing='ij')
+        y2d, z2d = np.meshgrid(Y,Z,indexing='ij')      
+        
+        x = grid[0]*1e-3-position[0] #!!!!!!!!!!!!!!!!!!!!!!
+        y = grid[1]*1e-3-position[1] #!!!!!!!!!!!!!!!!!!!!!! 
+        z = grid[2]*1e-3-position[2] #!!!!!!!!!!!!!!!!!!!!!! 
         
 
         mx = dip_vec[0]
@@ -146,48 +150,42 @@ class shimming_magnet():
         #based on the dipole approximation
         #create mesh coordinates
         
-        X = np.linspace(-simDimensions[0]/2 - position[0], simDimensions[0]/2 - position[0] , int(simDimensions[0]*resolution)+1, dtype=np.float32)
-        Y = np.linspace(-simDimensions[1]/2 - position[1], simDimensions[1]/2 - position[1] , int(simDimensions[1]*resolution)+1, dtype=np.float32)
-        Z = np.linspace(-simDimensions[2]/2 - position[2], simDimensions[2]/2 - position[2] , int(simDimensions[2]*resolution)+1, dtype=np.float32)
+        X = np.linspace(-simDimensions[0]/2, simDimensions[0]/2 , int(simDimensions[0]*resolution)+1, dtype=np.float32)#!!!!!!!!!!!!!!!!!!!!!!
+        Y = np.linspace(-simDimensions[1]/2, simDimensions[1]/2 , int(simDimensions[1]*resolution)+1, dtype=np.float32)#!!!!!!!!!!!!!!!!!!!!!!
+        Z = np.linspace(-simDimensions[2]/2, simDimensions[2]/2 , int(simDimensions[2]*resolution)+1, dtype=np.float32) #!!!!!!!!!!!!!!!!!!!!!!
    
         print('x vector length in single magnet simulation: ',len(X))
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!     
-        x,y,z = np.meshgrid(X,Y,Z,indexing='ij')
+        grid = np.meshgrid(X,Y,Z,indexing='ij')
+        
+        x = grid[0]*1e-3-position[0] #!!!!!!!!!!!!!!!!!!!!!!
+        y = grid[1]*1e-3-position[1] #!!!!!!!!!!!!!!!!!!!!!! 
+        z = grid[2]*1e-3-position[2] #!!!!!!!!!!!!!!!!!!!!!! 
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!     
-        y2d, z2d = np.meshgrid(Y,Z,indexing='ij')
+
 
         print('computing field of one shim magnet at ',position[0],position[1],position[2])
 
         #vec_dot_dip = 3*(x*dipoleMoment[0] + y*dipoleMoment[1]) # was in Tom's script, where the shim magnet was in the xy plane
         
-        mx = dipoleMoment[0]
-        my = dipoleMoment[1]
-        mz = dipoleMoment[2]
+        rvec = np.sqrt(np.square(x)+np.square(y)+np.square(z))
+        vec_dot_dip = 3*(y*dipoleMoment[1] + z*dipoleMoment[2])
+
+        dip_vec = np.array([0,np.cos(0),np.sin(0)])*self.mu*self.dip_mom # the cheap magnet is always pointing along +Y
+        
+        mx = dip_vec[0]
+        my = dip_vec[1]
+        mz = dip_vec[2]
+
         rvec = np.sqrt(np.square(x)+np.square(y)+np.square(z))
         vec_dot_dip = 3*(np.multiply(mx,x) + np.multiply(my,y) + np.multiply(mz,z))
-        
 
-        B0 = np.zeros(np.shape(x)+(3,), dtype=np.float32)
+        B0 = np.zeros((np.shape(x)+(3,)),dtype = np.float32)
 
-        B0[:,:,:,0] = np.divide(np.multiply(x,vec_dot_dip),rvec**5)# - np.divide(mx,rvec**3)
-        B0[:,:,:,1] = np.divide(np.multiply(y,vec_dot_dip),rvec**5) - np.divide(my,rvec**3)
-        B0[:,:,:,2] = np.divide(np.multiply(z,vec_dot_dip),rvec**5) - np.divide(mz,rvec**3) #1/(x**2+y**2+z**2)#
 
-        
-
-        if plotFields:
-            # plot the field of one shim magnet in the YZ plane 
-            from matplotlib import pyplot as plt
-            ax = plt.figure().add_subplot()#projection='3d')
-            ax.contourf(y2d,z2d,B0[int(len(X)/2),:,:,2],cmap='coolwarm')#,clim=[-1e-5,1e-5])
-            ax.set_xlabel('Y')
-            ax.set_ylabel('Z')
-            
-            ax.set_title('z component of field of a single magnet YZ plane')
-
-            plt.show()
-        
-        #self.grid = [x,y,z]
-        self.field = B0
+        B0[:,:,:,0] += np.divide(np.multiply(x,vec_dot_dip),rvec**5)# - np.divide(mx,rvec**3)
+        B0[:,:,:,1] += np.divide(np.multiply(y,vec_dot_dip),rvec**5) - np.divide(my,rvec**3) #!!!!!!!!!
+        B0[:,:,:,2] += np.divide(np.multiply(z,vec_dot_dip),rvec**5) - np.divide(mz,rvec**3) #!!!!!!!!!
+        self.B0 = B0
 
         return B0
