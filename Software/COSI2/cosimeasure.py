@@ -340,10 +340,11 @@ class cosimeasure(object):
                         
                         
                     print('path scanning done. saving file')
-                    print('moving head away from magnet')
-                    self.home_axis(axis='y',dir=1)
-                    time.sleep(5)
-                    self.home_axis(axis='x',dir=1)
+                    print('not moving head away from magnet')
+                    print('TODO: go back to the center of the path in the end of the scan')
+                    #self.home_axis(axis='y',dir=1)
+                    #time.sleep(5)
+                    #self.home_axis(axis='x',dir=1)
 
                     #write shim orientations to file
 
