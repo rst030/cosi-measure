@@ -91,6 +91,7 @@ class pth():
         y_c = np.nanmean(self.r[:,1])
         z_c = np.nanmean(self.r[:,2])
         self.pathCenter = np.array([x_c,y_c,z_c])
+        return self.pathCenter
                     
                     
     def center(self,origin=None):

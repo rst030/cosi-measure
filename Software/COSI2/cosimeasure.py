@@ -338,10 +338,17 @@ class cosimeasure(object):
                         pt_prev = pos
                         ptidx +=1    
                         
-                        
                     print('path scanning done. saving file')
+
+                    print('going back to the center of the path in the end of the scan')
+                    
+                    ptctr = self.path.get_path_center()
+                    x_c = ptctr[0]
+                    y_c = ptctr[1]
+                    z_c = ptctr[2]
+                    self.moveto(x_c,y_c,z_c)
+                    
                     print('not moving head away from magnet')
-                    print('TODO: go back to the center of the path in the end of the scan')
                     #self.home_axis(axis='y',dir=1)
                     #time.sleep(5)
                     #self.home_axis(axis='x',dir=1)

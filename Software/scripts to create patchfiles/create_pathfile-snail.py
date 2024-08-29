@@ -18,19 +18,21 @@ from COSI import G0, displayPath, runWatchdogs# check4duplicates
 ##############################################################################
 
 # Please enter the filename for the pathfile to be generated here
-filename = '2021-10-14_PathfileTest_Snail'
+filename = '2024-08-29_PathfileTest_Snail_5_magnets_5mm_step'
 
 # Set the min and max dimensions along x-y-z coordinates and step size
-xMin       = 380 - 24 + 2.08 # [mm] minimum of x coordinate
-xMax       = 380 + 24 + 2.08 # [mm] maximum of x coordinate
 
-yMin       = 286 - 24 # [mm] minimum of y coordinate
-yMax       = 286 + 24 # [mm] maximum of y coordinate
 
-zMin       = 538.8 - 4 # [mm] minimum of z coordinate
-zMax       = 538.8 + 4 # [mm] maximum of z coordinate
+xMin       = 201#380 - 24 + 2.08 # [mm] minimum of x coordinate
+xMax       = 401#380 + 24 + 2.08 # [mm] maximum of x coordinate
 
-stepSize   = 4   # [mm] spacing of sample points
+yMin       = 359#286 - 24 # [mm] minimum of y coordinate
+yMax       = 459#286 + 24 # [mm] maximum of y coordinate
+
+zMin       = 291#538.8 - 4 # [mm] minimum of z coordinate
+zMax       = 391#538.8 + 4 # [mm] maximum of z coordinate
+
+stepSize   = 5#4   # [mm] spacing of sample points
 
 # in case the save rountine omitts the first point set doExtraPoint to True
 # and set firstPoint to a point where you would like to start the measurement

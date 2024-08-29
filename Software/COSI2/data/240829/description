@@ -1,0 +1,18 @@
+rectangular volume map
+
+path file
+
+probing a rectangle
+tip_point = 2.05
+zmin = 293-tip_point
+zmax = 393-tip_point
+xmin = 200
+xmax = 400
+ymin = 359
+ymax = 459
+
+
+g0 x300 y409
+
+10 mm map: 2024-08-29_..._5_magnets
+5 mm map: 2024-08-29_..._5_magnets_5mm_step
