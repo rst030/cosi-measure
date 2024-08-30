@@ -114,7 +114,7 @@ class b0():
         
         
     ''' path transformation to the coordinate system of the magnet '''    
-    def transfer_coordinates_of_the_path_from_cosi_to_magnet(self):
+    def transfer_coordinates_of_the_path_from_cosi_to_magnet(self,filtering=None):
         # now does everything, like an entry point. separate.
         
         # is called by btn on gui     
@@ -137,7 +137,7 @@ class b0():
         print('len(b0Data)=',len(self.fieldDataAlongPath))
 
         if len(self.path.r) == len(self.fieldDataAlongPath[:,0]):
-            self.reorder_field_to_cubic_grid() # make a cubic grid with xPts, yPts, zPts and define B0 on that
+            self.reorder_field_to_cubic_grid(filtering=filtering) # make a cubic grid with xPts, yPts, zPts and define B0 on that
         else:
             print('LEN of PATH and DATA', len(self.path.r), '   ',len(self.fieldDataAlongPath[:,0]))
         
@@ -196,7 +196,7 @@ class b0():
             
     
     
-    def reorder_field_to_cubic_grid(self):
+    def reorder_field_to_cubic_grid(self,filtering=None):
         # what we want to do here is make the coordinate grid. A cube, essentially.
         # we know that the path has a fixed distance between the points. This is crucial.
         # but the path is a snake path! it is a 1d line. 
@@ -292,17 +292,18 @@ class b0():
                 self.fieldDataAlongPath[idx,:] == self.fieldDataAlongPath[idx-1,:] if self.fieldDataAlongPath[idx-1,0] !=0 else self.fieldDataAlongPath[idx-2,:]
                 print('b0 importer: warning! 0 VALUE detected! pt %d, assigning'%(idx),self.fieldDataAlongPath[idx-1,:])
            
-           # replacing the max point by neighbor
-            if abs(self.fieldDataAlongPath[idx,0])/meanField_raw>1.25:
-                print(self.fieldDataAlongPath[idx,0],'is too high! NOT assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
-                #self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
-                #print('assigned: ',self.fieldDataAlongPath[idx,:], '<+++++')
-           
-           # replacing the min point by neighbor
-            if meanField_raw/abs(self.fieldDataAlongPath[idx,0])>1.25:
-                print(self.fieldDataAlongPath[idx,0],'is too low! NOT assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
-                #self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
-                #print('assigned: ',self.fieldDataAlongPath[idx,:], '<-----')
+            # replacing the max point by neighbor
+            if filtering is not None: # by how much can the valiues deviate
+                if abs(self.fieldDataAlongPath[idx,0])/meanField_raw>filtering:
+                    print(self.fieldDataAlongPath[idx,0],'is too high! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
+                    self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
+                    print('assigned: ',self.fieldDataAlongPath[idx,:], '<+++++')
+            
+            # replacing the min point by neighbor
+                if meanField_raw/abs(self.fieldDataAlongPath[idx,0])>filtering:
+                    print(self.fieldDataAlongPath[idx,0],'is too low! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
+                    self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
+                    print('assigned: ',self.fieldDataAlongPath[idx,:], '<-----')
 
 
             b0Data[xArg,yArg,zArg,:] = [self.fieldDataAlongPath[idx,0],self.fieldDataAlongPath[idx,1],self.fieldDataAlongPath[idx,2],self.fieldDataAlongPath[idx,3]]
