@@ -112,7 +112,9 @@ class data_visualisation_thread(QThread): # this is the data vis thread. Reads d
             if not empty:
                 break
         
-        while True:
+        self.quit() #!!!!!! TEMP!!!!! no gui update
+
+        while False: #!!!!!! TEMP!!!!! no gui update
             if not self.q.empty():
                 while not self.q.empty():
                     self.cosimeasure.b0 = self.q.get()
@@ -379,7 +381,13 @@ class Ui(QtWidgets.QMainWindow):
         
         self.cosimeasure.b0_filename=base_filename+'_bvals.csv'
         # todo: do the path generator inside the pth class
-        sphere_path = ball_path.ball_path(filename_input=self.cosimeasure.pathfile_path,center_point_input=[xc,yc,zc],radius_input=rad,radius_npoints_input=radpts)
+        #sphere_path = ball_path.ball_path(filename_input=self.cosimeasure.pathfile_path,center_point_input=[xc,yc,zc],radius_input=rad,radius_npoints_input=radpts)
+        
+        #!!!!!!!!!!!!! TEMP!!!!! RECTANGULAR PATH
+        #
+        rect_path = ball_path.rect_path(filename_input=self.cosimeasure.pathfile_path,center_point_input=[xc,yc,zc],radius_input=rad,radius_npoints_input=radpts)
+          
+        
         self.cosimeasure.load_path() # change to automatic loading of path when the path filename is given
         self.pathPlotter.plot_head_on_path(cosimeasure=self.cosimeasure,magnet=self.magnet)
 
@@ -412,27 +420,22 @@ class Ui(QtWidgets.QMainWindow):
 
     def load_path(self,pathfilename=None):
         print('load the path file.')
-        
-        if pathfilename is not None:
-            print("given filename: ",pathfilename)
-            self.cosimeasure.pathfile_path = pathfilename#+'.path'
-        # if no filename given, open file dialog
-        else:
-            try:
-                self.cosimeasure.pathfile_path, _ = QtWidgets.QFileDialog.getSaveFileName(self, caption="Select path data",
-                                                                       directory=self.cosimeasure.working_directory,
-                                                                       filter="path Files (*.path);;CSV Files (*.csv)")
-                self.cosimeasure.working_directory = os.path.split(os.path.abspath(self.cosimeasure.pathfile_path))[0]
+    
+        try:
+            self.cosimeasure.pathfile_path, _ = QtWidgets.QFileDialog.getOpenFileName(self, caption="Select path data",
+                                                                    directory=self.cosimeasure.working_directory,
+                                                                    filter="path Files (*.path);;CSV Files (*.csv)")
+            self.cosimeasure.working_directory = os.path.split(os.path.abspath(self.cosimeasure.pathfile_path))[0]
 
-            except:
-                print('no filename given, do it again.')
+        except:
+            print('no filename given, do it again.')
             return 
         
-        if self.cosimeasure.pathfile_path:
-            print('loading path %s with cosimeasure.'%self.cosimeasure.pathfile_path)
-            self.cosimeasure.load_path(path_filename=self.cosimeasure.pathfile_path)
-            self.pathPlotter.plot_head_on_path(cosimeasure=self.cosimeasure,magnet=self.magnet)
-
+        base_filename = os.path.splitext(self.cosimeasure.pathfile_path)[0]
+        self.cosimeasure.b0_filename=base_filename+'_bvals.csv'
+        # todo: do the path generator inside the pth class
+        self.cosimeasure.load_path() # change to automatic loading of path when the path filename is given
+        self.pathPlotter.plot_head_on_path(cosimeasure=self.cosimeasure,magnet=self.magnet)
 
 
     '''utuilities'''
