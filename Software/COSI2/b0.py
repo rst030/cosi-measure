@@ -114,7 +114,7 @@ class b0():
         
         
     ''' path transformation to the coordinate system of the magnet '''    
-    def transfer_coordinates_of_the_path_from_cosi_to_magnet(self,filtering=None):
+    def transfer_coordinates_of_the_path_from_cosi_to_magnet(self,filtering=None,stepsize=None):
         # now does everything, like an entry point. separate.
         
         # is called by btn on gui     
@@ -137,7 +137,7 @@ class b0():
         print('len(b0Data)=',len(self.fieldDataAlongPath))
 
         if len(self.path.r) == len(self.fieldDataAlongPath[:,0]):
-            self.reorder_field_to_cubic_grid(filtering=filtering) # make a cubic grid with xPts, yPts, zPts and define B0 on that
+            self.reorder_field_to_cubic_grid(filtering=filtering,givenstep=stepsize) # make a cubic grid with xPts, yPts, zPts and define B0 on that
         else:
             print('LEN of PATH and DATA', len(self.path.r), '   ',len(self.fieldDataAlongPath[:,0]))
         
@@ -196,7 +196,7 @@ class b0():
             
     
     
-    def reorder_field_to_cubic_grid(self,filtering=None):
+    def reorder_field_to_cubic_grid(self,filtering=None,givenstep=None):
         # what we want to do here is make the coordinate grid. A cube, essentially.
         # we know that the path has a fixed distance between the points. This is crucial.
         # but the path is a snake path! it is a 1d line. 
@@ -240,9 +240,14 @@ class b0():
         print(step_size_z_list)
         step_size_z = min(step_size_z_list)
         
+        print('given step ',givenstep)
+        if givenstep is not None:
+            step_size_x = givenstep
+            step_size_y = givenstep
+            step_size_z = givenstep
+            
         print('path step size: ',step_size_x,step_size_y,step_size_z)
-
-
+        
         # so there are unique_x x values between x_min and x_max
         # lets make a linspace
         self.xPts = np.arange(start=x_min,stop=x_max,step=step_size_x) #linspace(start=x_min,stop=x_max,num=num_steps_x)
