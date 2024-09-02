@@ -112,9 +112,9 @@ class data_visualisation_thread(QThread): # this is the data vis thread. Reads d
             if not empty:
                 break
         
-        self.quit() #!!!!!! TEMP!!!!! no gui update
+        #self.quit() #!!!!!! TEMP!!!!! no gui update
 
-        while False: #!!!!!! TEMP!!!!! no gui update
+        while True: #!!!!!! TEMP!!!!! no gui update
             if not self.q.empty():
                 while not self.q.empty():
                     self.cosimeasure.b0 = self.q.get()
@@ -291,9 +291,9 @@ class Ui(QtWidgets.QMainWindow):
 
         self.gen_trd = data_generating_thread(_cosimeasure=self.cosimeasure)
         self.vis_trd = data_visualisation_thread(_plotter = self.pathPlotter,_cosimeasure=self.cosimeasure)
-
+        # TMP! NO plotting
         self.vis_trd.start()
-        print(' VIS thread started')
+        print(' VIS thread NOT started')
         self.gen_trd.start()
         print('GEN thread started')
 

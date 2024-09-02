@@ -53,7 +53,7 @@ class gaussmeter(object):
             if fakeField is not None:
                 return fakeField[0],fakeField[1],fakeField[2],fakeField[3]
             else:
-                return 0,0,0,0
+                return 666,666,666,666
         
         self.ser.write('ALLF?'.encode())
         value = ''
