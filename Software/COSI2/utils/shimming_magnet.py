@@ -146,7 +146,7 @@ class shimming_magnet():
 
 
     
-    def OLD_singleMagnet(self,position, dipoleMoment, simDimensions, resolution, plotFields=False):
+    def OLD_singleMagnet(self,position, simDimensions, resolution, plotFields=False):
         #based on the dipole approximation
         #create mesh coordinates
         
@@ -169,7 +169,7 @@ class shimming_magnet():
         #vec_dot_dip = 3*(x*dipoleMoment[0] + y*dipoleMoment[1]) # was in Tom's script, where the shim magnet was in the xy plane
         
         rvec = np.sqrt(np.square(x)+np.square(y)+np.square(z))
-        vec_dot_dip = 3*(y*dipoleMoment[1] + z*dipoleMoment[2])
+        #vec_dot_dip = 3*(y*dipoleMoment[1] + z*dipoleMoment[2])
 
         dip_vec = np.array([0,np.cos(0),np.sin(0)])*self.mu*self.dip_mom # the cheap magnet is always pointing along +Y
         
