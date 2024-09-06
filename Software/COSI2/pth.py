@@ -64,7 +64,7 @@ class pth():
             rawPathData = file.readlines()
             headerLength = 0
             for line in rawPathData:
-                if line[0]=='#':
+                if line[0]=='#' or line[0]=='%':
                     if 'time' in line:
                         self.datetime = line.split('time')[1]
                     headerLength += 1

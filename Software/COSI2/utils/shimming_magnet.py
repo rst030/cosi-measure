@@ -56,10 +56,10 @@ class shimming_magnet():
         B0 = np.zeros((np.shape(x)+(3,)),dtype = np.float32)
 
 
-        B0[:,:,:,0] += np.divide(np.multiply(x,vec_dot_dip),rvec**5)# - np.divide(mx,rvec**3)
+        B0[:,:,:,0] += np.divide(np.multiply(x,vec_dot_dip),rvec**5) - np.divide(mx,rvec**3)
         B0[:,:,:,1] += np.divide(np.multiply(y,vec_dot_dip),rvec**5) - np.divide(my,rvec**3) #!!!!!!!!!
         B0[:,:,:,2] += np.divide(np.multiply(z,vec_dot_dip),rvec**5) - np.divide(mz,rvec**3) #!!!!!!!!!
-        self.B0 = B0
+        self.B0_expensive = B0
 
         return B0
 
@@ -146,17 +146,26 @@ class shimming_magnet():
 
 
     
-    def OLD_singleMagnet(self,position, simDimensions, resolution, plotFields=False):
+    def OLD_singleMagnet(self,position, grid=None, simDimensions=None, resolution=None, plotFields=None, magsizeouter = None):
         #based on the dipole approximation
         #create mesh coordinates
         
-        X = np.linspace(-simDimensions[0]/2, simDimensions[0]/2 , int(simDimensions[0]*resolution)+1, dtype=np.float32)#!!!!!!!!!!!!!!!!!!!!!!
-        Y = np.linspace(-simDimensions[1]/2, simDimensions[1]/2 , int(simDimensions[1]*resolution)+1, dtype=np.float32)#!!!!!!!!!!!!!!!!!!!!!!
-        Z = np.linspace(-simDimensions[2]/2, simDimensions[2]/2 , int(simDimensions[2]*resolution)+1, dtype=np.float32) #!!!!!!!!!!!!!!!!!!!!!!
+        if simDimensions is not None:
+            X = np.linspace(-simDimensions[0]/2, simDimensions[0]/2 , int(simDimensions[0]*resolution)+1, dtype=np.float32)#!!!!!!!!!!!!!!!!!!!!!!
+            Y = np.linspace(-simDimensions[1]/2, simDimensions[1]/2 , int(simDimensions[1]*resolution)+1, dtype=np.float32)#!!!!!!!!!!!!!!!!!!!!!!
+            Z = np.linspace(-simDimensions[2]/2, simDimensions[2]/2 , int(simDimensions[2]*resolution)+1, dtype=np.float32) #!!!!!!!!!!!!!!!!!!!!!!
    
-        print('x vector length in single magnet simulation: ',len(X))
-        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!     
-        grid = np.meshgrid(X,Y,Z,indexing='ij')
+            print('x vector length in single magnet simulation: ',len(X))
+            #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!     
+            grid = np.meshgrid(X,Y,Z,indexing='ij')
+        
+        if grid is not None:
+            grid = grid
+        
+        if magsizeouter is not None:
+            self.magSizeOuter = magsizeouter
+            self.dip_mom = self.magnetization(self.bRem,self.magSizeOuter) 
+            
         
         x = grid[0]*1e-3-position[0] #!!!!!!!!!!!!!!!!!!!!!!
         y = grid[1]*1e-3-position[1] #!!!!!!!!!!!!!!!!!!!!!! 
@@ -183,9 +192,9 @@ class shimming_magnet():
         B0 = np.zeros((np.shape(x)+(3,)),dtype = np.float32)
 
 
-        B0[:,:,:,0] += np.divide(np.multiply(x,vec_dot_dip),rvec**5)# - np.divide(mx,rvec**3)
-        B0[:,:,:,1] += np.divide(np.multiply(y,vec_dot_dip),rvec**5) - np.divide(my,rvec**3) #!!!!!!!!!
-        B0[:,:,:,2] += np.divide(np.multiply(z,vec_dot_dip),rvec**5) - np.divide(mz,rvec**3) #!!!!!!!!!
+        B0[:,:,:,0] = np.divide(np.multiply(x,vec_dot_dip),rvec**5) - np.divide(mx,rvec**3)
+        B0[:,:,:,1] = np.divide(np.multiply(y,vec_dot_dip),rvec**5) - np.divide(my,rvec**3)
+        B0[:,:,:,2] = np.divide(np.multiply(z,vec_dot_dip),rvec**5) - np.divide(mz,rvec**3)
         self.B0 = B0
 
         return B0
