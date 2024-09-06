@@ -2,17 +2,23 @@ mapping the v1 magnet
 no inserts
 
 magnet center
-250.40006982 168.49112103 276.1333868 
-g0 x250.4 z276.13
-g0 x250.40 y168.49 z276.13 
+243.34095788 174.47224734 276.21886086
+g0 x243.34 z276.22
+g0 x243.34 y174.47 z276.22
 
 making sphere 120
-250.40,168.49,276.13,120
+243.34,174.47,276.22,120
 20,50 pt per theta/phi
 
 magnet
-250.40,168.49,276.13
+243.34,174.47,276.22
 90,0,-90
 
 shell_no_inserts_240905_50pts = shell no inserts
 shell_ONE_RING_240905_50pts = shell with one ring
+
+--- 240906 ---
+magnet recentered. map was shifted.
+taking shell map again.
+50 pts
+shell_no_inserts_240906_50pts_centered
