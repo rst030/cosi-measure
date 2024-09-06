@@ -293,7 +293,7 @@ class Ui(QtWidgets.QMainWindow):
         self.vis_trd = data_visualisation_thread(_plotter = self.pathPlotter,_cosimeasure=self.cosimeasure)
         # TMP! NO plotting
         self.vis_trd.start()
-        print(' VIS thread NOT started')
+        print(' VIS thread started')
         self.gen_trd.start()
         print('GEN thread started')
 

@@ -2,16 +2,16 @@ mapping the v1 magnet
 no inserts
 
 magnet center
-243.34095788 174.47224734 276.21886086
-g0 x243.34 z276.22
-g0 x243.34 y174.47 z276.22
+243.76702435 163.96609229 277.21558226
+g0 x241 y415 z276.57 center of plane
+g0 x243 y163.97 z277.22
 
 making sphere 120
-243.34,174.47,276.22,120
+243,163.97,277.22,120
 20,50 pt per theta/phi
 
 magnet
-243.34,174.47,276.22
+243,163.97,277.22
 90,0,-90
 
 shell_no_inserts_240905_50pts = shell no inserts
@@ -24,3 +24,28 @@ taking shell map again.
 shell_no_inserts_240906_50pts_centered
 sphere loses center!
 X axis trips
+loses center!
+changed accel to max 30
+increased the max speed to 300
+in printer.cfg
+changed speed in cosimeasure.py to get time of travel right
+
+shell_no_inserts_SLOW_ACCEL_30pts_centeredcentered_R120
+lost 16 mm on x
+increased current (all switches off, RMS 3A PEAK 4.2A)
+shell_no_inserts_240906_30pts_centeredcentered_HIGHCURRENT_20pm
+still loses 1 cm mid way
+lowest current (all switches on)
+shell_no_inserts_240906_30pts_centeredcentered_LOWCURRENT_21pm
+again lost 15 mm on x
+sphere_240906_20pts_R120_23pm with higher current on x axis
+again loses 15 mm on x in the mid of the scan
+reduced accel to 10
+sphere_240906_20pts_R120_23pm
+x current high y current high z current high
+sphere_240906_20pts_R120_23pm
+slow speed (10 instead of 300)
+sphere_240906_20pts_R120_23pm46_slow
+nope
+super slow 5 mm/s works, cant stop by hand
+sphere_240907_20pts_R120_00am26_superslow

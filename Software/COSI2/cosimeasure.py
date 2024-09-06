@@ -302,9 +302,9 @@ class cosimeasure(object):
                     dummy_data_likely_zero = self.gaussmeter.read_gaussmeter(fakeField=[np.random.randint(100),100,100,100]) # after waiting get the averaged field vals                    
                     time.sleep(3)
                     ptidx = 0 # index of the point along the path
-                    speed = 20 # [mm/s]
-                    t_offset = 0.5 # [s]
-                    t_meas = 0.5 # [s] measurement
+                    speed = 10 # [mm/s] #!!!
+                    t_offset = 0.25 # [s] #!!!
+                    t_meas = 0.25 # [s] measurement
 
                     for pt in self.path.r: # follow the path
                         pt_prev = self.get_current_position(fakePosition=pt)
