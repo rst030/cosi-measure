@@ -114,7 +114,7 @@ class b0():
         
         
     ''' path transformation to the coordinate system of the magnet '''    
-    def transfer_coordinates_of_the_path_from_cosi_to_magnet(self,filtering=None,stepsize=None):
+    def transfer_coordinates_of_the_path_from_cosi_to_magnet(self,filtering=None,stepsize=None,onesign=None):
         # now does everything, like an entry point. separate.
         
         # is called by btn on gui     
@@ -137,7 +137,7 @@ class b0():
         print('len(b0Data)=',len(self.fieldDataAlongPath))
 
         if len(self.path.r) == len(self.fieldDataAlongPath[:,0]):
-            self.reorder_field_to_cubic_grid(filtering=filtering,givenstep=stepsize) # make a cubic grid with xPts, yPts, zPts and define B0 on that
+            self.reorder_field_to_cubic_grid(filtering=filtering,givenstep=stepsize,onesign=onesign) # make a cubic grid with xPts, yPts, zPts and define B0 on that
         else:
             print('LEN of PATH and DATA', len(self.path.r), '   ',len(self.fieldDataAlongPath[:,0]))
         
@@ -196,7 +196,7 @@ class b0():
             
     
     
-    def reorder_field_to_cubic_grid(self,filtering=None,givenstep=None):
+    def reorder_field_to_cubic_grid(self,filtering=None,givenstep=None,onesign=None):
         # what we want to do here is make the coordinate grid. A cube, essentially.
         # we know that the path has a fixed distance between the points. This is crucial.
         # but the path is a snake path! it is a 1d line. 
@@ -265,9 +265,9 @@ class b0():
         # which is the closest.
         # that is, less than epsilon
         
-        epsx = (self.xPts[1]-self.xPts[0])/3
-        epsy = (self.yPts[1]-self.yPts[0])/3
-        epsz = (self.zPts[1]-self.zPts[0])/3
+        epsx = step_size_x/2#(self.xPts[1]-self.xPts[0])/3
+        epsy = step_size_y/2#(self.yPts[1]-self.yPts[0])/3
+        epsz = step_size_z/2#(self.zPts[1]-self.zPts[0])/3
 
         # then we get the index of xPts
         # and same for z and y
@@ -276,13 +276,13 @@ class b0():
         
         b0Data = np.zeros((len(self.xPts),len(self.yPts),len(self.zPts),4))
         
-        meanField_raw = np.mean(abs(self.fieldDataAlongPath[idx,0]))
+        meanField_raw = np.mean((self.fieldDataAlongPath[idx,0]))
                    
         for idx in range(np.size(self.path.r,0)):
             x_value_along_path = self.path.r[idx,0]
             y_value_along_path = self.path.r[idx,1]
             z_value_along_path = self.path.r[idx,2]
-            
+
             xArg = min(np.where(abs(self.xPts - x_value_along_path) < epsx))
             yArg = min(np.where(abs(self.yPts - y_value_along_path) < epsy))
             zArg = min(np.where(abs(self.zPts - z_value_along_path) < epsz))
@@ -294,11 +294,19 @@ class b0():
 
             
             if self.fieldDataAlongPath[idx,0] == 0:
-                self.fieldDataAlongPath[idx,:] == self.fieldDataAlongPath[idx-1,:] if self.fieldDataAlongPath[idx-1,0] !=0 else self.fieldDataAlongPath[idx-2,:]
+                self.fieldDataAlongPath[idx,:] == self.fieldDataAlongPath[idx-1,:] if self.fieldDataAlongPath[idx-1,0] !=0 else meanField_raw#self.fieldDataAlongPath[idx-2,:]
                 print('b0 importer: warning! 0 VALUE detected! pt %d, assigning'%(idx),self.fieldDataAlongPath[idx-1,:])
            
             # replacing the max point by neighbor
             if filtering is not None: # by how much can the valiues deviate
+                
+                if onesign:
+                    if self.fieldDataAlongPath[idx,0]>0:
+                        print(self.fieldDataAlongPath[idx,0],'is wrong sign! assigning',meanField_raw, '!!!')
+                        self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
+                        print('assigned: ',self.fieldDataAlongPath[idx,:], '<+-+-+-')
+                
+                print(abs(self.fieldDataAlongPath[idx,0])/meanField_raw)
                 if abs(self.fieldDataAlongPath[idx,0])/meanField_raw>filtering:
                     print(self.fieldDataAlongPath[idx,0],'is too high! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
                     self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
@@ -315,14 +323,18 @@ class b0():
 
                 
             
-        b0Data[b0Data==0]=np.nan    
+          
         # getting mean field
-        meanField = np.nanmean(b0Data[:,:,:,0])
+        #meanField = np.nanmean(b0Data[:,:,:,0])
+        #b0Data[b0Data==0]=meanField_raw #!!!!    
         
+        b0Data[b0Data==0]=np.nan  
         # homogeniety
         maxField = np.nanmax(b0Data[:,:,:,0])
         minField = np.nanmin(b0Data[:,:,:,0])
                
+        meanField = np.nanmean(b0Data[:,:,:,0])
+
         
         try:
             homogeneity = float(1e6*(maxField-minField)/meanField)
@@ -375,41 +387,73 @@ class b0():
 
 
                         
-    def parse_field_of_CSV_file(self,field_lines):
+    def parse_field_of_CSV_file(self,field_lines,comsol=None):
         # 315.17	152.35	113.75	0	100	0	0
         self.fieldDataAlongPath = np.zeros((len(field_lines),4))
         for idx, line in enumerate(field_lines):
-            b0x = float(line.split(',')[3])
-            b0y = float(line.split(',')[4])
-            b0z = float(line.split(',')[5])
-            b0abs = float(line.split(',')[6])
+            x = float(line.split(',')[0])
+            y = float(line.split(',')[1])
+            z = float(line.split(',')[2])
+            try:
+                b0x = float(line.split(',')[3])
+            except:
+                b0x = 0
+            try:
+                b0y = float(line.split(',')[4])
+            except:
+                b0y = 0
+            try:
+                b0z = float(line.split(',')[5])
+            except:
+                b0z = 0
+            try:
+                b0abs = float(line.split(',')[6])
+            except:
+                b0abs = 0
 
             if b0abs == 0 :# sometimes gaussmeter doesnt give the vector
                 b0abs = np.sqrt(b0x**2+b0y**2+b0z**2)
                 print('OOPS, |Bo|=0')
             
             self.fieldDataAlongPath[idx,:] = [b0x,b0y,b0z,b0abs]
+            #self.path.r.append([x,y,z])
             
-            
-    def parse_header_of_CSV_file(self,header_lines,eulers=None):
+    def parse_header_of_CSV_file(self,header_lines,eulers=None,comsol=None):
         # COSI2 B0 scan						
         # time 2024-05-17 13:21:45.456312						
         # MAGNET CENTER IN LAB: x 265.170 mm	 y 182.350 mm	 z 163.750 mm				
         # MAGNET AXES WRT LAB: alpha 0.00 deg	 beta 0.00 deg	 gamma 0.00 deg				
         # path: C:/cosi-measure/Software/COSI2/dummies/b0_maps/testcsv.path						
         # X[mm]	Y[mm]	Z[mm]	B0_x[mT]	B0_y[mT|	B0_z[mT]	B0_abs[mT]
-        self.datetime = header_lines[1].split(' ')[2:3]
-        mg_cor_str = header_lines[2].split(':')[1]
-        mag_center_x = float(mg_cor_str.split(',')[0].split(' ')[2])
-        mag_center_y = float(mg_cor_str.split(',')[1].split(' ')[2])
-        mag_center_z= float(mg_cor_str.split(',')[2].split(' ')[2])
         
-        # euler angles are rotation of the magnet wrt cosi
-        mg_euler_str = header_lines[3].split(':')[1]
+        if comsol is None:
+            self.datetime = header_lines[1].split(' ')[2:3]
+            mg_cor_str = header_lines[2].split(':')[1]
+            mag_center_x = float(mg_cor_str.split(',')[0].split(' ')[2])
+            mag_center_y = float(mg_cor_str.split(',')[1].split(' ')[2])
+            mag_center_z= float(mg_cor_str.split(',')[2].split(' ')[2])
+            
+            # euler angles are rotation of the magnet wrt cosi
+            mg_euler_str = header_lines[3].split(':')[1]
 
-        mag_alpha = float(mg_euler_str.split(',')[0].split(' ')[2])
-        mag_beta = float(mg_euler_str.split(',')[1].split(' ')[2])
-        mag_gamma= float(mg_euler_str.split(',')[2].split(' ')[2])
+            mag_alpha = float(mg_euler_str.split(',')[0].split(' ')[2])
+            mag_beta = float(mg_euler_str.split(',')[1].split(' ')[2])
+            mag_gamma= float(mg_euler_str.split(',')[2].split(' ')[2])
+        
+            path_filename_str = str(header_lines[4].split('path:')[1])
+            print('warning. path file %s not used. path data taken from csv!'%path_filename_str)
+        
+        
+        else:
+            self.datetime=str(datetime.now())
+            mag_center_x = 0
+            mag_center_y = 0
+            mag_center_z = 0
+            mag_alpha = 0
+            mag_beta = 0
+            mag_gamma = 0
+            
+        
         if eulers is not None:
             mag_alpha = float(eulers[0])
             mag_beta = float(eulers[1])
@@ -417,9 +461,7 @@ class b0():
 
         self.magnet = osi2magnet.osi2magnet(origin=[mag_center_x,mag_center_y,mag_center_z],euler_angles_zyx=[mag_alpha,mag_beta,mag_gamma])
 
-        path_filename_str = str(header_lines[4].split('path:')[1])
-        print('warning. path file %s not used. path data taken from csv!'%path_filename_str)
-        
+
         
     
     
@@ -572,7 +614,7 @@ class b0():
         
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         x,y,z = np.meshgrid(self.xDim_SPH_fine, self.yDim_SPH_fine, self.zDim_SPH_fine, indexing='ij')
-        self.coord_grid_fine = [x,y,z] #!!!!!!!!!!!!!!!!
+        self.coord_grid_fine = [x,y,z] #!!!!!!!!!!!!!
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         
                 #Create a spherical mask for the data
@@ -758,8 +800,8 @@ class b0():
                 ri = self.path.r[i,:]            
                 bi = self.fieldDataAlongPath[i,:]
                 file.write('%.3f,%.3f,%.3f,%.4f,%.4f,%.4f,%.4f\n'%(ri[0],ri[1],ri[2],bi[0],bi[1],bi[2],bi[3]))
-        
-    def import_from_csv(self,b0_filename: str,eulers=None):
+                
+    def import_from_csv(self,b0_filename: str,eulers=None,comsol=None):
         print('importing b0 object from csv file%s'%b0_filename)
 
         # make an empty instance of b0 and get the b0 values from the csv file.
@@ -769,13 +811,13 @@ class b0():
                 raw_B0_data = file.readlines()     
                 headerlength = 0
                 for line in raw_B0_data:
-                    if line[0] == '#':
+                    if line[0] == '#' or line[0] == '%':
                         headerlength += 1
                         
                 header_lines = raw_B0_data[0:headerlength]    
                 field_lines = raw_B0_data[headerlength:]
-                self.parse_header_of_CSV_file(header_lines,eulers=eulers)
-                self.parse_field_of_CSV_file(field_lines) 
+                self.parse_header_of_CSV_file(header_lines,eulers=eulers,comsol=comsol)
+                self.parse_field_of_CSV_file(field_lines,comsol=comsol)
          
         # import the path from the path file
         self.path = pth.pth(csv_filename = b0_filename)
