@@ -4,7 +4,7 @@ no inserts
 magnet center
 243.76702435 163.96609229 277.21558226
 g0 x241 y415 z276.57 center of plane
-g0 x243 y163.97 z277.22
+g0 x243 y163.97 z277.22 center of bore
 
 making sphere 120
 243,163.97,277.22,120
@@ -48,4 +48,10 @@ slow speed (10 instead of 300)
 sphere_240906_20pts_R120_23pm46_slow
 nope
 super slow 5 mm/s works, cant stop by hand
-sphere_240907_20pts_R120_00am26_superslow
+sphere_240907_20pts_R120_00am26_superslow OK
+
+
+motors ver hot, reduced current to 'off on off'
+inserts calculated, insert -6, one ring
+extremes crap
+sphere_superslow_WITH_ONE_RING_INSTALLED_20pts_R120_240907_01AM

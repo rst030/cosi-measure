@@ -1,0 +1,16 @@
+magnet center
+243.76702435 163.96609229 277.21558226
+g0 x241 y415 z276.57 center of plane
+g0 x243 y163.97 z277.22 center of bore
+
+making BALL 120
+243,163.97,277.22,120
+24 pt per R (5mm step)
+
+magnet
+243,163.97,277.22
+90,0,-90
+
+ball 5mm
+no inserts
+240907_ball_R120_no_inserts
