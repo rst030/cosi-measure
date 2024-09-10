@@ -13,4 +13,15 @@ magnet
 
 ball 5mm
 no inserts
-240907_ball_R120_no_inserts
+#############################################
+240907_ball_R120_no_inserts - good map (!) used as init
+############################################
+
+inserts calculated, one ring installed
+240907_ball_R120_ONE_RING - failed mid way, shortcut in the hard endstop box  
+
+240909 recording sphere
+243,163.97,277.22,120
+20 pts per angle
+240909_sphere_R120_ONE_RING - OK had to move xes independently
+240909_sphere_R120_ONE_RING_50pts

@@ -189,7 +189,10 @@ class cosimeasure(object):
 
     def moveto(self,x:float,y:float,z:float):
 
-        self.command("G0 X%.2f Y%.2f Z%.2f"%(x,y,z))
+        self.command("G0 X%.2f"%(x))
+        self.command("G0 Y%.2f"%(y))
+        self.command("G0 Z%.2f"%(z))
+
         self.head_position = self.get_current_position(fakePosition=[x,y,z])
 
 
@@ -302,14 +305,14 @@ class cosimeasure(object):
                     dummy_data_likely_zero = self.gaussmeter.read_gaussmeter(fakeField=[np.random.randint(100),100,100,100]) # after waiting get the averaged field vals                    
                     time.sleep(3)
                     ptidx = 0 # index of the point along the path
-                    speed = 10 # [mm/s] #!!!
-                    t_offset = 0.25 # [s] #!!!
-                    t_meas = 0.25 # [s] measurement
+                    speed = 200 # [mm/s] #!!!
+                    t_offset = 0.3 # [s] #!!!
+                    t_meas = 0.3 # [s] measurement
 
                     for pt in self.path.r: # follow the path
                         pt_prev = self.get_current_position(fakePosition=pt)
                         dist = np.linalg.norm(np.add(np.asarray(pt),-np.asarray(pt_prev)))
-                        t = dist/speed + t_offset + t_meas
+                        t = 3*dist/speed + t_offset + t_meas
 
                         self.moveto(pt[0],pt[1],pt[2]) # move the head physically to the position
                         time.sleep(t)
