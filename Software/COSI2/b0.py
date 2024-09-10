@@ -387,7 +387,7 @@ class b0():
 
 
                         
-    def parse_field_of_CSV_file(self,field_lines,comsol=None, fieldDirection=None):
+    def parse_field_of_CSV_file(self,field_lines,comsol=None):
         # 315.17	152.35	113.75	0	100	0	0
         self.fieldDataAlongPath = np.zeros((len(field_lines),4))
         for idx, line in enumerate(field_lines):
@@ -414,9 +414,7 @@ class b0():
             if b0abs == 0 :# sometimes gaussmeter doesnt give the vector
                 b0abs = np.sqrt(b0x**2+b0y**2+b0z**2)
                 print('OOPS, |Bo|=0')
-            if fieldDirection is not None:
-                b0x = fieldDirection*abs(b0x)
-                
+            
             self.fieldDataAlongPath[idx,:] = [b0x,b0y,b0z,b0abs]
             #self.path.r.append([x,y,z])
             
@@ -803,7 +801,7 @@ class b0():
                 bi = self.fieldDataAlongPath[i,:]
                 file.write('%.3f,%.3f,%.3f,%.4f,%.4f,%.4f,%.4f\n'%(ri[0],ri[1],ri[2],bi[0],bi[1],bi[2],bi[3]))
                 
-    def import_from_csv(self,b0_filename: str,eulers=None,comsol=None,fieldDirection=None):
+    def import_from_csv(self,b0_filename: str,eulers=None,comsol=None):
         print('importing b0 object from csv file%s'%b0_filename)
 
         # make an empty instance of b0 and get the b0 values from the csv file.
@@ -819,7 +817,7 @@ class b0():
                 header_lines = raw_B0_data[0:headerlength]    
                 field_lines = raw_B0_data[headerlength:]
                 self.parse_header_of_CSV_file(header_lines,eulers=eulers,comsol=comsol)
-                self.parse_field_of_CSV_file(field_lines,comsol=comsol, fieldDirection=fieldDirection)
+                self.parse_field_of_CSV_file(field_lines,comsol=comsol)
          
         # import the path from the path file
         self.path = pth.pth(csv_filename = b0_filename)
