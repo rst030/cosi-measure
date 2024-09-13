@@ -318,7 +318,12 @@ class cosimeasure(object):
                         time.sleep(t)
                         
 
-                        bx,by,bz,babs = self.gaussmeter.read_gaussmeter(fakeField=[np.random.randint(100),100,100,100]) # after waiting get the averaged field vals
+                        bx_probe,by_probe,bz_probe,babs = self.gaussmeter.read_gaussmeter(fakeField=[np.random.randint(100),100,100,100]) # after waiting get the averaged field vals
+                        
+                        bx = bz_probe #!!! 240913
+                        by = by_probe #!!! 240913
+                        bz = bx_probe #!!! 240913
+
                         pos = self.get_current_position(fakePosition=pt)
 
                         print('pt %d of %d'%(ptidx,len(self.path.r)),pos,'mm reached, B0=[%.4f,%.4f,%.4f] mT'%(bx,by,bz))
