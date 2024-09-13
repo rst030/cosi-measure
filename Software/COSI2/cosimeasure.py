@@ -281,7 +281,7 @@ class cosimeasure(object):
         self.path = self.b0.path
         
         print('cosimeasure uses path of the passed b0 object')
-        self.gaussmeter.fast(state=False)
+        self.gaussmeter.fast(state=True)
         print('running along path, no display on GM')
         if self.b0_filename: # if filename was given
             with open(self.b0_filename, 'w') as file: # open that file
@@ -307,7 +307,7 @@ class cosimeasure(object):
                     ptidx = 0 # index of the point along the path
                     speed = 200 # [mm/s] #!!!
                     t_offset = 0.4 # [s] #!!!
-                    t_meas = 0.4 # [s] measurement
+                    t_meas = 0.6 # [s] measurement
 
                     for pt in self.path.r: # follow the path
                         pt_prev = self.get_current_position(fakePosition=pt)
