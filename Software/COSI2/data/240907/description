@@ -42,7 +42,16 @@ shell map one ring
 240912
 recalculated magnet rotations in one ring, xy indexing
 240912_sphere_20pts_1_ring homo by extremes: 5400 ppm
-
+map bad
 field in center increased to 47.50 from 47.32 wtf
 ball again
 240912_ball_5pts_no_rings
+240912_sphere_50pts_no_rings
+
+240912 21:44
+-alpha+pi/2 for real magnet same rotations
+shell
+240912_sphere_20pts_1_ring_-alpha+pi2
+
+#overnight ball no inserts
+240912_ball_overnight_R120_12pts
