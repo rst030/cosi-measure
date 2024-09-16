@@ -192,6 +192,7 @@ class cosimeasure(object):
         self.command("G0 X%.2f"%(x))
         self.command("G0 Y%.2f"%(y))
         self.command("G0 Z%.2f"%(z))
+        self.command("M400")
 
         self.head_position = self.get_current_position(fakePosition=[x,y,z])
 
