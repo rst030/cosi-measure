@@ -219,9 +219,9 @@ class cosimeasure(object):
         ypos = float(vals[1].split(':')[1])
         zpos = float(vals[2].split(':')[1])
         
-        print('GCP x: ',xpos, 'mm')
-        print('GCP y: ',ypos, 'mm')
-        print('GCP z: ',zpos, 'mm')
+        #print('GCP x: ',xpos, 'mm')
+        #print('GCP y: ',ypos, 'mm')
+        #print('GCP z: ',zpos, 'mm')
 
         self.head_position=[xpos,ypos,zpos]
 
@@ -254,9 +254,9 @@ class cosimeasure(object):
         print('running through pass witout measurement')
         if len(self.path.r):
             for pt in self.path.r:
-                print(pt)
+                #print(pt)
                 self.moveto(pt[0],pt[1],pt[2])
-                print('pt reached, magnetometer?')
+                #print('pt reached, magnetometer?')
         else:
             print('load path first!')
 
@@ -306,20 +306,18 @@ class cosimeasure(object):
                     dummy_data_likely_zero = self.gaussmeter.read_gaussmeter(fakeField=[np.random.randint(100),100,100,100]) # after waiting get the averaged field vals                    
                     time.sleep(3)
                     ptidx = 0 # index of the point along the path
-                    speed = 200 # [mm/s] #!!!
                     t_offset = 0.1 # [s] #!!!
                     t_meas = 0.3 # [s] measurement
 
                     for pt in self.path.r: # follow the path
                         pt_prev = self.get_current_position(fakePosition=pt)
-                        dist = np.linalg.norm(np.add(np.asarray(pt),-np.asarray(pt_prev)))
-                        t = 3*dist/speed + t_offset + t_meas
+                        #dist = np.linalg.norm(np.add(np.asarray(pt),-np.asarray(pt_prev)))
+                        t = t_offset + t_meas
 
                         self.moveto(pt[0],pt[1],pt[2]) # move the head physically to the position
                         time.sleep(t)
                         
-
-                        bx_probe,by_probe,bz_probe,babs = self.gaussmeter.read_gaussmeter(fakeField=[np.random.randint(100),100,100,100]) # after waiting get the averaged field vals
+                        bx_probe,by_probe,bz_probe,babs = self.gaussmeter.read_gaussmeter(fakeField=[100,100,100,100]) # after waiting get the averaged field vals
                         
                         bx = bz_probe #!!! 240913
                         by = by_probe #!!! 240913
