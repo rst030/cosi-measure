@@ -62,4 +62,29 @@ indexing changed, sim renewed. 1 ring.
 1 ring improves by 2K4 ppm
 installed 4 rings
 
-240916_ball_R120_12pts_4_RINGS_INSTALLED - will it give 2808 ppm_
+240916_ball_R120_12pts_4_RINGS_INSTALLED - will it give 2808 ppm_#
+
+240917 11:32
+ball gives 4K5. swapped inserts along x
+240917_sphere_inserts_swapped_x->-x
+
+240917_sphere_inserts_swapped_x->-x_SWAPPED_POSITIONS
+nope
+
+swapped back, fine tuned rotations (were ok)
+sphere
+240917_sphere_4_rings_R120 - crap data dont use
+hm what if in a smaller sphere homo is much better?
+
+
+making SPHERE 110
+231.46,164.70,277.21,110
+20 pt per angle
+
+magnet
+231.46,164.70,277.21
+90,0,-90
+
+240917_sphere_4_rings_R110 - 110 mm sphere homo?
+240917_ball_4_rings_R110_12pts - full  ball. 110 mm! Homo?
+
