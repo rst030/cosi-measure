@@ -1,0 +1,6 @@
+
+
+240913_ball_R85_9pts_per_radius_before_shim_no_rings_field_components_aligned
+- not shimmed ball map, R=85mm, 9 points per radius
+- components of the field are in magnet coordinates.
+- path file is in the COSI coordinates.
