@@ -114,7 +114,7 @@ class b0():
         
         
     ''' path transformation to the coordinate system of the magnet '''    
-    def transfer_coordinates_of_the_path_from_cosi_to_magnet(self,filtering=None,stepsize=None,onesign=None):
+    def transfer_coordinates_of_the_path_from_cosi_to_magnet(self,filtering=None,stepsize=None,onesign=None,component=0):
         # now does everything, like an entry point. separate.
         
         # is called by btn on gui     
@@ -137,7 +137,7 @@ class b0():
         print('len(b0Data)=',len(self.fieldDataAlongPath))
 
         if len(self.path.r) == len(self.fieldDataAlongPath[:,0]):
-            self.reorder_field_to_cubic_grid(filtering=filtering,givenstep=stepsize,onesign=onesign) # make a cubic grid with xPts, yPts, zPts and define B0 on that
+            self.reorder_field_to_cubic_grid(filtering=filtering,givenstep=stepsize,onesign=onesign,component=component) # make a cubic grid with xPts, yPts, zPts and define B0 on that
         else:
             print('LEN of PATH and DATA', len(self.path.r), '   ',len(self.fieldDataAlongPath[:,0]))
         
@@ -196,7 +196,7 @@ class b0():
             
     
     
-    def reorder_field_to_cubic_grid(self,filtering=None,givenstep=None,onesign=None):
+    def reorder_field_to_cubic_grid(self,filtering=None,givenstep=None,onesign=None,component=0):
         # what we want to do here is make the coordinate grid. A cube, essentially.
         # we know that the path has a fixed distance between the points. This is crucial.
         # but the path is a snake path! it is a 1d line. 
@@ -276,7 +276,7 @@ class b0():
         
         b0Data = np.zeros((len(self.xPts),len(self.yPts),len(self.zPts),4))
         
-        meanField_raw = np.mean((self.fieldDataAlongPath[idx,0]))
+        meanField_raw = np.mean((self.fieldDataAlongPath[idx,component]))
                    
         for idx in range(np.size(self.path.r,0)):
             x_value_along_path = self.path.r[idx,0]
@@ -293,7 +293,7 @@ class b0():
                 # cleaning
 
             
-            if self.fieldDataAlongPath[idx,0] == 0:
+            if self.fieldDataAlongPath[idx,component] == 0:
                 self.fieldDataAlongPath[idx,:] == self.fieldDataAlongPath[idx-1,:] if self.fieldDataAlongPath[idx-1,0] !=0 else meanField_raw#self.fieldDataAlongPath[idx-2,:]
                 print('b0 importer: warning! 0 VALUE detected! pt %d, assigning'%(idx),self.fieldDataAlongPath[idx-1,:])
            
@@ -301,27 +301,27 @@ class b0():
             if filtering is not None: # by how much can the valiues deviate
                 
                 if onesign:
-                    if self.fieldDataAlongPath[idx,0]>0:
-                        print(self.fieldDataAlongPath[idx,0],'is wrong sign! assigning',meanField_raw, '!!!')
-                        self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
+                    if self.fieldDataAlongPath[idx,component]>0:
+                        print(self.fieldDataAlongPath[idx,0],'is wrong sign! not assigning NAN')#,meanField_raw, '!!!')
+                        self.fieldDataAlongPath[idx,:] = [np.nan,np.nan,np.nan,np.nan]#self.fieldDataAlongPath[idx-1,:]
                         print('assigned: ',self.fieldDataAlongPath[idx,:], '<+-+-+-')
                 
-                print(abs(self.fieldDataAlongPath[idx,0])/meanField_raw)
-                if abs(self.fieldDataAlongPath[idx,0])/meanField_raw>filtering:
-                    print(self.fieldDataAlongPath[idx,0],'is too high! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
-                    self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
+                print('ratio pt/mean: ',abs(self.fieldDataAlongPath[idx,component])/abs(meanField_raw))
+                if abs(self.fieldDataAlongPath[idx,component])/abs(meanField_raw)>filtering:
+                    print(self.fieldDataAlongPath[idx,component],'is too high! not assigning NAN')#,self.fieldDataAlongPath[idx-1,:], '!!!')
+                    self.fieldDataAlongPath[idx,:] = [np.nan,np.nan,np.nan,np.nan]#self.fieldDataAlongPath[idx-1,:]
                     print('assigned: ',self.fieldDataAlongPath[idx,:], '<+++++')
             
             # replacing the min point by neighbor
-                if meanField_raw/abs(self.fieldDataAlongPath[idx,0])>filtering:
-                    print(self.fieldDataAlongPath[idx,0],'is too low! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
-                    self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
+                if abs(meanField_raw)/abs(self.fieldDataAlongPath[idx,component])>filtering:
+                    print(self.fieldDataAlongPath[idx,component],'is too low! assigning NAN')#,self.fieldDataAlongPath[idx-1,:], '!!!')
+                    self.fieldDataAlongPath[idx,:] = [np.nan,np.nan,np.nan,np.nan]#self.fieldDataAlongPath[idx-1,:]
                     print('assigned: ',self.fieldDataAlongPath[idx,:], '<-----')
 
 
             b0Data[xArg,yArg,zArg,:] = [self.fieldDataAlongPath[idx,0],self.fieldDataAlongPath[idx,1],self.fieldDataAlongPath[idx,2],self.fieldDataAlongPath[idx,3]]
-
-                
+#!!!!!!!!!!!!!!!!!!!!!!! 249813 !!!!!!!!!!!!!!! WARNING!!!!! !!!!! IMPORTANT!!!!
+            #!!!!!!!!!!! 240916 !!!!!!!!!!!!!!! XY indexing (!!!)    
             
           
         # getting mean field
@@ -494,7 +494,7 @@ class b0():
     def fitSphericalHarmonics(self, maxorder:int, dsv:float, resol:float):
         # fitSphericalHarmonicsShell2_forInterpolation.py
         
-        fieldMap = self.b0Data[...,0] #np.load(r'./data/tmp/b0Data.npy')[...,0]
+        fieldMap = self.b0Data[:,:,:,0] #np.load(r'./data/tmp/b0Data.npy')[...,0]
         
         # order of sph harm to consider
         maxOrder = maxorder
@@ -504,21 +504,22 @@ class b0():
         resolution = resol
         
         #Create a cartesian coordinate system of where the data points were acquired, maps were acquired with a 5mm resolution 
-        fieldMapDims = np.shape(fieldMap)
+        fieldMapDims = [len(self.xPts),len(self.yPts),len(self.zPts)]#np.shape(fieldMap) #!!!! 240911
         
         print(fieldMapDims)
         
-        self.xDim_SPH_decomp = np.linspace(0, resolution*(fieldMapDims[0]-1), fieldMapDims[0]) - resolution*(fieldMapDims[0] -1)/2
-        self.yDim_SPH_decomp = np.linspace(0, resolution*(fieldMapDims[1]-1), fieldMapDims[1]) - resolution*(fieldMapDims[1] -1)/2
-        self.zDim_SPH_decomp = np.linspace(0, resolution*(fieldMapDims[2]-1), fieldMapDims[2]) - resolution*(fieldMapDims[2] -1)/2
+        self.xDim_SPH_decomp = self.xPts#np.linspace(0, resolution*(fieldMapDims[0]), fieldMapDims[0]) - resolution*(fieldMapDims[0])/2
+        self.yDim_SPH_decomp = self.yPts#np.linspace(0, resolution*(fieldMapDims[1]), fieldMapDims[1]) - resolution*(fieldMapDims[1])/2
+        self.zDim_SPH_decomp = self.zPts#np.linspace(0, resolution*(fieldMapDims[2]), fieldMapDims[2]) - resolution*(fieldMapDims[2])/2
 
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        x,y,z = np.meshgrid(self.xDim_SPH_decomp, self.yDim_SPH_decomp, self.zDim_SPH_decomp, indexing='ij')
-        coord = [x,y,z]
+        x,y,z = np.meshgrid(self.yDim_SPH_decomp, self.xDim_SPH_decomp, self.zDim_SPH_decomp, indexing='xy')  #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 240911
+        coord = [x,y,z] #!!!!! 240916 !!! XY indexing - we need to render the magnets!
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 
         #Create a spherical mask for the data
-        sphereMask = np.zeros(np.shape(coord[2]), dtype = bool)
+        sphereMask = np.zeros(np.shape(coord[0]), dtype = bool)
         sphereMask[np.square(coord[0]) + np.square(coord[1]) + np.square(coord[2]) <= (self.DSV/2)**2] = 1 
         sphereMask = sphereMask*(~np.isnan(fieldMap))
 
@@ -571,7 +572,7 @@ class b0():
         diffSph =  maskedFieldShell - decomposedField
       
         #generate spherical coordinates over entire sphere, not just shell, for plotting
-        spherCoordSphere = np.copy(spherCoord)
+        spherCoordSphere = np.copy(spherCoord) #!!!!! 240916 instead of np.shape(coord(0))
         spherCoordSphere[spherCoord[...,0] == 0,:] = np.nan
         spherHarm3D = getRealSphericalHarmonics(spherCoordSphere, maxOrder)
 
@@ -613,15 +614,17 @@ class b0():
         self.zDim_SPH_fine = np.linspace(-DSV/2, DSV/2, int(DSV/resolution+1))
         
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        x,y,z = np.meshgrid(self.xDim_SPH_fine, self.yDim_SPH_fine, self.zDim_SPH_fine, indexing='ij')
-        self.coord_grid_fine = [x,y,z] #!!!!!!!!!!!!!
+        x,y,z = np.meshgrid(self.xDim_SPH_fine, self.yDim_SPH_fine, self.zDim_SPH_fine, indexing='xy')
+        self.coord_grid_fine = [x,y,z] #!!!!!!!!!!!!! 240916 !!!!!! gives Y,X,Z in the coord_grid_fine
         #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #!!!!!!!!!!! 240916 !!!!!!!!!!!!!! xy indexing, we need to render the magnets
         
                 #Create a spherical mask for the data
         sphereMask = np.zeros(np.shape(self.coord_grid_fine[0]), dtype = bool)
         sphereMask[np.square(self.coord_grid_fine[0]) + np.square(self.coord_grid_fine[1]) + np.square(self.coord_grid_fine[2]) <= (DSV/2)**2] = 1 
         sphereMask = np.asarray(sphereMask, dtype=np.double)
         sphereMask[sphereMask == 0] = np.nan
+  
         self.sphere_mask = sphereMask # for later
 
         spherCoord = cartToSpher(np.stack((self.coord_grid_fine[0],self.coord_grid_fine[1], self.coord_grid_fine[2]), axis = -1))
