@@ -307,7 +307,7 @@ class cosimeasure(object):
                     time.sleep(3)
                     ptidx = 0 # index of the point along the path
                     t_offset = 0.1 # [s] #!!!
-                    t_meas = 0.3 # [s] measurement
+                    t_meas = 0.1 # [s] measurement
 
                     for pt in self.path.r: # follow the path
                         pt_prev = self.get_current_position(fakePosition=pt)
