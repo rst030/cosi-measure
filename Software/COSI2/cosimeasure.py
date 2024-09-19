@@ -156,7 +156,7 @@ class cosimeasure(object):
     def quickhome_x(self):
         self.command("G0 X%.2f"%minx) # quick home x
     def quickhome_y(self):
-        self.command("G0 Y%.2f"%miny) # quick home y
+        self.command("G0 Y%.2f"%maxy) # quick home y
     def quickhome_z(self):
         self.command("G0 Z%.2f"%minz) # quick home z
 

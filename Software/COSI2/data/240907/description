@@ -1,15 +1,18 @@
 magnet center
-231.46194728 164.70459572 277.21148095
-g0 x231.75 y415.75 z275.72 center of plane
-g0 x231.46 y164.70 z277.21 center of bore
+ptxz = 232. 416. 275.
+231.45669778 164.95148086 275.66959616
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+g0 x231.45 y416 z275.67 center of plane
+g0 x231.46 y164.95 z275.67 center of bore
 
 making BALL 120
-231.46,164.70,277.21,120
+231.46,164.95,275.67,120
 24 pt per R (5mm step)
 
 magnet
-231.46,164.70,277.21
+231.46,164.95,275.67
 90,0,-90
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 ball 5mm
 no inserts
@@ -92,3 +95,12 @@ flipped yz in the shom magnet positions - so rendered good shim field
 240917_sphere_yz_flipped - sphere.crap.
 
 240918_sphere_zinverted_R120_20pts
+
+240919
+gm wire fixed
+4 rings 240918 installed
+231.46,164.95,275.67,120 6 pts
+
+240919_ball_4rings_R120_6pts 4618 ppm wtf
+mapping precisely
+240919_ball_4rings_R120_12pts
