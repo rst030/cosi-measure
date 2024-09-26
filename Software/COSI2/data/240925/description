@@ -23,3 +23,6 @@ sphere, 50 pts
 simulated 4 rings with the mismatch included in the initial map
 sphere, 50 pts
 240925_sphere_R120_FOUR_RINGS_ITER2_with_mismatch
+
+coarse ball
+240925_coarse_ball_R120_FOUR_RINGS_ITER2_with_mismatch
