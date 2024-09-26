@@ -1,0 +1,18 @@
+mapping of v1 magnet with 4 rings in.
+center: 
+254.181, 149.964, 277.405
+
+center of magnet
+
+g0 x254.181 z277.405
+g0 x254.181 y149.964 z277.405
+
+ball path
+254.181,149.964,277.405,120
+12 pts
+
+eulers: -90,0,90
+
+data:
+240925_ball_R120_FOUR_RINGS_ITER2
+
