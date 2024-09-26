@@ -114,7 +114,7 @@ class b0():
         
         
     ''' path transformation to the coordinate system of the magnet '''    
-    def transfer_coordinates_of_the_path_from_cosi_to_magnet(self,filtering=None,stepsize=None,onesign=None,component=0):
+    def transfer_coordinates_of_the_path_from_cosi_to_magnet(self,filtering=None,stepsize=None,onesign=None,component=None,magnet_center=None):
         # now does everything, like an entry point. separate.
         
         # is called by btn on gui     
@@ -137,9 +137,13 @@ class b0():
         print('len(b0Data)=',len(self.fieldDataAlongPath))
 
         if len(self.path.r) == len(self.fieldDataAlongPath[:,0]):
-            self.reorder_field_to_cubic_grid(filtering=filtering,givenstep=stepsize,onesign=onesign,component=component) # make a cubic grid with xPts, yPts, zPts and define B0 on that
+            self.reorder_field_to_cubic_grid(filtering=filtering,givenstep=stepsize,onesign=onesign,component=component,magnet_center=magnet_center) # make a cubic grid with xPts, yPts, zPts and define B0 on that
         else:
             print('LEN of PATH and DATA', len(self.path.r), '   ',len(self.fieldDataAlongPath[:,0]))
+        
+        
+        
+        
         
     # ----------------- artificial data generation ----------------- 
     def make_cylindrical_anomaly_along_x(self,yz_of_the_cylinder_center,radius_of_cylinder,intensity,bg):
@@ -276,7 +280,7 @@ class b0():
         
         b0Data = np.zeros((len(self.xPts),len(self.yPts),len(self.zPts),4))
         
-        meanField_raw = np.mean((self.fieldDataAlongPath[idx,component]))
+        meanField_raw = np.mean((self.fieldDataAlongPath[:,component]))
                    
         for idx in range(np.size(self.path.r,0)):
             x_value_along_path = self.path.r[idx,0]
@@ -299,16 +303,19 @@ class b0():
            
             # replacing the max point by neighbor
             if filtering is not None: # by how much can the valiues deviate
+                print('mean: ',abs(meanField_raw))
                 
                 if onesign:
                     if self.fieldDataAlongPath[idx,component]>0:
-                        print(self.fieldDataAlongPath[idx,0],'is wrong sign! not assigning NAN')#,meanField_raw, '!!!')
+                        print(self.fieldDataAlongPath[idx,0],'is wrong sign! assigning NAN')#,meanField_raw, '!!!')
                         self.fieldDataAlongPath[idx,:] = [np.nan,np.nan,np.nan,np.nan]#self.fieldDataAlongPath[idx-1,:]
                         print('assigned: ',self.fieldDataAlongPath[idx,:], '<+-+-+-')
                 
                 print('ratio pt/mean: ',abs(self.fieldDataAlongPath[idx,component])/abs(meanField_raw))
+                
+
                 if abs(self.fieldDataAlongPath[idx,component])/abs(meanField_raw)>filtering:
-                    print(self.fieldDataAlongPath[idx,component],'is too high! not assigning NAN')#,self.fieldDataAlongPath[idx-1,:], '!!!')
+                    print(self.fieldDataAlongPath[idx,component],'is too high! assigning NAN')#,self.fieldDataAlongPath[idx-1,:], '!!!')
                     self.fieldDataAlongPath[idx,:] = [np.nan,np.nan,np.nan,np.nan]#self.fieldDataAlongPath[idx-1,:]
                     print('assigned: ',self.fieldDataAlongPath[idx,:], '<+++++')
             
@@ -318,8 +325,9 @@ class b0():
                     self.fieldDataAlongPath[idx,:] = [np.nan,np.nan,np.nan,np.nan]#self.fieldDataAlongPath[idx-1,:]
                     print('assigned: ',self.fieldDataAlongPath[idx,:], '<-----')
 
-
+#!!!!!!!!!!!!!!! 240917
             b0Data[xArg,yArg,zArg,:] = [self.fieldDataAlongPath[idx,0],self.fieldDataAlongPath[idx,1],self.fieldDataAlongPath[idx,2],self.fieldDataAlongPath[idx,3]]
+            print(b0Data[xArg,yArg,zArg,:])
 #!!!!!!!!!!!!!!!!!!!!!!! 249813 !!!!!!!!!!!!!!! WARNING!!!!! !!!!! IMPORTANT!!!!
             #!!!!!!!!!!! 240916 !!!!!!!!!!!!!!! XY indexing (!!!)    
             
@@ -330,10 +338,10 @@ class b0():
         
         b0Data[b0Data==0]=np.nan  
         # homogeniety
-        maxField = np.nanmax(b0Data[:,:,:,0])
-        minField = np.nanmin(b0Data[:,:,:,0])
+        maxField = np.nanmax(b0Data[:,:,:,component])
+        minField = np.nanmin(b0Data[:,:,:,component])
                
-        meanField = np.nanmean(b0Data[:,:,:,0])
+        meanField = np.nanmean(b0Data[:,:,:,component])
 
         
         try:
@@ -491,10 +499,10 @@ class b0():
     # DATA MANIPULATION SECTION
      # ------------ fitting B0 with spherical harmonics ---------------
 
-    def fitSphericalHarmonics(self, maxorder:int, dsv:float, resol:float):
+    def fitSphericalHarmonics(self, maxorder:int, dsv:float, resol:float,component=0):
         # fitSphericalHarmonicsShell2_forInterpolation.py
         
-        fieldMap = self.b0Data[:,:,:,0] #np.load(r'./data/tmp/b0Data.npy')[...,0]
+        fieldMap = self.b0Data[:,:,:,component] #np.load(r'./data/tmp/b0Data.npy')[...,0]
         
         # order of sph harm to consider
         maxOrder = maxorder
@@ -804,7 +812,7 @@ class b0():
                 bi = self.fieldDataAlongPath[i,:]
                 file.write('%.3f,%.3f,%.3f,%.4f,%.4f,%.4f,%.4f\n'%(ri[0],ri[1],ri[2],bi[0],bi[1],bi[2],bi[3]))
                 
-    def import_from_csv(self,b0_filename: str,eulers=None,comsol=None):
+    def import_from_csv(self,b0_filename: str,eulers=None,comsol=None,magnet_center=None):
         print('importing b0 object from csv file%s'%b0_filename)
 
         # make an empty instance of b0 and get the b0 values from the csv file.
@@ -823,7 +831,7 @@ class b0():
                 self.parse_field_of_CSV_file(field_lines,comsol=comsol)
          
         # import the path from the path file
-        self.path = pth.pth(csv_filename = b0_filename)
+        self.path = pth.pth(csv_filename = b0_filename,magnet_center=magnet_center)
 
                 
         
