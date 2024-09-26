@@ -83,8 +83,7 @@ class shimming_magnet():
             dip_mom = b_analytic * (dimensions/2 + evalDistance)**3 /(2*self.mu) #strength of the dipole moment
         
         return dip_mom
-    
-    
+        
 
     
     def OLD_singleMagnet(self,position, dipoleMoment, simDimensions, resolution, plotFields=False):

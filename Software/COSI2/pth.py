@@ -17,7 +17,7 @@ class pth():
     
     current_index = 0 # when scanned along path, its current index iterates. Used for live path plotting
 
-    def __init__(self,filename='',csv_filename=None):
+    def __init__(self,filename='',csv_filename=None,magnet_center=None):
         
         self.filename = 'dummy'
         self.datetime = str(datetime.now())
