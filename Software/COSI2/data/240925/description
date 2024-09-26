@@ -15,4 +15,11 @@ eulers: -90,0,90
 
 data:
 240925_ball_R120_FOUR_RINGS_ITER2
+looks not good
 
+sphere, 50 pts
+240925_sphere_R120_FOUR_RINGS_ITER2
+
+simulated 4 rings with the mismatch included in the initial map
+sphere, 50 pts
+240925_sphere_R120_FOUR_RINGS_ITER2_with_mismatch
