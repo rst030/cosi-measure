@@ -30,11 +30,13 @@ class shimming_magnet():
         #self.dipole_vector = np.array([0,np.cos(rotation_yz),np.sin(rotation_yz)])*self.mu*self.dip_mom # dipole moment in YZ plane!, initially - along Y
         print(self.dipole_vector)
         
-    def render_field(self,grid):
+    def render_field(self,grid,magSizeOuter=None):
         '''calculate the magnetic field of the magnet on the coordinate grin grid, leave only values within sphere of d=dsv mm'''
         print("ROTATION OF EXPENSIVE MAGNET:%.0f"%(self.rotation_yz*180/np.pi))
         self.update_rotation(rotation_yz = self.rotation_yz)
-
+        
+        if magSizeOuter is not None:
+            self.magSizeOuter = magSizeOuter
         self.dip_mom = self.magnetization(self.bRem,self.magSizeOuter) 
         print(self.bRem)
         
