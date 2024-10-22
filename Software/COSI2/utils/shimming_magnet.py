@@ -32,7 +32,7 @@ class shimming_magnet():
         
     def render_field(self,grid,magSizeOuter=None):
         '''calculate the magnetic field of the magnet on the coordinate grin grid, leave only values within sphere of d=dsv mm'''
-        print("ROTATION OF EXPENSIVE MAGNET:%.0f"%(self.rotation_yz*180/np.pi))
+        print("ROTATION OF CHEAP MAGNET:%.0f"%(self.rotation_yz*180/np.pi))
         self.update_rotation(rotation_yz = self.rotation_yz)
         
         if magSizeOuter is not None:

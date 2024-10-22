@@ -114,7 +114,7 @@ class b0():
         
         
     ''' path transformation to the coordinate system of the magnet '''    
-    def transfer_coordinates_of_the_path_from_cosi_to_magnet(self,filtering=None,stepsize=None,onesign=None,component=None,magnet_center=None):
+    def transfer_coordinates_of_the_path_from_cosi_to_magnet(self,filtering=None,stepsize=None,onesign=None,component=None):
         # now does everything, like an entry point. separate.
         
         # is called by btn on gui     
@@ -137,7 +137,7 @@ class b0():
         print('len(b0Data)=',len(self.fieldDataAlongPath))
 
         if len(self.path.r) == len(self.fieldDataAlongPath[:,0]):
-            self.reorder_field_to_cubic_grid(filtering=filtering,givenstep=stepsize,onesign=onesign,component=component,magnet_center=magnet_center) # make a cubic grid with xPts, yPts, zPts and define B0 on that
+            self.reorder_field_to_cubic_grid(filtering=filtering,givenstep=stepsize,onesign=onesign,component=component) # make a cubic grid with xPts, yPts, zPts and define B0 on that
         else:
             print('LEN of PATH and DATA', len(self.path.r), '   ',len(self.fieldDataAlongPath[:,0]))
         
@@ -325,11 +325,9 @@ class b0():
                     self.fieldDataAlongPath[idx,:] = [np.nan,np.nan,np.nan,np.nan]#self.fieldDataAlongPath[idx-1,:]
                     print('assigned: ',self.fieldDataAlongPath[idx,:], '<-----')
 
-#!!!!!!!!!!!!!!! 240917
             b0Data[xArg,yArg,zArg,:] = [self.fieldDataAlongPath[idx,0],self.fieldDataAlongPath[idx,1],self.fieldDataAlongPath[idx,2],self.fieldDataAlongPath[idx,3]]
             print(b0Data[xArg,yArg,zArg,:])
-#!!!!!!!!!!!!!!!!!!!!!!! 249813 !!!!!!!!!!!!!!! WARNING!!!!! !!!!! IMPORTANT!!!!
-            #!!!!!!!!!!! 240916 !!!!!!!!!!!!!!! XY indexing (!!!)    
+
             
           
         # getting mean field
