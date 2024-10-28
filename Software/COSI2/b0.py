@@ -114,7 +114,7 @@ class b0():
         
         
     ''' path transformation to the coordinate system of the magnet '''    
-    def transfer_coordinates_of_the_path_from_cosi_to_magnet(self,filtering=None,stepsize=None,onesign=None,component=None):
+    def transfer_coordinates_of_the_path_from_cosi_to_magnet(self,filtering=None,stepsize=None,onesign=None,component=0):
         # now does everything, like an entry point. separate.
         
         # is called by btn on gui     
@@ -137,6 +137,7 @@ class b0():
         print('len(b0Data)=',len(self.fieldDataAlongPath))
 
         if len(self.path.r) == len(self.fieldDataAlongPath[:,0]):
+            self.reorder_field_to_cubic_grid(filtering=filtering,givenstep=stepsize,onesign=onesign,component=component) # make a cubic grid with xPts, yPts, zPts and define B0 on that
             self.reorder_field_to_cubic_grid(filtering=filtering,givenstep=stepsize,onesign=onesign,component=component) # make a cubic grid with xPts, yPts, zPts and define B0 on that
         else:
             print('LEN of PATH and DATA', len(self.path.r), '   ',len(self.fieldDataAlongPath[:,0]))
@@ -200,6 +201,7 @@ class b0():
             
     
     
+    def reorder_field_to_cubic_grid(self,filtering=None,givenstep=None,onesign=None,component=0):
     def reorder_field_to_cubic_grid(self,filtering=None,givenstep=None,onesign=None,component=0):
         # what we want to do here is make the coordinate grid. A cube, essentially.
         # we know that the path has a fixed distance between the points. This is crucial.
@@ -298,6 +300,7 @@ class b0():
 
             
             if self.fieldDataAlongPath[idx,component] == 0:
+            if self.fieldDataAlongPath[idx,component] == 0:
                 self.fieldDataAlongPath[idx,:] == self.fieldDataAlongPath[idx-1,:] if self.fieldDataAlongPath[idx-1,0] !=0 else meanField_raw#self.fieldDataAlongPath[idx-2,:]
                 print('b0 importer: warning! 0 VALUE detected! pt %d, assigning'%(idx),self.fieldDataAlongPath[idx-1,:])
            
@@ -307,22 +310,20 @@ class b0():
                 
                 if onesign:
                     if self.fieldDataAlongPath[idx,component]>0:
-                        print(self.fieldDataAlongPath[idx,0],'is wrong sign! assigning NAN')#,meanField_raw, '!!!')
-                        self.fieldDataAlongPath[idx,:] = [np.nan,np.nan,np.nan,np.nan]#self.fieldDataAlongPath[idx-1,:]
+                        print(self.fieldDataAlongPath[idx,component],'is wrong sign! assigning',meanField_raw, '!!!')
+                        self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
                         print('assigned: ',self.fieldDataAlongPath[idx,:], '<+-+-+-')
                 
-                print('ratio pt/mean: ',abs(self.fieldDataAlongPath[idx,component])/abs(meanField_raw))
-                
-
-                if abs(self.fieldDataAlongPath[idx,component])/abs(meanField_raw)>filtering:
-                    print(self.fieldDataAlongPath[idx,component],'is too high! assigning NAN')#,self.fieldDataAlongPath[idx-1,:], '!!!')
-                    self.fieldDataAlongPath[idx,:] = [np.nan,np.nan,np.nan,np.nan]#self.fieldDataAlongPath[idx-1,:]
+                print(abs(self.fieldDataAlongPath[idx,component])/meanField_raw)
+                if abs(self.fieldDataAlongPath[idx,component])/meanField_raw>filtering:
+                    print(self.fieldDataAlongPath[idx,component],'is too high! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
+                    self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
                     print('assigned: ',self.fieldDataAlongPath[idx,:], '<+++++')
             
             # replacing the min point by neighbor
-                if abs(meanField_raw)/abs(self.fieldDataAlongPath[idx,component])>filtering:
-                    print(self.fieldDataAlongPath[idx,component],'is too low! assigning NAN')#,self.fieldDataAlongPath[idx-1,:], '!!!')
-                    self.fieldDataAlongPath[idx,:] = [np.nan,np.nan,np.nan,np.nan]#self.fieldDataAlongPath[idx-1,:]
+                if meanField_raw/abs(self.fieldDataAlongPath[idx,component])>filtering:
+                    print(self.fieldDataAlongPath[idx,component],'is too low! assigning',self.fieldDataAlongPath[idx-1,:], '!!!')
+                    self.fieldDataAlongPath[idx,:] = self.fieldDataAlongPath[idx-1,:]
                     print('assigned: ',self.fieldDataAlongPath[idx,:], '<-----')
 
             b0Data[xArg,yArg,zArg,:] = [self.fieldDataAlongPath[idx,0],self.fieldDataAlongPath[idx,1],self.fieldDataAlongPath[idx,2],self.fieldDataAlongPath[idx,3]]
